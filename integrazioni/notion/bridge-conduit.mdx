@@ -48,6 +48,10 @@ Dopo una modifica in Notion, usa questa procedura per confermare che il bridge a
   Se il `listing_id` nel DB Notion non corrisponde a quello in KrossBooking, il bridge crea cartelle KB con uno scope errato: le informazioni non vengono consegnate all'ospite giusto, oppure le cartelle rimangono disconnesse da qualsiasi prenotazione. Verifica sempre l'allineamento del `listing_id` prima di dichiarare il setup completato.
 </Warning>
 
+<Info>
+  **Caso test del bridge = HostManager360.** È il **primo partner Kross live** (agente che legge 13 ospiti reali) **e** il caso su cui si valida il bridge Notion↔Conduit end-to-end per un cliente reale, oltre a Cosmica. Da qui si estrae il pattern ripetibile per gli altri partner.
+</Info>
+
 <Note>
   Il bridge è un componente interno della piattaforma Mattone — non è necessario configurarlo manualmente. In caso di sincronizzazione rotta o anomalie, consulta la pagina [Troubleshooting Notion](/integrazioni/notion/troubleshooting) per la diagnosi e la risoluzione.
 </Note>

@@ -10,6 +10,10 @@ Configura Stripe in modo che Conduit possa generare link di pagamento per extra 
   Mai usare la Secret Key (`sk_live_…`) — usa solo la Restricted Key (`rk_live_…`) con i permessi minimi necessari. La Secret Key dà accesso completo all'account Stripe dello studente, inclusi rimborsi e modifiche al piano.
 </Warning>
 
+<Info>
+  **Una chiave, due usi.** La stessa `stripe_key_<token>` nel Vault serve sia ai **link di pagamento in chat** (Conduit, extra a listino) sia al **checkout del sito direct booking**. Raccoglila una volta sola. Panoramica completa + Stripe Connect multi-owner: [Integrazione Stripe](/integrazioni/stripe/panoramica). Ricorda: prenotazioni/allunghi si pagano col **nativo PMS**, Stripe autonomo solo per gli extra a listino.
+</Info>
+
 ## Cosa serve
 
 Lo studente deve creare una **Restricted Key** (`rk_live_…`) nel suo dashboard Stripe con esattamente questi permessi:

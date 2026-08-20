@@ -1,0 +1,59 @@
+---
+title: "Personalizzazione per studente"
+description: "Cosa si adatta per ogni studente (config, non codice): skill policy, KB per-listing, dominio/branding, numeri e contatti."
+---
+
+
+Il codice e i tool sono gli **stessi** per tutti (un catalogo, una procedura). Ciò che cambia per studente è la **config**: dati, testi, branding. Questa pagina elenca cosa personalizzare, così nessun pezzo resta con i dati di Cosmica.
+
+## Skill policy (i dati dentro le skill)
+Le skill **tool-bound** (booking-extension, check-in-access, gate-opening, reservation-status) vanno **as-is**. Le skill **policy** contengono dati Cosmica hard-coded e vanno riscritte con quelli dello studente:
+
+| Skill policy | Cosa sostituire |
+|---|---|
+| `early-late-policy-manager` | fee early/late + numeri team → fee e reperibili dello studente |
+| `apartment-issue-escalator` | numeri on-call Cosmica → numeri dello studente |
+| `guest-portal-link-information` | link portale + email Cosmica → quelli dello studente (la parte legale TULPS resta) |
+| `luggage-storage-policy` | link deposito Cosmica → quello dello studente o generico |
+| `night-rate-discount-policy` | soglie sconto → policy dello studente |
+| `invoice-request-procedure` | testo intermediazione → studente |
+| `extra-bed-linen-coordinator` / `additional-supplies-handler` | workflow specifici → workflow dello studente |
+
+Le skill generiche (power-outage, cleaning-issue, garbage-disposal, keybox-retrieval) vanno bene così (i dati stanno nella KB del listing).
+
+## KB per-listing
+La knowledge è **per-appartamento** (mai globale): WiFi, indirizzo, keybox, parcheggio, listino extra. Si genera dal registro Notion dello studente via bridge. Vedi [Conduit KB](/integrazioni/conduit/kb) e [Bridge](/integrazioni/notion/bridge-conduit).
+
+## Listino extra
+Compilato con i **prezzi dello studente** (valuta corretta), nella KB del listing. Senza listino confermato l'agente escala (comportamento sicuro). Vedi [Extra / Upsell](/casistiche/extra-upsell).
+
+## Dominio & branding
+- Sito direct booking: **`stay.{brand}.com`**, palette + font + logo dello studente (rebrand del template). Vedi [Direct Booking](/integrazioni/direct-booking/panoramica).
+- Numero telefonico col **prefisso della zona** dello studente (fiducia dell'ospite). Vedi [Telefonia & WABA](/integrazioni/conduit/telefonia-waba).
+
+## Numeri & contatti
+- Numeri reperibili (manutenzione/urgenze), email di supporto, link portale: quelli **dello studente**, dentro le skill policy e la KB.
+- Escalation → un **cellulare umano vero** dello studente/team, mai un altro numero AI.
+
+## Cosa NON cambia
+Il **codice** dei custom tool, la struttura del catalogo, i workflow standard: sono il template unico, propagato a tutti. Personalizzi la **config**, non il codice.
+
+<Tip>
+**▷ Prompt Claude Code — Personalizza per lo studente**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a personalizzare la config per lo studente [NOME] seguendo mattone-docs
+/delivery/personalizzazione-studente. Elenca cosa devo raccogliere da lui (fee
+early/late, numeri reperibili, email supporto, link portale, prezzi listino,
+brand/dominio, prefisso telefonico) e per ogni skill policy dimmi cosa sostituire
+rispetto ai default Cosmica. NON toccare le skill tool-bound né il codice dei
+tool: solo config/testi/dati. Alla fine dimmi cosa manca ancora dallo studente.
+```
+
+<CardGroup cols={2}>
+  <Card title="Pacchetto Conduit completo" icon="arrow-up-right-from-square" href="/integrazioni/conduit/pacchetto-completo">Lo standard end-to-end</Card>
+  <Card title="Onboarding · Conduit" icon="arrow-up-right-from-square" href="/onboarding/3-conduit">Dove si montano skill e tool</Card>
+</CardGroup>
+
+<Note>Fonti: `conduit-custom-tool/catalog.json` (skills_policy_DA_PERSONALIZZARE), `PROVISIONING.md` (§4 personalizzazione), `conduit-reasoning/reusable-operational-skills.md`.</Note>

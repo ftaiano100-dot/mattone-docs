@@ -1,0 +1,56 @@
+---
+title: "Sito Direct Booking — come si crea"
+description: "Come si costruisce il sito di prenotazione diretta di uno studente: fork del template canonico, stack, PMS, pagamenti, deploy, dominio."
+---
+
+
+Il **sito di prenotazione diretta** è il sito con cui lo studente vende senza OTA (niente commissioni Airbnb/Booking). Non si parte da zero: si **forka il template canonico** e si personalizza.
+
+## Regola d'oro: si forka, non si scaffolda
+Ogni sito studente parte da un **fork** del template canonico `ftaiano100-dot/cosmica-booking` (live: `stay.cosmicarentals.com`), **mai** da `create-next-app`. Il template porta già PMS adapter, i18n, tema, Stripe, health endpoint — ricostruirli a mano introduce bug che il template ha già risolto.
+
+## Stack (dal template)
+- **Next.js** (App Router) + **next-intl** per le lingue (tipico `it, en`; aggiungi `de/fr` se servono i mercati).
+- Tema in **Tailwind** (palette + font dello studente).
+- **PMS adapter agnostico** dietro un unico contratto `PmsAdapter`: KrossBooking, Hostaway, Smoobu, Hostify, Lodgify, Hostfully, Guesty. Con caching + coalescing + retry backoff su ogni adapter (difensivo, obbligatorio).
+- **Stripe** per i pagamenti (vedi sotto).
+- Opzionali: embed chatbot **Conduit**, **smart check-in** (Shelly/SwitchBot), CRM **GHL**, esperienze **GetYourGuide**.
+
+## Come si costruisce (fasi)
+<Steps>
+  <Step title="Intake">Raccogli tutto con lo studente: brand/dominio/colori, paese+valuta, lingue, lista appartamenti, PMS, Stripe (single o multi-owner), CRM, smart-lock, AI inbox, analytics. Usa la checklist della skill.</Step>
+  <Step title="Stack decision">Blocca i moduli in base all'intake (quale PMS adapter, valuta, locale, Stripe single vs Connect, smart check-in sì/no, Conduit sì/no).</Step>
+  <Step title="Fork del template">Copia `cosmica-booking`, `rm -rf .git .next .vercel node_modules && git init`, rebrand (colori, font, asset, testi, footer, sitemap), `npm install`, `.env.local` con solo le env che lo studente ha davvero. Grep zero-residui del brand vecchio prima del primo commit.</Step>
+  <Step title="PMS adapter + pagamenti + moduli">Collega il PMS, Stripe, e i moduli opzionali scelti. Non rimuovere i moduli baseline anche se non usati.</Step>
+  <Step title="Deploy + dominio">Deploy su **Vercel** (git push). Dominio: convenzione **`stay.{brand}.com`** per il sito di prenotazione (Cosmica usa `stay.` per il booking e `book.` per il guest portal/accesso). Aggiungi il dominio su Vercel + record DNS.</Step>
+  <Step title="Verifica">`npm run dev` renderizza la home; il flusso di prenotazione arriva fino al checkout Stripe; le pagine appartamento leggono i dati dal PMS.</Step>
+</Steps>
+
+## Pagamenti
+- **Single owner** → account Stripe standard (una `sk`/`pk`).
+- **Multi-owner** (più proprietari con payout separati) → **Stripe Connect** (un connected account per proprietario, `application_fee_amount` per prenotazione).
+- La chiave Stripe è la **stessa** usata dall'agente Conduit per gli extra: una credenziale sola nel Vault (`stripe_key_<token>`). Vedi [Stripe](/integrazioni/stripe/panoramica).
+
+<Warning>Vincolo Kross: l'API partner è per tool **interni** al percorso formativo, non per software commercializzati "integrati con Kross". Se un giorno il sito direct booking diventa un prodotto vendibile con logo Kross, il contratto partner va rinegoziato prima.</Warning>
+
+<Note>Fonti: skill `direct-booking-engine` (workflow 10 fasi + lezioni L1-L8), repo `ftaiano100-dot/cosmica-booking`, memoria `project_direct_booking_skill`, `project_cosmica_domain_migration`.</Note>
+
+<Tip>
+**▷ Prompt Claude Code — Crea il sito direct booking**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Costruisci il sito direct booking per lo studente [NOME] usando la skill
+direct-booking-engine e seguendo mattone-docs /integrazioni/direct-booking/
+panoramica. Parti SEMPRE da un fork del template ftaiano100-dot/cosmica-booking
+(mai create-next-app). Guidami nell'intake (brand, dominio stay.{brand}.com,
+paese/valuta, lingue, appartamenti, PMS, Stripe single/multi-owner, smart-lock,
+Conduit), poi blocca lo stack, forka+rebranda (grep zero-residui), collega PMS
+e Stripe, e deploya su Vercel. Verifica che la home renderizzi e che il flusso
+arrivi al checkout Stripe.
+```
+
+<CardGroup cols={2}>
+  <Card title="Stripe" icon="arrow-up-right-from-square" href="/integrazioni/stripe/panoramica">Chiave unica per checkout + extra Conduit</Card>
+  <Card title="Personalizzazione studente" icon="arrow-up-right-from-square" href="/delivery/personalizzazione-studente">Branding, dominio, dati per-studente</Card>
+</CardGroup>

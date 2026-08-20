@@ -1,0 +1,56 @@
+---
+title: "Stripe — pagamenti dello studente"
+description: "Restricted key a permessi minimi, collegamento nel Vault, e doppio uso: extra in chat Conduit + checkout del sito direct booking."
+---
+
+
+**Stripe** è il modo con cui lo studente incassa online. La sua chiave serve a **due** cose con una sola credenziale: i **link di pagamento** che l'agente Conduit genera in chat (extra a listino) e il **checkout del sito direct booking**.
+
+## Regola d'oro: una chiave, permessi minimi
+- Si usa una **Restricted key** (`rk_live_…`), **non** la Secret Key.
+- Permessi minimi: **Products / Prices / Payment Links = Write**, tutto il resto **None**.
+- La chiave sta cifrata nel Vault come `stripe_key_<student_token>` — mai nei repo, mai in chat.
+
+<Warning>Stripe è **opzionale/fallback**: si monta solo per chi vende extra a listino. Il pagamento di **prenotazioni/allunghi** va sul flusso **nativo del PMS** (online check-in), mai su Stripe autonomo. Se il nativo non incassa → escala a umano.</Warning>
+
+## Collegamento
+<Steps>
+  <Step title="Lo studente crea la Restricted key">Dashboard Stripe → **Developers → API keys → Create restricted key** con i soli permessi Products/Prices/Payment Links = Write. La invia su canale sicuro (mai in chat di gruppo).</Step>
+  <Step title="Salva nel Vault">Carica la chiave come `stripe_key_<student_token>` (Supabase Vault). Mai nei repo/messaggi.</Step>
+  <Step title="Monta tool + skill (per gli extra Conduit)">Custom tool `stripe` (gateway `mcp.mattone.co/api/mcp/stripe`, metodo `create_payment_link`, params `amount`+`description`) + skill `payment-link-generator`. Senza la skill l'agente ignora il tool.</Step>
+</Steps>
+
+<Warning>Prima la **chiave vera nel Vault**, poi il tool. Una chiave mancante/fasulla **rompe** l'agente nativo.</Warning>
+
+## Doppio uso della stessa chiave
+| Uso | Come |
+|---|---|
+| **Extra in chat (Conduit)** | l'agente quota dal listino → genera il link Stripe con importo + causale (voce + prenotazione, serve alla riconciliazione) |
+| **Checkout sito direct booking** | il sito (template `cosmica-booking`) usa la stessa `stripe_key_<token>` per incassare le prenotazioni dirette. Multi-owner → **Stripe Connect** (un connected account per proprietario) |
+
+## Come verificare
+- **T1 gateway**: `create_payment_link` con `amount:"1.00"` → torna una URL Stripe valida.
+- **T2 agente**: "Vorrei il late check-out" → quota dal listino e, a "sì", genera il link. Prezzo non a listino → **escala**, non inventa.
+- **T3 causale**: il link ha `description` specifica per la riconciliazione.
+
+<Note>Fonti: `conduit-custom-tool/STRIPE-PAYMENT-LINK-attivazione-e-test.md`, memoria `reference_conduit_stripe_payments`. Attivazione step-by-step: [Onboarding · Pagamenti Stripe](/onboarding/5-pagamenti-stripe). Uso sul sito: [Direct Booking](/integrazioni/direct-booking/panoramica).</Note>
+
+<Tip>
+**▷ Prompt Claude Code — Collega Stripe**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a collegare Stripe per lo studente [NOME] seguendo mattone-docs
+/integrazioni/stripe/panoramica. Verifica prima se vende extra a listino (se no,
+non montarlo). Chiedimi la Restricted key (rk_live) a permessi minimi
+(Products/Prices/Payment Links = Write, resto None) — va nel Vault come
+stripe_key_<token>, mai in chat. Ordine tassativo: chiave nel Vault -> tool
+stripe -> skill payment-link-generator. Poi test T1 (link da 1.00), T2 (agente
+genera a "sì", escala se prezzo non a listino), T3 (causale corretta). Ricordami
+che la stessa chiave serve anche al checkout del sito direct booking.
+```
+
+<CardGroup cols={2}>
+  <Card title="Stripe → API keys" icon="arrow-up-right-from-square" href="https://dashboard.stripe.com/apikeys">Lo studente crea la Restricted key</Card>
+  <Card title="Extra / Upsell (casistica)" icon="arrow-up-right-from-square" href="/casistiche/extra-upsell">Come l'agente vende dal listino</Card>
+</CardGroup>

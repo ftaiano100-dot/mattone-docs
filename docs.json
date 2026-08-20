@@ -62,7 +62,8 @@
               "delivery/monitorare-studenti",
               "delivery/supportare-studenti",
               "delivery/metriche-numeri",
-              "delivery/problemi-ricorrenti-conduit"
+              "delivery/problemi-ricorrenti-conduit",
+              "delivery/personalizzazione-studente"
             ]
           },
           {
@@ -85,6 +86,7 @@
             "group": "PMS & CRM",
             "pages": [
               "integrazioni/kross/panoramica",
+              "integrazioni/kross/accessi",
               "integrazioni/kross/collegamento",
               "integrazioni/kross/endpoint-scope",
               "integrazioni/kross/rate-limit-trappole",
@@ -123,6 +125,13 @@
               "integrazioni/pricelabs/panoramica",
               "integrazioni/pricelabs/collegamento",
               "integrazioni/pricelabs/revenue-management"
+            ]
+          },
+          {
+            "group": "Pagamenti & Vendita diretta",
+            "pages": [
+              "integrazioni/stripe/panoramica",
+              "integrazioni/direct-booking/panoramica"
             ]
           },
           {
