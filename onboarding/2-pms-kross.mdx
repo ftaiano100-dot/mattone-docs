@@ -34,7 +34,7 @@ Collega KrossBooking così che Conduit possa leggere le prenotazioni, i dati deg
   <Step title="Verifica il test di connessione">
     Dopo il salvataggio, il sistema esegue automaticamente un test di connessione attraverso il gateway `mcp.mattone.co`. Attendi il risultato:
 
-    - **Verde** ✅ — la terna è salvata cifrata (`cred_secret_id`) nel Vault. **Non serve creare nessuna chiave manuale**: la chiave generica partner è già nostra. I custom tool si montano nello [Step 3 · Conduit](/onboarding/3-conduit) con il **Provision**; da lì il gateway `mcp.mattone.co` risolve la terna **a runtime**. Procedi.
+    - **Verde** ✅ — le 3 credenziali sono salvate cifrate (`cred_secret_id`) nel Vault. **Non serve creare nessuna chiave manuale**: la chiave generica partner è già nostra. Gli strumenti dell'assistente si montano nello [Step 3 · Conduit](/onboarding/3-conduit) col bottone **Provision**; da lì il nostro ponte `mcp.mattone.co` recupera le 3 credenziali **quando l'assistente lavora**. Procedi.
     - **Rosso** ❌ — la connessione ha fallito. Vedi la sezione qui sotto.
   </Step>
 
@@ -70,15 +70,15 @@ Step completato? Procedi con → [Step 3 · Conduit](/onboarding/3-conduit)
 
 ```text
 Guidami nello step 2 (PMS KrossBooking, modello partner) per lo studente [NOME],
-seguendo mattone-docs /onboarding/2-pms-kross. Chiedimi la terna del cliente
+seguendo mattone-docs /onboarding/2-pms-kross. Chiedimi le 3 credenziali del cliente
 (hotel_id, username apiNNNNN, password API) — NON stamparla, va cifrata nel
 Vault; la chiave generica partner è già nostra, niente chiavi manuali da creare.
 "Collega Kross" -> verde (cred_secret_id salvato). Ricordami che i tool si
-montano allo Step 3 con Provision e che il gateway risolve la terna a runtime.
-Poi fammi verificare con dati reali. Se rosso, la causa è quasi sempre la terna.
+montano allo Step 3 con Provision e che il gateway recupera le 3 credenziali mentre lavora.
+Poi fammi verificare con dati reali. Se rosso, la causa è quasi sempre nelle 3 credenziali.
 ```
 
 <CardGroup cols={2}>
-  <Card title="Collega Kross (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Inserisci la terna (cifrata nel Vault)</Card>
+  <Card title="Collega Kross (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Inserisci le 3 credenziali (cifrate nel Vault)</Card>
   <Card title="Portale KrossBooking → API" icon="key">Da qui lo studente prende hotel_id / username / password</Card>
 </CardGroup>

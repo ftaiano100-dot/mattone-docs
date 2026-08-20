@@ -8,12 +8,12 @@ Operations diventa utile quando **tira i dati dal gestionale** (pulizie da check
 
 ## Prerequisiti
 - Anagrafica appartamenti presente in Operations (o riconciliata dal registro).
-- Credenziali API del PMS dello studente (Hostaway account+key, o terna Kross).
+- Credenziali API del PMS dello studente (Hostaway account+key, o le 3 credenziali Kross).
 
 ## Step (in ordine)
 <Steps>
   <Step title="Anagrafica pronta">Gli appartamenti esistono in Operations (nome, costo/prezzo pulizia, tipo PM/SUB, fee%). Seed dal registro canonico, non re-inserire.</Step>
-  <Step title="Credenziali PMS server-side">Env del PMS (es. `HOSTAWAY_ACCOUNT_ID` + `HOSTAWAY_API_KEY`, o terna Kross nel Vault). Mai lato client: l'app usa la service-role solo server-side.</Step>
+  <Step title="Credenziali PMS server-side">Env del PMS (es. `HOSTAWAY_ACCOUNT_ID` + `HOSTAWAY_API_KEY`, o le 3 credenziali Kross nel Vault). Mai lato client: l'app usa la service-role solo server-side.</Step>
   <Step title="Mappa listing → appartamento">Nel tab del PMS: collega ogni listing all'appartamento (link/crea/scollega). Il match si fa per nome interno (che coincide tra Notion/Conduit/PMS).</Step>
   <Step title="Importa pulizie & revenue">Anteprima pulizie da check-out → confermi (salta le esistenti). Sync revenue soggiorni (somma base rate per arrivo nel mese). Early/late check-in si tirano dai `financeField` della prenotazione.</Step>
 </Steps>
@@ -39,7 +39,7 @@ Operations diventa utile quando **tira i dati dal gestionale** (pulizie da check
 Aiutami a collegare il gestionale a Operations per [studente/Cosmica] seguendo
 mattone-docs /integrazioni/operations/collegamento. Verifica prima che
 l'anagrafica sia seedata dal registro (nessun duplicato). Chiedimi le
-credenziali PMS (Hostaway account+key o terna Kross) — server-side, mai client.
+credenziali PMS (Hostaway account+key o le 3 credenziali Kross) — server-side, mai client.
 Aiutami a mappare listing->appartamento per nome interno, poi importa pulizie
 da check-out (cancellation-safe) e sync revenue soggiorni. Ricordami le trappole
 Hostaway (departureStartDate/EndDate, financeField solo su includeResources=1).

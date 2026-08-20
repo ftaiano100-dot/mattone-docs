@@ -1,0 +1,28 @@
+---
+title: "Token Conduit coach — cosa possiamo fare cross-studente"
+description: "Un accesso Conduit 'coach' vede tutti gli spazi degli studenti: è la leva per gestire tanti studenti con poche persone. Cosa ci fai e dove prenderlo (mai il valore)."
+---
+
+
+Esiste un accesso Conduit **"coach"** (un token) che **vede e legge TUTTI gli spazi (workspace) degli studenti**, non solo Cosmica. È la leva che permette di gestire **tanti studenti con poche persone**.
+
+<Warning>**Zero segreti in questa pagina.** Il **valore** del token **non** sta qui (questi docs sono pubblicabili): sta nel posto sicuro del team (Vault / variabile d'ambiente privata del ponte o della piattaforma), sotto il nome `CONDUIT_COACH_TOKEN`. Qui spieghiamo solo **a cosa serve** e **cosa ci fai**.</Warning>
+
+## Cosa ci puoi fare
+- **Vedere tutti gli studenti**: elencare tutti gli spazi e gli assistenti degli studenti in un colpo solo.
+- **Controllare/auditare** la conoscenza (KB) e gli strumenti di ciascuno: trovare **leak** (dati di una casa che finiscono su un'altra), **strumenti senza le loro istruzioni** (skill mancanti), config incomplete.
+- **Montare/aggiornare in blocco** strumenti e istruzioni: configurare **a scala** (lo stesso miglioramento propagato a molti studenti), non uno per uno.
+- **Monitorare**: conversazioni, **percentuale di automazione** (quanto risolve l'assistente da solo), tempo risparmiato, per studente.
+- **Supporto al volo**: vedere lo **stato di un assistente** quando uno studente segnala un problema.
+
+## Come usarlo (senza esporre il segreto)
+- Il valore vive **solo** nel Vault / env privata, col nome `CONDUIT_COACH_TOKEN`. **Dove prenderlo**: chiedilo/leggilo dal Vault del team — **non è pubblico**, non incollarlo nei docs, nei repo o in chat.
+- Da Claude Code lo si usa come accesso Conduit "partner/coach" (il connettore che vede tutti gli spazi), tenuto separato da quello del singolo cliente.
+
+## A cosa si collega
+- Audit e correzioni sulla conoscenza → [Conduit KB](/integrazioni/conduit/kb).
+- Strumenti e regola strumento+istruzioni → [Custom tools](/integrazioni/conduit/custom-tools).
+- Automazioni → [Workflow](/integrazioni/conduit/workflow).
+- Uso quotidiano a scala → [Monitorare gli studenti](/delivery/monitorare-studenti) e [Supportare gli studenti](/delivery/supportare-studenti).
+
+<Note>Il token coach è la base tecnica del lavoro "a volumi": senza, si vede solo un cliente alla volta; con, si gestisce l'intera flotta. Fonte: memoria `reference_conduit_fleet_status` (stato flotta), `delivery-checklist-apikey-e-mcp.md` (accesso partner MCP). Valore reale → solo nel Vault.</Note>

@@ -58,7 +58,7 @@ Non tutti partono dallo stesso punto. Scegli il ramo in base al profilo:
   </Step>
 
   <Step title="Pagamenti — Stripe">
-    Collega Stripe con una Restricted Key a permessi minimi in modo che Conduit possa generare link di pagamento per extra e upsell direttamente in chat con l'ospite.
+    Collega Stripe con una **chiave a permessi minimi** (Restricted Key) in modo che Conduit possa generare link di pagamento per extra e upsell direttamente in chat con l'ospite.
 
     → [Vai allo Step 5](/onboarding/5-pagamenti-stripe)
   </Step>
@@ -92,7 +92,7 @@ Pensa a una **matrice passi × stato** per studente, non a una lista lineare: og
 <Warning>Il "non ora" **non è uno skip che perde il pezzo**: lo step resta visibile e ripescabile. Chi subentra deve vedere che quel passo è stato consapevolmente rimandato, non dimenticato.</Warning>
 
 ### Dipendenze di fase (passi distinti anche se sembrano lo stesso)
-- **Kross caricato in piattaforma** ≠ **Kross collegato a Conduit**: il primo è la terna salvata+validata nel Vault (fase PMS); il secondo è il montaggio dei tool nell'agente (fase Conduit, in un altro momento).
+- **Kross caricato in piattaforma** ≠ **Kross collegato a Conduit**: il primo è le 3 credenziali salvate e validate nel Vault (fase PMS); il secondo è il montaggio dei tool nell'agente (fase Conduit, in un altro momento).
 - I **custom tool** possono essere preparati **prima/indipendentemente** dal resto della fase Conduit.
 - **Smart-lock** e **Stripe** sono condizionali: possono restare "non ora" a lungo senza bloccare gli altri.
 

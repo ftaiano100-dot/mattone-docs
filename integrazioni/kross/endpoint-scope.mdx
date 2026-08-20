@@ -65,9 +65,8 @@ Tutti gli endpoint KrossBooking sono su **API v5**, in **`POST`** su base `https
   I filtri data su alcuni endpoint Kross possono essere ignorati server-side: la risposta potrebbe contenere tutte le prenotazioni indipendentemente dal range richiesto. Verifica sempre la risposta effettiva contando i record restituiti e controllando le date prima di passare i dati a Conduit o ad altri sistemi a valle.
 </Note>
 
-## Scope WRITE (solo operatività ospite)
-- **In scope**: `reservations/save` (modifica/estensione date), `reservations/add-payment`. Registrazione ospite: `check-in-guest`, `save-guest-pictures`.
-- **Da aggiungere** (chiesto a Kross, non ancora concesso): **`add-charge`** — serve per gli upsell/servizi extra (pulizia extra, servizi in prenotazione). Va inquadrato come "gestione servizi ospite in prenotazione", **mai** come AI-messaging. Se non è nel link di condivisione dello studente, il tool non può addebitare.
+## Permessi di scrittura (solo operatività ospite)
+- **In uso**: `reservations/save` (modifica/estensione date), `reservations/add-payment`. Registrazione ospite: `check-in-guest`, `save-guest-pictures`.
 
 <Warning>Fuori perimetro (dichiarato "pulito" a Kross): `channel/save-cm` (tariffe/restrizioni OTA) → le governa **PriceLabs**; gestione utenti/permessi; `messaging/*`. Kross **non accetta** partner che commercializzano AI per la messaggistica: la messaggistica la fa Conduit lato canale, mai via Kross.</Warning>
 

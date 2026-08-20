@@ -29,26 +29,26 @@ Prima di iniziare, assicurati che:
   <Step title="Il sistema verifica la connessione via gateway">
     Dopo il salvataggio, la piattaforma esegue automaticamente un test di connessione passando per `mcp.mattone.co`. Attendi che il risultato appaia nell'interfaccia: il processo richiede normalmente meno di 10 secondi.
   </Step>
-  <Step title="Verde: la terna è salvata (cred_secret_id)">
-    Stato **verde** = la connessione è attiva e la terna è stata scritta cifrata (`cred_secret_id`) nel Vault. **Non devi creare nessuna chiave manuale**: la chiave generica partner è già nostra e il gateway la usa in automatico.
+  <Step title="Verde: le 3 credenziali sono salvate (cred_secret_id)">
+    Stato **verde** = la connessione è attiva e le 3 credenziali sono state scritte cifrate (`cred_secret_id`) nel Vault. **Non devi creare nessuna chiave manuale**: la chiave generica partner è già nostra e il gateway la usa in automatico.
   </Step>
-  <Step title="🚀 Provision: monta tool + skill sull'agente">
-    Premi **Provision** per lo studente: la piattaforma monta i custom tool Kross (+ skill di prompting abbinate) sul workspace Conduit. Da qui l'agente sa parlare con Kross.
+  <Step title="🚀 Provision: monta gli strumenti dell'assistente">
+    Premi **Provision** per lo studente: la piattaforma monta gli **strumenti dell'assistente** per Kross (le "custom tool") con le loro **istruzioni** (skill) nello spazio Conduit dello studente. Da qui l'assistente sa parlare con Kross.
   </Step>
-  <Step title="Fatto: il runtime risolve la terna da solo">
-    Quando l'agente usa un tool, il gateway `mcp.mattone.co` **risolve la terna dal Vault a runtime** (chiave generica + proxy a IP whitelistato) e chiama Kross. Nessun passaggio manuale ulteriore. Verifica con una domanda reale (es. una prenotazione) che tornino **dati veri**.
+  <Step title="Fatto: l'assistente recupera le 3 credenziali da solo">
+    Quando l'assistente usa uno strumento, il nostro **ponte** `mcp.mattone.co` **recupera le 3 credenziali dal Vault mentre lavora** (chiave generica + proxy con IP autorizzato) e chiama Kross. Nessun passaggio manuale ulteriore. Verifica con una domanda reale (es. una prenotazione) che tornino **dati veri**.
   </Step>
 </Steps>
 
-<Note>Se il test è **rosso**, la causa quasi sempre è la terna (credenziali API errate, o `hotel_id` non corrispondente). Rigenerala dal portale Kross e ri-salva. Dettaglio: [Troubleshooting](/integrazioni/kross/troubleshooting).</Note>
+<Note>Se il test è **rosso**, la causa quasi sempre sono le 3 credenziali (sbagliate, o `hotel_id` che non corrisponde). Rigenerale dal portale Kross e ri-salva. Dettaglio: [Troubleshooting](/integrazioni/kross/troubleshooting).</Note>
 
 ## Procedura partner ripetibile (template)
 Questa è la strada **funzionante end-to-end** per collegare un nuovo partner Kross — provata su **HostManager360** (agente live che legge 13 ospiti reali). Replicala per il prossimo partner:
 
 <Steps>
-  <Step title="Mattia contatta Kross per la partnership">L'AM avvia la partnership con Kross e recupera l'accesso al portale partner del cliente (dove compare la terna).</Step>
-  <Step title="Recupera la terna">Dal portale partner → sezione **API**: `hotel_id`, `username` (`apiNNNNN`), `password` API del cliente.</Step>
-  <Step title="Collega Kross">Admin → *Collega Kross* → incolla la terna → **verde** (scrive `cred_secret_id` nel Vault).</Step>
+  <Step title="Mattia contatta Kross per la partnership">L'AM avvia la partnership con Kross e recupera l'accesso al portale partner del cliente (dove compaiono le 3 credenziali).</Step>
+  <Step title="Recupera le 3 credenziali">Dal portale partner → sezione **API**: `hotel_id`, `username` (`apiNNNNN`), `password` API del cliente.</Step>
+  <Step title="Collega Kross">Admin → *Collega Kross* → incolla le 3 credenziali → **verde** (scrive `cred_secret_id` nel Vault).</Step>
   <Step title="Provision">🚀 monta tool + skill sul workspace Conduit dello studente.</Step>
   <Step title="Personalizza le skill policy">Sostituisci i dati Cosmica (numeri reperibili, fee, link portale/email) con quelli **dello studente** nelle skill policy.</Step>
   <Step title="KB Notion & telefonia, se servono">Se lo studente ha il registro Notion → genera la KB per-listing (bridge). Se vuole voce/WhatsApp → configura telefonia/WABA.</Step>
@@ -76,15 +76,15 @@ Se tutti e tre i segnali sono presenti, l'integrazione è operativa e puoi proce
 ```text
 Collega KrossBooking (modello partner) per lo studente [NOME] seguendo
 mattone-docs /integrazioni/kross/collegamento. È la strada funzionante:
-1) chiedimi la terna del cliente (hotel_id, username apiNNNNN, password API) —
-va cifrata nel Vault, non stamparla; la chiave generica partner è già nostra,
+1) chiedimi le 3 credenziali del cliente (hotel_id, username apiNNNNN, password API) —
+vanno cifrate nel Vault, non stamparle; la chiave generica partner è già nostra,
 NON serve creare chiavi manuali; 2) "Collega Kross" -> verde (scrive
-cred_secret_id); 3) Provision (monta tool+skill); 4) il gateway risolve la terna
+cred_secret_id); 3) Provision (monta tool+skill); 4) il ponte recupera le 3 credenziali
 a runtime. Alla fine fammi verificare con una domanda reale che l'agente legga
-ospiti/prenotazioni veri. Se rosso, la causa è quasi sempre la terna.
+ospiti/prenotazioni veri. Se rosso, la causa è quasi sempre nelle 3 credenziali.
 ```
 
 <CardGroup cols={2}>
-  <Card title="Collega Kross (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Inserisci la terna (cifrata nel Vault)</Card>
+  <Card title="Collega Kross (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Inserisci le 3 credenziali (cifrate nel Vault)</Card>
   <Card title="Portale KrossBooking → API" icon="key">Sezione API → credenziali del cliente</Card>
 </CardGroup>

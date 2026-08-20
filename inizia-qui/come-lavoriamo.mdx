@@ -1,0 +1,47 @@
+---
+title: "Come lavoriamo: la Piattaforma e Claude Code + i repo"
+description: "Due strumenti, due lavori: cosa si fa nell'app Mattone (clic) e cosa con Claude Code + i repo (costruire/aggiustare), e come restano allineati."
+---
+
+
+Il team lavora con **due strumenti** che fanno lavori diversi ma collegati. Capire chi fa cosa evita confusione.
+
+## 1. La Piattaforma Mattone (`app.mattone.co`) — quello che il team **clicca**
+È l'app che usa il team senza toccare codice. Da qui si fanno le **azioni operative**:
+- **Collegare i gestionali** ("Collega Kross", collegare Notion, PriceLabs…).
+- **Montare gli strumenti dell'assistente** con il bottone **Provision**.
+- Vedere **dashboard e numeri**, la pagina **`/connessioni`**, la **gestione studenti**.
+
+In pratica: è la **superficie** con cui si opera tutti i giorni.
+
+## 2. Claude Code + i repo — quello con cui **costruiamo e aggiustiamo**
+È il lavoro tecnico e di configurazione:
+- Questi **docs** (`mattone-docs`).
+- **Montare/aggiustare le integrazioni** dai repo (il ponte `mcp.mattone.co`, `api-kross-mattone`…).
+- **Lanciare i prompt** (vedi [Prompt per Claude Code](/riferimenti/prompt-claude-code)), fare i **fix**.
+
+In pratica: è il **"motore"** dietro le quinte.
+
+## Chi fa cosa — azione → dove si fa
+| Azione | Dove si fa |
+|---|---|
+| Collegare Kross / Notion / PriceLabs a uno studente | **Piattaforma** (Collega… / Connessioni) |
+| Montare gli strumenti dell'assistente (Provision) | **Piattaforma** (bottone Provision) |
+| Vedere lead, occupancy, EBITDA, stato studenti | **Piattaforma** (dashboard) |
+| Scrivere/aggiornare questi docs | **Claude Code + repo** (`mattone-docs`) |
+| Creare/aggiustare il ponte, gli strumenti, i workflow | **Claude Code + repo** |
+| Diagnosticare un problema leggendo i log | **Claude Code + repo** (+ i log della Piattaforma) |
+| Mandare una modifica in produzione | **Claude Code + repo** → `git push` → deploy |
+
+## Come restano allineati (il punto chiave)
+Le due cose si tengono insieme grazie a **tre colle**:
+1. **Il Vault (cassaforte)**: le credenziali le inserisce l'admin nella **Piattaforma** → finiscono **cifrate nel Vault** (Supabase). Il **ponte** (`mcp.mattone.co`) e l'assistente le leggono da lì. Nessuno le scrive nei docs o nel codice.
+2. **I deploy**: le modifiche al codice vanno in produzione con **`git push` → deploy** automatico. I docs descrivono le **procedure**; il codice le **esegue**.
+3. **Il registro appartamenti (Notion)**: è la **fonte unica** da cui nasce la conoscenza dell'assistente (KB), portata in Conduit dal **bridge**.
+
+<Info>In una frase: **la Piattaforma è ciò che il team clicca**, **i repo + Claude Code sono come lo costruiamo e aggiustiamo**, e **il Vault + i deploy tengono le due cose allineate**.</Info>
+
+<CardGroup cols={2}>
+  <Card title="Prompt per Claude Code" icon="arrow-up-right-from-square" href="/riferimenti/prompt-claude-code">Prompt pronti + come usare i docs</Card>
+  <Card title="Panoramica onboarding" icon="arrow-up-right-from-square" href="/onboarding/panoramica">Il flusso completo di uno studente</Card>
+</CardGroup>

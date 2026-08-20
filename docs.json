@@ -29,6 +29,7 @@
             "pages": [
               "index",
               "inizia-qui/a-chi-serve",
+              "inizia-qui/come-lavoriamo",
               "inizia-qui/glossario",
               "inizia-qui/best-practices",
               "troubleshooting/metodo"
@@ -63,7 +64,8 @@
               "delivery/supportare-studenti",
               "delivery/metriche-numeri",
               "delivery/problemi-ricorrenti-conduit",
-              "delivery/personalizzazione-studente"
+              "delivery/personalizzazione-studente",
+              "delivery/token-conduit-coach"
             ]
           },
           {

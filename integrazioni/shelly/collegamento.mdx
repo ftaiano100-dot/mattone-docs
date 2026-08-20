@@ -42,7 +42,9 @@ Prima di iniziare, assicurati che siano tutti soddisfatti:
 </Warning>
 
 <Note>
-  **Come è fatto davvero.** Shelly Cloud lavora **per account**: ogni account ha un **Server URI** (`shelly-<NN>-eu.shelly.cloud`) + una **Auth Key**. Per gli **studenti** la config va nel Vault come `shelly_config_<token>` = `{ server, auth_key, devices }` e il gateway multi-tenant la usa a runtime; per **Cosmica** i device stanno nel registro codice `SHELLY_DEVICES` (`src/lib/shelly.ts`), 1 riga per device (slug, deviceId 12-hex, type citofono/porta, account). L'apertura è un **pulse del relay**: `POST /device/relay/control` con `timer=3` (ON 3 sec poi auto-off). Stato: `POST /device/status`. Rate limit **1 req/sec per account**.
+  **In parole semplici:** il **Server** dice *dove* sta l'account Shelly e la **Auth Key** *autorizza* ad aprire il relè (l'interruttore che apre porta/citofono) di quell'account. Senza, l'apertura è negata.
+
+  **Come è fatto davvero.** Shelly Cloud lavora **per account**: ogni account ha un **Server** (`shelly-<NN>-eu.shelly.cloud`) + una **Auth Key**. Per gli **studenti** questi dati vanno nel Vault come `shelly_config_<token>` = `{ server, auth_key, devices }` e il nostro ponte li usa quando l'assistente lavora; per **Cosmica** i device stanno nel registro codice `SHELLY_DEVICES` (`src/lib/shelly.ts`), 1 riga per device (slug, deviceId 12-hex, tipo citofono/porta, account). L'apertura è un **impulso al relè**: `POST /device/relay/control` con `timer=3` (acceso 3 sec poi si spegne). Stato: `POST /device/status`. Limite: **1 richiesta/sec per account**.
 </Note>
 
 ## Verifica

@@ -4,7 +4,7 @@ sidebarTitle: "5 · Stripe"
 description: "Configura Stripe con una Restricted Key a permessi minimi per permettere a Conduit di generare link di pagamento per extra e upsell direttamente in chat."
 ---
 
-Configura Stripe in modo che Conduit possa generare link di pagamento per extra e upsell direttamente nella chat con l'ospite — costi del parcheggio, set di asciugamani aggiuntivi, early check-in e qualsiasi altro servizio a pagamento che lo studente vuole offrire. La connessione richiede una Restricted Key con permessi minimi: non usare mai la Secret Key.
+Configura Stripe in modo che Conduit possa generare link di pagamento per extra e upsell direttamente nella chat con l'ospite — costi del parcheggio, set di asciugamani aggiuntivi, early check-in e qualsiasi altro servizio a pagamento che lo studente vuole offrire. La connessione richiede una **chiave a permessi minimi** (Restricted Key): non usare mai la Secret Key (quella dà accesso a tutto).
 
 <Warning>
   Mai usare la Secret Key (`sk_live_…`) — usa solo la Restricted Key (`rk_live_…`) con i permessi minimi necessari. La Secret Key dà accesso completo all'account Stripe dello studente, inclusi rimborsi e modifiche al piano.

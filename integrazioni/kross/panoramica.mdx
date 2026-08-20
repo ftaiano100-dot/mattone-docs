@@ -6,28 +6,29 @@ description: "Scopri come KrossBooking si integra con Mattone: lettura prenotazi
 
 KrossBooking è il sistema di gestione prenotazioni (PMS) usato dalla maggior parte degli studenti Mattone. Attraverso questa integrazione, Conduit legge in tempo reale le prenotazioni attive, i dati degli ospiti e lo stato del check-in, permettendo all'assistente AI di rispondere con informazioni sempre aggiornate e di automatizzare i flussi operativi legati agli arrivi e alle partenze.
 
-## I tre modelli di connessione
+## Un solo ponte per tutti (`mcp.mattone.co`)
+Tutti gli strumenti dell'assistente (i "custom tool") di **ogni** studente passano dallo **stesso ponte tecnico** `mcp.mattone.co` (il gateway multi-tenant, cioè che serve tanti studenti da un unico posto). Il ponte legge dalla cassaforte (Vault) le credenziali **di quello specifico studente** — riconosciuto da un suo codice, `X-Student-Token` — e lì si può anche **personalizzare per studente**.
 
-Prima di collegare uno studente, capisci **quale dei tre modelli** è il suo: cambia la procedura.
+**L'unica differenza tra studenti è QUALE chiave usa il ponte:**
 
-**1. Partner (chiave generica via gateway) — la strada dei nuovi studenti**
-Lo studente non ha una chiave API propria: usa la **chiave generica** Mattone. Dà la sua terna (`hotel_id`, `username`, `password` API) → si salva cifrata nel Vault con "Collega Kross" → i custom tool puntano al gateway `mcp.mattone.co` (con la generica + proxy a IP whitelistato) che **risolve la terna a runtime**. Verificato live: partner HostManager360 → 13 ospiti reali. Vedi [Accessi](/integrazioni/kross/accessi) e [Collegamento](/integrazioni/kross/collegamento).
+| Modello | Chiave che il ponte usa | Chi |
+|---|---|---|
+| **Partner** | la **nostra chiave generica** (uguale per tutti) + le 3 credenziali del cliente | i **nuovi** studenti. Verificato live: partner HostManager360 → 13 ospiti reali |
+| **Own** | la **chiave propria** dello studente (che genera nel suo Kross) + le sue 3 credenziali | clienti attrezzati: **Cosmica, Solisera, SevenHome, MbaPrime** |
 
-**2. Own (chiave propria) — clienti attrezzati**
-Lo studente ha una **api-key KrossBooking propria** (la genera nel suo PMS → Utilità → Servizi esterni). I custom tool puntano al suo **MCP** con la sua chiave, **senza** passare dal gateway/proxy. Sono i clienti storici: **Cosmica, Solisera, SevenHome, MbaPrime**.
+In entrambi i casi credenziali e chiave stanno **nel Vault** e il ponte le usa quando l'assistente lavora. Non esiste uno studente con "un ponte tutto suo": il ponte è sempre `mcp.mattone.co`.
 
-**3. Altri PMS (non Kross)**
-Pochi studenti usano un gestionale diverso (es. **Hostaway**): non seguono questa integrazione ma quella del loro PMS.
+**Altri PMS (non Kross)**: pochi studenti usano un gestionale diverso (es. **Hostaway**): non seguono questa integrazione ma quella del loro PMS.
 
-<Warning>**Own e partner hanno ENTRAMBI bisogno di MCP + custom tool + skill** (il provisioning Conduit è lo stesso). L'**unica differenza è dove puntano i tool e come si autenticano**: partner → gateway `mcp.mattone.co` + `X-Student-Token` (generica); own → MCP proprio + chiave propria. Non pensare che "own" salti il provisioning: la connessione nativa Conduit è solo la **base dati**, i custom tool (disponibilità, portal, accessi, pagamenti) servono in entrambi.</Warning>
+<Warning>Sia "partner" sia "own" hanno bisogno degli **strumenti dell'assistente + le loro istruzioni (skill)**, montati col bottone Provision: non pensare che "own" salti la configurazione. La connessione base di Conduit dà solo i dati grezzi; gli strumenti (disponibilità, check-in, apertura porta, pagamenti) servono in tutti e due i casi.</Warning>
 
-<Info>In sintesi: **nuovo studente Kross → partner** (generica + gateway); **cliente con chiave sua → own** (chiave propria + MCP proprio); **PMS diverso → altra integrazione**. In tutti i casi Kross → agente = **API v5** consumata via MCP.</Info>
+<Info>In sintesi: **nuovo studente → chiave generica nostra**; **cliente con chiave sua → chiave sua**; **PMS diverso → altra integrazione**. Ma il **ponte è sempre `mcp.mattone.co`** e i dati Kross arrivano via **API v5**. Vedi [Accessi](/integrazioni/kross/accessi) e [Collegamento](/integrazioni/kross/collegamento).</Info>
 
 ## Sezioni correlate
 
 <CardGroup cols={2}>
   <Card title="Accessi & credenziali" icon="key" href="/integrazioni/kross/accessi">
-    Portale partner, sandbox, come arriva la terna di un cliente, IP whitelist. Dove si prendono le cose (mai valori reali).
+    Portale partner, sandbox, come arrivano le 3 credenziali di un cliente, IP whitelist. Dove si prendono le cose (mai valori reali).
   </Card>
   <Card title="Collegamento" icon="link" href="/integrazioni/kross/collegamento">
     Come collegare l'account di uno studente alla piattaforma Mattone (Collega Kross → Provision → runtime).

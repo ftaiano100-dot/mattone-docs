@@ -1,45 +1,59 @@
 ---
 title: "Accessi & credenziali KrossBooking"
-description: "Dove si prendono gli accessi Kross (portale partner, sandbox, terna cliente, IP whitelist) — mai valori reali, solo dove trovarli."
+description: "Dove si prendono gli accessi Kross (portale partner, sandbox, le 3 credenziali del cliente, IP whitelist) e cosa fa ciascuna — mai valori reali."
 ---
 
 
-Questa pagina dice **dove** si prendono gli accessi Kross e **come** arriva la terna di un cliente. **Zero segreti**: nessuna password/api_key reale qui — quelle stanno **nel Vault** o nel gestore accessi del team.
+Questa pagina dice **dove** si prendono gli accessi Kross e **cosa fa** ciascun dato. **Zero segreti**: nessuna password o chiave reale qui — quelle stanno cifrate **nel Vault** (la cassaforte) o nel gestore accessi del team.
 
 ## Portali & contatti
 | Cosa | Dove | Note |
 |---|---|---|
-| **Partner Portal** | `https://partner.krossbooking.com` | account Mattone. **2FA obbligatoria, l'Authenticator lo gestisce Mattia** → il codice a 6 cifre chiedilo a lui |
-| **Sandbox PMS** | `https://sandboxmattone.krossbooking.com` | ambiente di test (senza unità finché non ne aggiungi una demo) |
-| **Contatto Kross** | Fabio Di Dio Rosso — `fabiod@krossbooking.com` · supporto `staff@krossbooking.com` | ⚠️ verso Kross **non nominare mai Conduit/AI-messaging** (loro veto) |
+| **Partner Portal** | `https://partner.krossbooking.com/` | account Mattone. **Codice a 6 cifre (2FA) gestito da Mattia** → chiedilo a lui |
+| **Sandbox (ambiente di prova)** | `https://sandbox.krossbooking.com/login/v2` | per fare test senza toccare dati veri |
+| **Contatto Kross** | Fabio Di Dio Rosso — `fabiod@krossbooking.com` · supporto `staff@krossbooking.com` | ⚠️ verso Kross **non nominare mai Conduit/AI** (loro veto) |
 
-<Warning>Le credenziali web del portale sono **login (user+password), NON api key**. Non vanno nei docs/repo: vivono nel gestore accessi del team. La 2FA la sblocca Mattia.</Warning>
+<Warning>Le credenziali del portale sono **login web (utente + password), NON la chiave API**. Non vanno nei docs/repo: vivono nel gestore accessi del team. Il codice 2FA lo sblocca Mattia.</Warning>
 
-## Come arriva la terna di un cliente PARTNER
+## Le 3 credenziali del cliente + la chiave — cosa sono
+Per far leggere all'assistente i dati Kross di un cliente servono **3 credenziali del cliente** + **1 chiave**:
+
+| Dato | Cos'è / cosa fa |
+|---|---|
+| **hotel_id** | identifica **quale** struttura/account del cliente su Kross (a chi appartengono prenotazioni e appartamenti) |
+| **username** (tipo `api...`) | l'**utente tecnico** con cui si entra nei dati Kross via API (non è l'email del cliente) |
+| **password** | la password di quell'utente tecnico |
+| **api_key** | la **chiave che autorizza** a parlare con Kross. Per i clienti **partner** è la **nostra chiave generica** (uguale per tutti); per chi ha la propria, è la **sua**. Va sempre insieme alle 3 credenziali per fare l'accesso |
+
+L'accesso vero e proprio (`POST /v5/auth/get-token`) usa **tutti e 4** i valori insieme.
+
+## Come arrivano le 3 credenziali di un cliente PARTNER
 È la strada che funziona per collegare un nuovo cliente partner:
 
 <Steps>
-  <Step title="Mattone invia a Kross la lista endpoint + privilegi">Il team manda a Fabio l'elenco degli endpoint e dei privilegi necessari per la connessione del cliente.</Step>
+  <Step title="Mattone invia a Kross la lista di servizi + permessi">Il team manda a Fabio l'elenco dei servizi (chiamate API) e dei permessi necessari per il cliente.</Step>
   <Step title="Kross genera il link di condivisione">Kross crea un **link** che il cliente accetta: accettandolo apre il ticket e attiva il canone **€1/unità/mese**.</Step>
-  <Step title="La terna compare nel Partner Portal">Dopo l'accettazione, la terna del cliente (`hotel_id` / `username` / `password`) compare nel **Partner Portal → sezione API → voce Credenziali**.</Step>
-  <Step title="Il team la copia in 'Collega Kross'">Da lì la terna si incolla nell'admin *Collega Kross* → viene cifrata nel Vault. Vedi [Collegamento](/integrazioni/kross/collegamento).</Step>
+  <Step title="Le 3 credenziali compaiono nel Partner Portal">Dopo l'accettazione, le 3 credenziali del cliente (`hotel_id`, `username`, `password`) compaiono nel **Partner Portal → sezione API → voce Credenziali**.</Step>
+  <Step title="Il team le copia in 'Collega Kross'">Da lì si incollano nell'admin *Collega Kross* → vengono cifrate nel Vault. Vedi [Collegamento](/integrazioni/kross/collegamento).</Step>
 </Steps>
 
-## Autenticazione (partner)
-- Auth = **api_key generica partner** (nostra, **nel Vault**) + la **terna del cliente** → `POST /v5/auth/get-token` (base `https://api.krossbooking.com/v5`).
-- Serve lo header **User-Agent browser** (altrimenti Cloudflare blocca con **1010**). Il token torna in `data.auth_token` (TTL 7 giorni).
-- La generica non la digita nessuno a mano: la aggiunge il **gateway** a runtime.
+## Accesso (per il partner)
+- L'accesso usa la **chiave generica** (nostra, nel Vault) + le **3 credenziali del cliente** → `POST /v5/auth/get-token` (base `https://api.krossbooking.com/v5`).
+- Serve lo header **User-Agent browser** (se manca, Cloudflare blocca con errore **1010**). Il permesso torna in `data.auth_token` (dura 7 giorni).
+- Nessuno digita la chiave generica a mano: la aggiunge da solo il nostro **ponte** `mcp.mattone.co` quando l'assistente lavora.
 
-## IP whitelist (self-service)
-Kross accetta chiamate **solo da IP in whitelist**. La whitelist si imposta **da soli** nella **sezione API del Partner Portal** (non si chiede a Fabio).
+## Whitelist IP (lo facciamo noi)
+Kross accetta chiamate **solo da indirizzi IP autorizzati** (whitelist). La whitelist si imposta **da soli** nella **sezione API del Partner Portal** (non si chiede a Fabio).
 
-- Va whitelistato l'**IP del proxy** — il droplet `164.92.228.57` — perché **tutto** il traffico Kross esce da lì. **Vercel non è whitelistato** (ha IP dinamici): per questo il traffico passa dal proxy.
+- Va autorizzato l'**IP del proxy** (il droplet `164.92.228.57`), perché **tutto** il traffico Kross esce da lì. **Vercel non è autorizzato** (cambia IP di continuo): per questo il traffico passa dal proxy.
 
-<Info>È il motivo per cui esiste il gateway + proxy: un **solo IP** stabile whitelistato, invece di rincorrere gli IP dinamici di Vercel/servizi.</Info>
+<Info>È il motivo per cui esiste il ponte + proxy: un **solo indirizzo IP** stabile da autorizzare, invece di rincorrere gli IP che cambiano.</Info>
 
-## Caso "own" — lo studente genera la SUA api_key
-Per i clienti **own** (chiave propria), la api_key **non** viene da noi: la genera lo studente **dentro il suo PMS** → **Utilità → Servizi esterni** (ottiene `api_key` + `username` `api...` + `password`, con il suo `hotel_id`). Poi la terna va in *Collega Kross* come per il partner. Vedi la differenza tra i modelli in [Panoramica](/integrazioni/kross/panoramica).
+## Caso "own" — lo studente genera la SUA chiave
+Per i clienti **own** (che hanno una chiave propria), la chiave **non** viene da noi: la genera lo studente **dentro il suo Kross** → **Utilità → Servizi esterni** (ottiene `api_key` + `username` `api...` + `password`, col suo `hotel_id`). Poi le 3 credenziali + la sua chiave vanno in *Collega Kross* come per il partner.
 
-<Note>**Da confermare con Mattia** al primo cliente reale: il **click-path esatto** dentro il Partner Portal per far comparire la terna (sezione API → Credenziali) può variare leggermente nella UI — verificalo alla prima attivazione e aggiorna questa pagina.</Note>
+<Note>In tutti i casi gli strumenti dell'assistente passano dallo **stesso ponte** `mcp.mattone.co`: cambia solo **quale chiave** usa (la nostra generica, oppure quella dello studente). Vedi [Panoramica](/integrazioni/kross/panoramica).</Note>
+
+<Note>**Da confermare con Mattia** al primo cliente reale: il **percorso esatto di clic** nel Partner Portal per far comparire le 3 credenziali (sezione API → Credenziali) può cambiare un po' nella schermata — verificalo alla prima attivazione e aggiorna questa pagina.</Note>
 
 <Note>Fonti: memoria `reference_krossbooking_partner_sandbox_creds`, `reference_krossbooking_partner_api_spec`, `project_krossbooking_partnership` (valori reali → nel Vault, non qui). Architettura proxy: `api-kross-mattone/architecture/proxy.md`.</Note>

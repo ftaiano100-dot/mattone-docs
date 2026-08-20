@@ -6,9 +6,11 @@ description: "Restricted key a permessi minimi, collegamento nel Vault, e doppio
 
 **Stripe** è il modo con cui lo studente incassa online. La sua chiave serve a **due** cose con una sola credenziale: i **link di pagamento** che l'agente Conduit genera in chat (extra a listino) e il **checkout del sito direct booking**.
 
-## Regola d'oro: una chiave, permessi minimi
-- Si usa una **Restricted key** (`rk_live_…`), **non** la Secret Key.
-- Permessi minimi: **Products / Prices / Payment Links = Write**, tutto il resto **None**.
+## Regola d'oro: una chiave **a permessi minimi**
+Si usa una **chiave a permessi minimi** (Restricted Key, `rk_live_…`), **non** la Secret Key (quella dà accesso a tutto).
+
+- **Cosa deve poter fare**: creare **prodotti, prezzi e link di pagamento** (Products / Prices / Payment Links = Write). Nient'altro.
+- **Cosa NON deve poter fare**: rimborsi, leggere i **dati dei clienti**, toccare l'account. Tutto il resto = **None**.
 - La chiave sta cifrata nel Vault come `stripe_key_<student_token>` — mai nei repo, mai in chat.
 
 <Warning>Stripe è **opzionale/fallback**: si monta solo per chi vende extra a listino. Il pagamento di **prenotazioni/allunghi** va sul flusso **nativo del PMS** (online check-in), mai su Stripe autonomo. Se il nativo non incassa → escala a umano.</Warning>
