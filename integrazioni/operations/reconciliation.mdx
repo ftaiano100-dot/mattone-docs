@@ -1,0 +1,36 @@
+---
+title: "Reconciliation — riconciliazione bancaria (Revolut)"
+description: "Il tool che confronta i movimenti bancari con le prenotazioni/payout: quando serve, come si collega a Revolut Business, e stato (in miglioramento)."
+---
+
+
+**Reconciliation** è il tool che fa la **riconciliazione bancaria**: confronta i **movimenti del conto** con le **prenotazioni e i payout** (Booking, Airbnb, Stripe) e dice cosa torna e cosa no. Serve a chiudere i conti senza controllare a mano riga per riga.
+
+<Info>È **in miglioramento**: **Mattia** deve ancora ottimizzare la funzione. Usalo, ma aspettati che cambi/migliori nei prossimi giri.</Info>
+
+## Quando serve
+- Quando uno studente (o Cosmica) vuole **verificare che gli incassi bancari corrispondano** alle prenotazioni gestite: quante entrate Booking/Airbnb/Stripe sono arrivate davvero sul conto, e quali mancano.
+- È un tool di **controllo/finanza**, accanto a [Operations](/integrazioni/operations/panoramica) (pulizie, revenue, EBITDA).
+
+## Cosa fa (in breve)
+- **Multi-tenant**: ogni proprietario/gestore è un **tenant** separato (con i suoi utenti), così i conti di uno non si mescolano con quelli di un altro.
+- Prende i **movimenti bancari** e li **abbina** alle prenotazioni/payout del PMS (Kross), per canale (Booking / Airbnb / Stripe).
+- Mostra il tasso di **match** e le righe non abbinate (da controllare).
+
+## Come si collega — Revolut Business
+- Il tool si connette a **Revolut Business** (il conto). Il collegamento passa dalla **Mattone Platform** con una comunicazione **da-servizio-a-servizio** protetta da un segreto condiviso (nel Vault come `RECON_HMAC_SECRET`, mai nei docs).
+- In pratica: i movimenti Revolut arrivano al tool tramite questa sincronizzazione; tu li **riconcili** contro le prenotazioni.
+
+<Steps>
+  <Step title="Accedi al tool">Entra in Reconciliation (dominio dedicato, es. `reconciliation.mattone.co`) con l'utente del tenant giusto.</Step>
+  <Step title="Sincronizza i movimenti">Fai partire la sincronizzazione dei movimenti dal conto Revolut Business (via la Piattaforma).</Step>
+  <Step title="Riconcilia">Confronta movimenti ↔ prenotazioni/payout per canale; controlla le righe non abbinate.</Step>
+</Steps>
+
+<Warning>**In miglioramento (Mattia).** Alcune cose sono ancora da rifinire (velocità di deduplica, conteggi Kross, formato di alcune righe). Se un risultato sembra strano, verificalo e segnalalo — non darlo per definitivo.</Warning>
+
+## Fonti ufficiali
+- **Revolut Business API** (doc ufficiale): https://developer.revolut.com/docs/api/business · portale sviluppatori: https://developer.revolut.com/
+- **KrossBooking** (prenotazioni/payout, sorgente del confronto): doc v5 non pubblica → richiedere a Kross.
+
+<Note>Zero segreti: credenziali e segreti (es. `RECON_HMAC_SECRET`) vivono nel Vault / env, mai qui. Fonti interne: memoria `project_reconciliation_status`, `reference_recon_deploy`, `project_reconciliation_multitenancy`.</Note>

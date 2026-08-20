@@ -23,9 +23,13 @@ Operations diventa utile quando **tira i dati dal gestionale** (pulizie da check
 - Le **fee** (early/late, cleaning) stanno nei `financeField`, visibili solo su `/reservations/{id}?includeResources=1`, **non** nella lista.
 - Alcuni appartamenti non sono su Hostaway (sono su Kross): per il loro revenue serve l'altro PMS.
 
-## Come verificare
-- Import pulizie: confronto "nostre vs PMS" nel tab (✓ = nostra, H = da PMS); l'import è cancellation-safe (rimuove le cancellate, non tocca le manuali).
-- Revenue soggiorni: il totale sync deve avvicinarsi al gross atteso (base rate, non gross totale).
+## Come verificare (con test di connessione)
+<Steps>
+  <Step title="Test di connessione al gestionale">Dopo aver inserito le credenziali, lancia il test: deve tornare **verde** e leggere almeno un listing/una prenotazione reale.</Step>
+  <Step title="Controllo su dati reali">Import pulizie: confronto "nostre vs PMS" nel tab (✓ = nostra, H = da PMS); l'import è cancellation-safe (rimuove le cancellate, non tocca le manuali). Revenue soggiorni: il totale sync deve avvicinarsi al gross atteso (base rate, non gross totale).</Step>
+</Steps>
+
+<Warning>**Da verificare (in corso).** Stiamo testando che il collegamento **Operations ↔ Kross** funzioni **per tutti** gli studenti (non solo per chi è su Hostaway). Finché non è confermato su tutti: dopo ogni collegamento **fai sempre il test di connessione + il controllo su dati reali** sopra, e segnala se un caso non torna. Non dare per scontato che funzioni senza la verifica.</Warning>
 
 <Warning>La chiave service-role dà **accesso pieno al DB**: tienila solo server-side su Vercel, mai nel client.</Warning>
 

@@ -32,6 +32,24 @@ Una volta attivo, il WABA sblocca queste funzionalità nel workflow Conduit:
   Senza WABA, tutte le comunicazioni automatiche Conduit → ospite avvengono via canali alternativi (email o SMS), con minore affidabilità nei tassi di consegna e lettura. Per un'esperienza ospite ottimale, il WABA deve essere attivo prima del go-live della proprietà.
 </Note>
 
+## Meta Business Manager (BM) — fondamentale
+Il **Business Manager di Meta** (il "pannello aziendale" di Facebook/Instagram) è un pezzo **fondamentale**, per due motivi:
+1. **Abilita la WABA**: la WhatsApp Business API **richiede** un Business Manager Meta. Senza BM, non c'è WhatsApp ufficiale per l'assistente.
+2. **Serve al marketing**: le **campagne pubblicitarie** del nostro team girano dentro il BM (account pubblicitari, pagine, pixel).
+
+### Prassi Mattone: farsi dare accesso al BM dello studente
+Meglio **non creare un BM nuovo** ma **farsi dare accesso al BM dello studente** (dove vivono già la sua pagina, il numero, gli asset). Così gestiamo WABA + campagne dal suo Business, con i permessi giusti.
+
+**Come lo studente ci dà accesso** (dal suo Meta Business):
+<Steps>
+  <Step title="Business Settings → Users → Partner">Lo studente apre **business.facebook.com → Impostazioni azienda → Utenti → Partner** e clicca **Aggiungi**.</Step>
+  <Step title="Aggiunge il nostro Business tramite ID">Inserisce l'**ID del Business Manager Mattone** (glielo diamo noi) come partner.</Step>
+  <Step title="Assegna gli asset e i permessi">Condivide gli **asset** che servono: **account WhatsApp**, **account pubblicitario**, **pagina** — con i permessi adeguati (gestione).</Step>
+</Steps>
+
+<Warning>Non chiedere mai a nessuno **la password** di Facebook/Meta: l'accesso si dà **come partner** (per ID Business), non condividendo credenziali. Se lo studente non ha un BM, va creato **dal suo account** prima.</Warning>
+
 ## Fonti ufficiali
 - **WhatsApp Business Platform (Meta)** — doc ufficiale: https://developers.facebook.com/docs/whatsapp
+- **Meta Business Help Center** — condividere l'accesso al Business (Partner): https://www.facebook.com/business/help
 - Il collegamento all'assistente lo gestisce **Conduit**: https://docs.conduit.ai

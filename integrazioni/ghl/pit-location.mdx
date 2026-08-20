@@ -44,3 +44,19 @@ Il PIT (Private Integration Token) è una chiave API per-location disponibile ne
 <Warning>
   Il PIT **scade immediatamente** se l'integrazione "Mattone Platform" viene eliminata da GHL Settings — anche accidentalmente. Se i dati di lead o ROAS di uno studente smettono di aggiornarsi, verifica prima di tutto che l'integrazione sia ancora attiva in GHL → Settings → Private Integrations. Se è stata eliminata, genera un nuovo PIT seguendo questa procedura e contatta il team tecnico per aggiornare la configurazione.
 </Warning>
+
+## Quando si collega e a cosa serve
+GHL si collega nella **fase marketing** dell'onboarding (non serve per l'assistente/prenotazioni). Una volta collegato, la piattaforma legge **lead, pipeline, valori delle opportunità e spesa** → calcola **CPL / CPA / ROAS / CAC** e permette la gestione del **rebilling** dei sotto-account. Vedi [Lead & valore](/integrazioni/ghl/lead-valore) e [Rebilling](/integrazioni/ghl/rebilling).
+
+## Prassi Mattone: partire dal nostro snapshot GHL
+Di solito **non** si parte da una location vuota: **duplichiamo il NOSTRO workspace/snapshot GHL** (un template già pronto con pipeline, automazioni, campi) nel sotto-account dello studente. Poi, in quella location, si crea il **PIT** (i passi qui sopra) e lo si collega alla piattaforma.
+
+<Steps>
+  <Step title="Duplica lo snapshot Mattone">Crea il sotto-account dello studente dallo **snapshot template** Mattone (pipeline + automazioni già impostate), invece di configurarlo da zero.</Step>
+  <Step title="Crea il PIT nella sua location">Nel sotto-account appena creato → Settings → Private Integrations → crea il token con gli scope necessari (vedi sopra).</Step>
+  <Step title="Collega + (dal 3° mese) rebilling">Registra il PIT sulla piattaforma; imposta il [rebilling](/integrazioni/ghl/rebilling) del sotto-account quando previsto.</Step>
+</Steps>
+
+## Fonti ufficiali
+- **GoHighLevel — Private Integrations Token** (doc ufficiale): https://marketplace.gohighlevel.com/docs/Authorization/PrivateIntegrationsToken/
+- **GHL API** (riferimento): https://highlevel.stoplight.io

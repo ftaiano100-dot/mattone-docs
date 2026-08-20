@@ -100,7 +100,8 @@
               "integrazioni/ghl/rebilling",
               "integrazioni/ghl/troubleshooting",
               "integrazioni/operations/panoramica",
-              "integrazioni/operations/collegamento"
+              "integrazioni/operations/collegamento",
+              "integrazioni/operations/reconciliation"
             ]
           },
           {
