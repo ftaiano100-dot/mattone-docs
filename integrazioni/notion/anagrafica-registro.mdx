@@ -37,6 +37,6 @@ Il template canonico v1 è versionato nel codice (16 database, 177 properties). 
 | Registro/anagrafica (`/anagrafica`) | 🟡 consegnato (PR #12), rotta diretta, badge beta; smoke-test con token reale da fare |
 | Audit engine drift (Fase 2) + `/admin/notion` | 🔴 non iniziato (in mano a Niccolò) |
 
-<Warning>Non lanciare in prod studenti finché il **save bug** Conduit non è risolto: le CREATE funzionano, gli UPDATE flappano. Il bridge è già best-effort con create/skip.</Warning>
+<Note>Il bridge lavora in sicurezza col **save bug** Conduit: fa solo **CREATE-or-SKIP** (mai UPDATE, che è il pezzo che flappa) ed è best-effort. Quindi si può usare oggi; per aggiornare un nodo esistente lo si ricrea, non si edita.</Note>
 
 <Note>Fonti: memoria `project_notion_conduit_kb_bridge` (PR #11/#12), `project_notion_mattone_integration`. Codice: `mattone-platform/src/lib/notion/*`, `src/lib/conduit/*`, `src/lib/registry/*`.</Note>

@@ -1,52 +1,40 @@
 ---
-title: "Collegare PriceLabs: API key e configurazione account"
-sidebarTitle: "Collegamento"
-description: "Come generare la API key PriceLabs, inserirla in Mattone e configurare il collegamento con KrossBooking per l'aggiornamento automatico dei prezzi."
+title: "Collegare PriceLabs: Client ID e OAuth MCP"
+description: "Come collegare PriceLabs a Mattone via MCP (Client ID + OAuth), così la piattaforma legge gli insight di pricing dello studente."
 ---
 
-Collega PriceLabs alla piattaforma Mattone per permettere la lettura dei dati di pricing e l'aggiornamento automatico delle tariffe KrossBooking dello studente. Il collegamento richiede due azioni distinte: inserire la API key in Mattone **e** configurare KrossBooking come PMS direttamente dentro PriceLabs — entrambe sono necessarie perché i prezzi si aggiornino correttamente.
+Lo studente collega PriceLabs a Mattone incollando solo il suo **Client ID**: il resto è OAuth. Una volta collegato, la piattaforma legge gli insight di pricing (e Francesco AI può agire read+write sui prezzi in chat).
 
 ## Prerequisiti
 
-Prima di iniziare, verifica che siano soddisfatte queste condizioni:
-
-- **KrossBooking è già connesso** alla piattaforma Mattone (step 2 del flusso di onboarding). Se KrossBooking non è attivo, PriceLabs non ha un canale per inviare i prezzi al PMS.
-- **Lo studente ha un account PriceLabs attivo** — l'account deve essere già creato su [pricelabs.co](https://pricelabs.co). Se non ce l'ha, deve registrarsi prima di procedere.
+- **Lo studente ha un account PriceLabs attivo** su [pricelabs.co](https://pricelabs.co), con i suoi listing **già sincronizzati** dal suo PMS (è PriceLabs a tenere il sync coi listing/prezzi — noi ci agganciamo in lettura/scrittura via MCP).
+- Costo: **~$1/unità/mese** extra per l'accesso API/MCP.
 
 ## Collegamento
 
 <Steps>
-  <Step title="Genera la API key in PriceLabs">
-    Lo studente accede al proprio account PriceLabs, poi va su **Account → API Key → Genera nuova chiave**. Copia la chiave generata — verrà mostrata una sola volta.
+  <Step title="Prendi il Client ID in PriceLabs">
+    Lo studente va su **PriceLabs → Account Settings → AI Connector (MCP)** e copia il **Client ID** (è per-account). Non serve nessun client secret.
   </Step>
-  <Step title="Copia la API key">
-    Usa il pulsante **Copia** accanto alla chiave per salvarla negli appunti. Se la finestra viene chiusa prima di copiarla, bisognerà generarne una nuova (le vecchie chiavi vengono invalidate).
+  <Step title="Incollalo nella piattaforma Mattone">
+    Su **Connessioni → PriceLabs**, incolla il Client ID nel campo dedicato e clicca **Connetti**. Parte il flusso OAuth.
   </Step>
-  <Step title="Incolla la API key nella piattaforma Mattone">
-    Nella piattaforma Mattone, vai su **Connessioni → PriceLabs**, incolla la API key nel campo dedicato e clicca su **Salva**. La piattaforma testa automaticamente la connessione.
+  <Step title="Autorizza (OAuth PKCE)">
+    Lo studente fa login su PriceLabs e approva l'accesso (scope `read write`). Torni in piattaforma con esito **verde** (`?pricelabs=ok`).
   </Step>
-  <Step title="Verifica che la connessione risulti verde">
-    Dopo il salvataggio, lo stato della connessione deve diventare **verde** (Connesso). Se rimane rosso, la chiave è errata o non ha i permessi necessari — genera una nuova API key e riprova.
-  </Step>
-  <Step title="Collega KrossBooking come PMS dentro PriceLabs">
-    Questo passaggio va fatto **direttamente in PriceLabs** — non è sufficiente inserire la API key in Mattone. In PriceLabs, vai su **Integrazioni → Channel Manager / PMS → Aggiungi** e seleziona **KrossBooking**. Inserisci le credenziali KrossBooking quando richiesto.
-  </Step>
-  <Step title="Verifica la sincronizzazione dei listing e dei prezzi">
-    In PriceLabs, vai su **Dashboard** e controlla che i listing dello studente siano visibili. Verifica che la colonna **Sync PMS** mostri uno stato attivo. In KrossBooking, controlla che le tariffe future siano state aggiornate da PriceLabs.
+  <Step title="Verifica che i listing siano leggibili">
+    Dopo il connect, `get_listings` deve tornare i listing dello studente (`listing_id`, `pms_name`). Considera solo quelli **synced**.
   </Step>
 </Steps>
 
-<Warning>
-  Il collegamento PriceLabs ↔ KrossBooking **deve essere configurato anche dentro PriceLabs**, non solo nella piattaforma Mattone. Senza questo secondo passaggio, la API key permette alla piattaforma Mattone di leggere i dati PriceLabs, ma i prezzi non vengono mai inviati a KrossBooking e le tariffe sul PMS rimangono statiche.
-</Warning>
+## Come funziona (tecnico)
 
-## Verifica
+- MCP runtime: `https://mcp.pricelabs.co/mcp` (Bearer access_token).
+- OAuth **PKCE S256**, grant authorization_code + refresh_token, **niente client_secret** (public client). Il token si rinfresca al 401.
 
-Il collegamento è completato e funzionante quando:
-
-- La API key in **Connessioni → PriceLabs** mostra stato **verde**.
-- In PriceLabs sono visibili almeno un listing dello studente.
-- La sincronizzazione prezzi con KrossBooking è **attiva** (colonna Sync PMS verde in PriceLabs).
+<Note>
+  I connettori MCP si legano all'**avvio sessione**: un reconnect a caldo non entra nella sessione in corso, serve una sessione nuova. Se il connect non parte, il Client ID è errato o preso dalla sezione sbagliata (dev'essere quello di **AI Connector (MCP)**).
+</Note>
 
 <Tip>
 **▷ Prompt Claude Code — Collega PriceLabs**  ·  incolla in Claude Code:

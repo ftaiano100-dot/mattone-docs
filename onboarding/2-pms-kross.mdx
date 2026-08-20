@@ -34,7 +34,7 @@ Collega KrossBooking così che Conduit possa leggere le prenotazioni, i dati deg
   <Step title="Verifica il test di connessione">
     Dopo il salvataggio, il sistema esegue automaticamente un test di connessione attraverso il gateway `mcp.mattone.co`. Attendi il risultato:
 
-    - **Verde** ✅ — la connessione è attiva; Conduit può già interrogare le API Kross per questo studente. Procedi al passo successivo.
+    - **Verde** ✅ — la terna è salvata cifrata (`cred_secret_id`) nel Vault. **Non serve creare nessuna chiave manuale**: la chiave generica partner è già nostra. I custom tool si montano nello [Step 3 · Conduit](/onboarding/3-conduit) con il **Provision**; da lì il gateway `mcp.mattone.co` risolve la terna **a runtime**. Procedi.
     - **Rosso** ❌ — la connessione ha fallito. Vedi la sezione qui sotto.
   </Step>
 
@@ -69,14 +69,13 @@ Step completato? Procedi con → [Step 3 · Conduit](/onboarding/3-conduit)
 </Tip>
 
 ```text
-Guidami nello step 2 (PMS KrossBooking) per lo studente [NOME], seguendo
-mattone-docs /onboarding/2-pms-kross. Chiedimi la terna (hotel_id, username
-apiNNNNN, password API) — NON stamparla, dimmi solo che va cifrata nel Vault.
-Ricordami la trappola autocompilazione (la vera api_key è 32 hex, non la
-password di login Mattone) e valida SEMPRE con auth reale via gateway
-mcp.mattone.co prima di dire "connected". Poi fai un test dal vivo
-(get-in-house-guests / get-reservation-status) e dimmi se tornano ospiti reali.
-Se rosso, portami su /integrazioni/kross/troubleshooting.
+Guidami nello step 2 (PMS KrossBooking, modello partner) per lo studente [NOME],
+seguendo mattone-docs /onboarding/2-pms-kross. Chiedimi la terna del cliente
+(hotel_id, username apiNNNNN, password API) — NON stamparla, va cifrata nel
+Vault; la chiave generica partner è già nostra, niente chiavi manuali da creare.
+"Collega Kross" -> verde (cred_secret_id salvato). Ricordami che i tool si
+montano allo Step 3 con Provision e che il gateway risolve la terna a runtime.
+Poi fammi verificare con dati reali. Se rosso, la causa è quasi sempre la terna.
 ```
 
 <CardGroup cols={2}>

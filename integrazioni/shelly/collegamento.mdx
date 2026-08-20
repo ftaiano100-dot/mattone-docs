@@ -38,8 +38,12 @@ Prima di iniziare, assicurati che siano tutti soddisfatti:
 </Steps>
 
 <Warning>
-  Salva il token Shelly **solo nel Vault** — mai in messaggi, email, fogli di calcolo o documenti condivisi. Un token esposto consente il controllo remoto del device a chiunque lo possieda.
+  Salva le credenziali Shelly **solo nel Vault** — mai in messaggi, email, fogli di calcolo o documenti condivisi. Credenziali esposte consentono il controllo remoto del device a chiunque le possieda.
 </Warning>
+
+<Note>
+  **Come è fatto davvero.** Shelly Cloud lavora **per account**: ogni account ha un **Server URI** (`shelly-<NN>-eu.shelly.cloud`) + una **Auth Key**. Per gli **studenti** la config va nel Vault come `shelly_config_<token>` = `{ server, auth_key, devices }` e il gateway multi-tenant la usa a runtime; per **Cosmica** i device stanno nel registro codice `SHELLY_DEVICES` (`src/lib/shelly.ts`), 1 riga per device (slug, deviceId 12-hex, type citofono/porta, account). L'apertura è un **pulse del relay**: `POST /device/relay/control` con `timer=3` (ON 3 sec poi auto-off). Stato: `POST /device/status`. Rate limit **1 req/sec per account**.
+</Note>
 
 ## Verifica
 

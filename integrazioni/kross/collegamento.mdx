@@ -29,12 +29,30 @@ Prima di iniziare, assicurati che:
   <Step title="Il sistema verifica la connessione via gateway">
     Dopo il salvataggio, la piattaforma esegue automaticamente un test di connessione passando per `mcp.mattone.co`. Attendi che il risultato appaia nell'interfaccia: il processo richiede normalmente meno di 10 secondi.
   </Step>
-  <Step title="Connessione verde: procedi alla configurazione di Conduit">
-    Se il test restituisce stato **verde**, la connessione è attiva. Puoi procedere con la configurazione dell'assistente Conduit per questo studente, partendo dal collegamento della Knowledge Base e dei flussi di risposta.
+  <Step title="Verde: la terna è salvata (cred_secret_id)">
+    Stato **verde** = la connessione è attiva e la terna è stata scritta cifrata (`cred_secret_id`) nel Vault. **Non devi creare nessuna chiave manuale**: la chiave generica partner è già nostra e il gateway la usa in automatico.
   </Step>
-  <Step title="Connessione rossa: vai al Troubleshooting">
-    Se il test restituisce stato **rosso**, non procedere. Consulta la pagina [Troubleshooting KrossBooking](/integrazioni/kross/troubleshooting) per identificare la causa e applicare la soluzione. Le cause più frequenti sono credenziali errate o `hotel_id` non corrispondente.
+  <Step title="🚀 Provision: monta tool + skill sull'agente">
+    Premi **Provision** per lo studente: la piattaforma monta i custom tool Kross (+ skill di prompting abbinate) sul workspace Conduit. Da qui l'agente sa parlare con Kross.
   </Step>
+  <Step title="Fatto: il runtime risolve la terna da solo">
+    Quando l'agente usa un tool, il gateway `mcp.mattone.co` **risolve la terna dal Vault a runtime** (chiave generica + proxy a IP whitelistato) e chiama Kross. Nessun passaggio manuale ulteriore. Verifica con una domanda reale (es. una prenotazione) che tornino **dati veri**.
+  </Step>
+</Steps>
+
+<Note>Se il test è **rosso**, la causa quasi sempre è la terna (credenziali API errate, o `hotel_id` non corrispondente). Rigenerala dal portale Kross e ri-salva. Dettaglio: [Troubleshooting](/integrazioni/kross/troubleshooting).</Note>
+
+## Procedura partner ripetibile (template)
+Questa è la strada **funzionante end-to-end** per collegare un nuovo partner Kross — provata su **HostManager360** (agente live che legge 13 ospiti reali). Replicala per il prossimo partner:
+
+<Steps>
+  <Step title="Mattia contatta Kross per la partnership">L'AM avvia la partnership con Kross e recupera l'accesso al portale partner del cliente (dove compare la terna).</Step>
+  <Step title="Recupera la terna">Dal portale partner → sezione **API**: `hotel_id`, `username` (`apiNNNNN`), `password` API del cliente.</Step>
+  <Step title="Collega Kross">Admin → *Collega Kross* → incolla la terna → **verde** (scrive `cred_secret_id` nel Vault).</Step>
+  <Step title="Provision">🚀 monta tool + skill sul workspace Conduit dello studente.</Step>
+  <Step title="Personalizza le skill policy">Sostituisci i dati Cosmica (numeri reperibili, fee, link portale/email) con quelli **dello studente** nelle skill policy.</Step>
+  <Step title="KB Notion & telefonia, se servono">Se lo studente ha il registro Notion → genera la KB per-listing (bridge). Se vuole voce/WhatsApp → configura telefonia/WABA.</Step>
+  <Step title="Test end-to-end reale">Ospite realmente presente in Kross → l'agente trova la prenotazione e dà i dati corretti.</Step>
 </Steps>
 
 <Warning>
@@ -56,13 +74,14 @@ Se tutti e tre i segnali sono presenti, l'integrazione è operativa e puoi proce
 </Tip>
 
 ```text
-Collega KrossBooking per lo studente [NOME] seguendo mattone-docs
-/integrazioni/kross/collegamento. Verifica prima che abbia accettato lo sharing
-link partner (chiedi a Mattia). Chiedimi la terna (hotel_id, username apiNNNNN,
-password API) — va cifrata nel Vault, non stamparla. Attenzione alla trappola
-autocompilazione: la vera api_key è 32 hex. Poi valida con auth reale via
-gateway mcp.mattone.co e dimmi se torna verde con un auth_token; se no, isola
-il codice errore (es. error_code 11 combinazione errata).
+Collega KrossBooking (modello partner) per lo studente [NOME] seguendo
+mattone-docs /integrazioni/kross/collegamento. È la strada funzionante:
+1) chiedimi la terna del cliente (hotel_id, username apiNNNNN, password API) —
+va cifrata nel Vault, non stamparla; la chiave generica partner è già nostra,
+NON serve creare chiavi manuali; 2) "Collega Kross" -> verde (scrive
+cred_secret_id); 3) Provision (monta tool+skill); 4) il gateway risolve la terna
+a runtime. Alla fine fammi verificare con una domanda reale che l'agente legga
+ospiti/prenotazioni veri. Se rosso, la causa è quasi sempre la terna.
 ```
 
 <CardGroup cols={2}>

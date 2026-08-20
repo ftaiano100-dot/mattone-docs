@@ -6,15 +6,20 @@ description: "Scopri come KrossBooking si integra con Mattone: lettura prenotazi
 
 KrossBooking è il sistema di gestione prenotazioni (PMS) usato dalla maggior parte degli studenti Mattone. Attraverso questa integrazione, Conduit legge in tempo reale le prenotazioni attive, i dati degli ospiti e lo stato del check-in, permettendo all'assistente AI di rispondere con informazioni sempre aggiornate e di automatizzare i flussi operativi legati agli arrivi e alle partenze.
 
-## Modello di collegamento
+## I tre modelli di connessione
 
-Mattone supporta due modelli di connessione a KrossBooking, a seconda del tipo di account:
+Prima di collegare uno studente, capisci **quale dei tre modelli** è il suo: cambia la procedura.
 
-**Studenti (modello partner via gateway)**
-Gli studenti Mattone si collegano tramite il gateway multi-tenant `mcp.mattone.co`. Ogni studente ha un set di credenziali dedicato — `hotel_id`, `username` e `password` — recuperato dal portale Kross e salvato cifrato nel Vault di piattaforma. Il gateway effettua le chiamate verso Kross tramite un unico IP in whitelist, evitando blocchi legati a IP multipli.
+**1. Partner (via gateway) — la strada dei nuovi studenti**
+Lo studente non ha una chiave API propria: usa la **chiave generica** Mattone. Dà la sua terna (`hotel_id`, `username`, `password` API) → si salva cifrata nel Vault con "Collega Kross" → il gateway multi-tenant `mcp.mattone.co` (con la generica + proxy a IP whitelistato) parla con Kross **a runtime, risolvendo la terna da solo**. È il percorso completo e funzionante (verificato live: partner HostManager360 → 13 ospiti reali). Vedi [Collegamento](/integrazioni/kross/collegamento).
 
-**Cosmica (connettore nativo diretto)**
-Cosmica dispone di una propria chiave API e utilizza un connettore nativo diretto senza passare dal gateway condiviso.
+**2. Own (connettore nativo Conduit) — clienti con chiave propria**
+Lo studente ha una **api-key KrossBooking propria** e si collega col **connettore nativo di Conduit**: **NON passa dal gateway** né dal proxy. Sono i clienti storici/attrezzati: **Cosmica, Solisera, SevenHome, MbaPrime**.
+
+**3. Altri PMS (non Kross)**
+Pochi studenti usano un gestionale diverso (es. **Hostaway**): non seguono questa integrazione, ma quella del loro PMS.
+
+<Info>In sintesi: **nuovo studente Kross → partner** (gateway, chiave generica nostra); **cliente con chiave sua → own** (connettore nativo, niente gateway); **PMS diverso → altra integrazione**.</Info>
 
 ## Sezioni correlate
 
