@@ -1,7 +1,7 @@
 ---
 title: "KrossBooking API: autenticazione ed endpoint disponibili"
 sidebarTitle: "Endpoint & Scope"
-description: "Token di autenticazione, elenco degli endpoint KrossBooking usati da Mattone e scopo di ciascuna chiamata API verso il gateway."
+description: "Autenticazione bearer e tutti gli endpoint KrossBooking usati da Mattone: disponibilità, prenotazioni, portali check-in e accesso."
 ---
 
 L'API di KrossBooking utilizza un sistema di autenticazione basato su token bearer. Tutte le chiamate che Mattone effettua verso Kross passano attraverso il gateway multi-tenant `mcp.mattone.co`, che gestisce l'autenticazione, la rotazione dei token e il whitelisting dell'IP — in questo modo le strutture degli studenti non devono aprire accessi multipli o gestire token direttamente.
@@ -34,17 +34,21 @@ La risposta include il token bearer da usare nell'header `Authorization: Bearer 
 
 ## Endpoint per scopo
 
-Questa tabella elenca tutti gli endpoint KrossBooking attualmente usati dalla piattaforma Mattone, con il relativo scopo operativo.
+Questa tabella elenca tutti gli endpoint KrossBooking attualmente usati dalla piattaforma Mattone, con il relativo tool MCP esposto tramite gateway e il tipo di operazione.
 
-| Scopo | Endpoint | Tipo |
-|---|---|---|
-| Autenticazione | `POST /v5/auth/get-token` | Write |
-| Disponibilità | `GET /v5/calendar/get-availability` | Read |
-| Stato prenotazione | `GET /v5/reservations/{id}` | Read |
-| Ospiti in casa | `GET /v5/reservations/in-house` | Read |
-| Portali check-in | `GET /v5/checkin/portals` | Read |
-| Stato portale | `GET /v5/checkin/portals/{id}` | Read |
-| Istruzioni accesso | `GET /v5/properties/{id}/access` | Read |
+| Scopo | Endpoint REST | Tool MCP | Tipo |
+|---|---|---|---|
+| Autenticazione | `POST /v5/auth/get-token` | _(gestito internamente dal gateway)_ | Write |
+| Disponibilità | `GET /v5/calendar/get-availability` | `check-availability` | Read |
+| Stato prenotazione | `GET /v5/reservations/{id}` | `get-reservation-status` | Read |
+| Ospiti in casa | `GET /v5/reservations/in-house` | `get-in-house-guests` | Read |
+| Portali check-in | `GET /v5/checkin/portals` | `get-incomplete-portals` | Read |
+| Stato portale | `GET /v5/checkin/portals/{id}` | `check-portal-status` | Read |
+| Istruzioni accesso | `GET /v5/properties/{id}/access` | `get-checkin-instructions` | Read |
+
+<Note>
+  I tool MCP sono i nomi usati da Conduit per invocare gli endpoint Kross attraverso il gateway `mcp.mattone.co`. Non è necessario chiamare gli endpoint REST direttamente: Conduit utilizza i tool MCP, che gestiscono autenticazione, token e retry in modo trasparente.
+</Note>
 
 <Warning>
   Il path `/apiv5` restituisce la pagina HTML della documentazione KrossBooking, **non dati API**. Usare sempre il path corretto `/v5/...` per tutte le chiamate. Questo è uno degli errori più comuni in fase di configurazione manuale o debug.

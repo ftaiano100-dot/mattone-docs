@@ -11,7 +11,7 @@ Il problema più frequente con SwitchBot è il codice errore 161 (device offline
 <Warning>
   **Esempio da un caso reale del team Mattone.**
 
-  L'app SwitchBot mostrava la serratura come "scarica". I Vercel runtime log mostravano codice **161 (device offline)**. Il problema era l'Hub Mini offline — non la batteria scarica.
+  L'app SwitchBot mostrava la serratura come "scarica". I log della piattaforma mostravano codice **161 (device offline)**. Il problema era l'Hub Mini offline — non la batteria scarica.
 
   Senza i log avremmo cambiato le batterie a vuoto, senza risolvere nulla. La connessione dell'Hub Mini al WiFi 2.4GHz era caduta; riavviando l'Hub Mini il problema si è risolto in meno di due minuti.
 
@@ -30,7 +30,7 @@ Il problema più frequente con SwitchBot è il codice errore 161 (device offline
 | Serratura non risponde ai comandi (Hub online) | Serratura fisicamente fuori portata Bluetooth (>5m) dall'Hub Mini | Avvicina l'Hub Mini alla serratura; verifica che non ci siano muri spessi o ostacoli tra Hub e serratura |
 
 <Tip>
-  Per diagnosticare rapidamente senza accedere ai log Vercel, usa il tool `check-device-status` da Conduit — restituisce il codice risposta esatto della serratura in tempo reale, permettendoti di distinguere subito tra Hub offline (161), token non valido (401) e Cloud Service disabilitato.
+  Per diagnosticare rapidamente senza aprire i log della piattaforma, usa il tool `check-device-status` da Conduit — restituisce il codice risposta esatto della serratura in tempo reale, permettendoti di distinguere subito tra Hub offline (161), token non valido (401) e Cloud Service disabilitato.
 </Tip>
 
 <Tip>

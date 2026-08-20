@@ -8,13 +8,13 @@ Quando devi collegare o fare debug su un'integrazione, il punto di partenza è i
 
 ## Indice dei repository
 
-| Integrazione | Repo | Cosa contiene |
+| Integrazione | Area | Cosa contiene |
 |---|---|---|
-| KrossBooking | `api-kross-mattone`, `krossbooking-mcp` | Client Kross, gateway multi-tenant, endpoint scope |
-| Gateway multi-tenant | `mattone-mcp-gateway` | mcp.mattone.co — proxy verso Kross / Shelly / Stripe |
-| Conduit | skill `conduit-api-reference` | Schemi endpoint, MCP Conduit |
-| Shelly / SwitchBot | `cosmica-booking`, `solisera-checkin` | MCP smart lock + guest portal |
-| Piattaforma | `mattone-platform` | Bridge KB Notion→Conduit, provisioning studenti |
+| KrossBooking | Client Kross / Gateway multi-tenant | Client Kross, gateway multi-tenant, endpoint scope |
+| Gateway multi-tenant | Gateway MCP (`mcp.mattone.co`) | Proxy verso Kross / Shelly / Stripe |
+| Conduit | Skill & API reference | Schemi endpoint, MCP Conduit |
+| Shelly / SwitchBot | Smart lock & guest portal | MCP smart lock, guest portal check-in |
+| Piattaforma | Bridge KB & provisioning | Bridge KB Notion→Conduit, provisioning studenti |
 
 ## Come usare questo indice
 
@@ -23,13 +23,13 @@ Quando devi collegare o fare debug su un'integrazione, il punto di partenza è i
     Parti dal problema o dalla funzione che stai cercando: è un problema di disponibilità? Guarda KrossBooking. È una porta che non si apre? Guarda Shelly / SwitchBot.
   </Step>
   <Step title="Trova il repo nella tabella">
-    Cerca la riga corrispondente all'integrazione e annota il nome del repo (o della skill) indicato nella colonna **Repo**.
+    Cerca la riga corrispondente all'integrazione e annota l'area funzionale indicata nella colonna **Area**.
   </Step>
-  <Step title="Naviga nella cartella giusta">
-    All'interno del repo, la struttura standard prevede queste sottocartelle principali:
-    - `team-runbook/` — procedure operative e note di manutenzione
-    - `provisioning/` — script e config per l'attivazione di nuovi studenti
-    - `conduit-custom-tool/` — definizione dei tool MCP collegati a Conduit
+  <Step title="Individua l'area funzionale giusta">
+    Ogni area è organizzata in sezioni standard:
+    - **Procedure operative** — runbook e note di manutenzione per il team
+    - **Provisioning** — configurazioni per l'attivazione di nuovi studenti
+    - **Tool MCP** — definizione dei custom tool collegati a Conduit
   </Step>
   <Step title="Consulta o segnala">
     Se trovi la risposta, aggiorna le note di onboarding o troubleshooting di conseguenza. Se trovi un bug, apri una segnalazione nel canale di riferimento.

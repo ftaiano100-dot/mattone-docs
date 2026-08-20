@@ -36,11 +36,11 @@ Il PIT (Private Integration Token) è una chiave API per-location disponibile ne
   <Step title="Consegna il token al team Mattone su canale sicuro">
     Invia il token al team Mattone **solo su canale sicuro** — mai in una chat di gruppo, email non cifrata o documento condiviso. Usa il canale di consegna credenziali indicato nel tuo processo di onboarding.
   </Step>
-  <Step title="Il team salva il token come variabile d'ambiente">
-    Il team tecnico Mattone salva il token nel sistema come variabile d'ambiente `GHL_PIT_<location_id>`, dove `<location_id>` è l'ID univoco della location GHL dello studente. Da questo momento la piattaforma può accedere ai dati GHL dello studente.
+  <Step title="Il team configura il token sulla piattaforma">
+    Il team tecnico Mattone registra il token nella piattaforma in modo sicuro, associandolo alla location GHL dello studente. Da questo momento la piattaforma può accedere ai dati GHL dello studente.
   </Step>
 </Steps>
 
 <Warning>
-  Il PIT **scade immediatamente** se l'integrazione "Mattone Platform" viene eliminata da GHL Settings — anche accidentalmente. Se i dati di lead o ROAS di uno studente smettono di aggiornarsi, verifica prima di tutto che l'integrazione sia ancora attiva in GHL → Settings → Private Integrations. Se è stata eliminata, genera un nuovo PIT seguendo questa procedura e aggiorna la variabile d'ambiente con il team tecnico.
+  Il PIT **scade immediatamente** se l'integrazione "Mattone Platform" viene eliminata da GHL Settings — anche accidentalmente. Se i dati di lead o ROAS di uno studente smettono di aggiornarsi, verifica prima di tutto che l'integrazione sia ancora attiva in GHL → Settings → Private Integrations. Se è stata eliminata, genera un nuovo PIT seguendo questa procedura e contatta il team tecnico per aggiornare la configurazione.
 </Warning>

@@ -1,7 +1,7 @@
 ---
 title: "Best practice operative per le integrazioni Mattone"
 sidebarTitle: "Best Practice"
-description: "Le 7 regole d'oro che si applicano a ogni integrazione Mattone: seguirle previene l'80% dei problemi prima che si presentino."
+description: "Le 7 regole d'oro che si applicano a ogni integrazione Mattone: seguirle previene l'80% dei problemi e riduce il tempo di debug sul campo."
 ---
 
 Queste 7 regole si applicano a ogni integrazione, indipendentemente dal pezzo che stai configurando. Non sono linee guida vaghe: derivano da errori reali accaduti sul campo. Seguirle previene l'80% dei problemi prima che si presentino e riduce il tempo di debug quando qualcosa va storto.
@@ -53,7 +53,7 @@ La sequenza corretta è sempre:
 
 ## 5. Credenziali mai in chat né nei repo
 
-Le chiavi API, i token e le password dei clienti non vanno mai in una chat (WhatsApp, Slack, email) né committate in un repository. Vanno sempre e solo nel **Vault** (Supabase cifrato).
+Le chiavi API, i token e le password dei clienti non vanno mai in una chat (WhatsApp, Slack, email) né committate in un repository. Vanno sempre e solo nel **Vault** — il magazzino cifrato delle credenziali.
 
 Se uno studente ti invia una credenziale in chat, fai due cose immediatamente:
 1. Salvala nel Vault
@@ -79,10 +79,10 @@ L'onboarding non è completo finché non hai verificato personalmente che i tre 
 
 Per la checklist completa vedi la pagina [Verifica finale](/onboarding/6-verifica-finale).
 
-## 7. Sai dove sta il codice
+## 7. Conosci le pagine di riferimento prima di iniziare
 
-Ogni integrazione ha un repository API di riferimento. Prima di improvvisare una soluzione o fare una supposizione su come funziona un'API, consulta il repo. Il codice è la fonte di verità — la documentazione esterna può essere obsoleta.
+Ogni integrazione ha una pagina dedicata in Mattone Docs con la lista degli endpoint attivi, i codici di errore noti e le soluzioni già documentate. Prima di improvvisare una soluzione o aprire un ticket, consulta la pagina di riferimento corrispondente: spesso il problema è già stato incontrato e risolto.
 
 <Note>
-  L'elenco completo dei repository con le relative integrazioni è in [Repo e API di riferimento](/riferimenti/repo-api). Aggiungilo ai segnalibri.
+  L'elenco completo delle integrazioni supportate con i relativi endpoint è in [Repo e API di riferimento](/riferimenti/repo-api). Aggiungila ai segnalibri insieme al [Catalogo MCP](/riferimenti/mcp-catalog) per avere tutto a portata di mano durante il debug.
 </Note>
