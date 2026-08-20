@@ -1,0 +1,16 @@
+---
+title: "5 · Pagamenti — Stripe"
+description: "Payment link per extra/upsell in chat."
+---
+
+**Obiettivo:** far generare a Conduit i link Stripe per gli extra.
+
+## Serve
+- **Restricted key** Stripe (permessi minimi: Products/Prices/Payment Links = Write, resto None). Mai la Secret Key.
+
+## Step
+1. Studente crea `rk_live_…` e la manda **in modo sicuro** (mai in chat di gruppo).
+2. Salvala cifrata nel Vault.
+3. Monta tool `stripe-payment-link` + skill `payment-link-generator`.
+
+<Note>**In costruzione.** Fonte: `conduit-custom-tool/STRIPE-PAYMENT-LINK-attivazione-e-test.md`.</Note>

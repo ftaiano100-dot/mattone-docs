@@ -1,0 +1,17 @@
+---
+title: "2 · PMS — KrossBooking"
+description: "Provisioning API Kross per lo studente."
+---
+
+**Obiettivo:** collegare il PMS così Conduit legge prenotazioni/ospiti.
+
+## Prima
+- Anagrafica Notion fatta (step 1).
+- Dallo studente: **hotel_id + username + password API** (portale Kross → API).
+
+## Step (in ordine)
+1. Admin piattaforma → *Collega Kross* → inserisci la terna → salva (cifrata nel Vault).
+2. Il sistema testa via gateway `mcp.mattone.co` → deve tornare **verde**.
+3. Se rosso: vedi [Troubleshooting Kross](/troubleshooting/kross).
+
+<Note>**In costruzione.** Fonte da portare: `api-kross-mattone/team-runbook/flusso-onboarding-studente-kross.md` + `provisioning/`.</Note>

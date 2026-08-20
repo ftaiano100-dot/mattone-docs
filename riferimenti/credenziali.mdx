@@ -1,0 +1,19 @@
+---
+title: "Credenziali — dove stanno, come si ruotano"
+description: "Regola zero-segreti + Vault + rotazione."
+---
+
+
+**Regola zero-segreti:** nessuna credenziale nei repo/docs. Tutto cifrato nel **Vault Supabase**.
+
+## Dove stanno
+- Terna Kross, config Shelly, key Stripe per-studente → Vault (`*_<token>`).
+- Token/PIT → env Vercel.
+
+## Come si ruota (quando esposta)
+1. Rigenera dal servizio (es. Stripe → nuova restricted key, revoca la vecchia).
+2. Aggiorna Vault/env.
+3. Verifica health-check verde.
+
+<Warning>Caso reale 20/08: chiave Stripe live incollata in WhatsApp → **ruotare**.</Warning>
+

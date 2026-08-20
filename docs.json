@@ -3,32 +3,84 @@
   "theme": "mint",
   "name": "Mattone Docs",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#EA580C",
+    "light": "#F97316",
+    "dark": "#C2410C"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "pages": [
       {
-        "group": "Getting Started",
+        "group": "Inizia qui",
         "pages": [
           "index",
-          "quickstart"
+          "inizia-qui/a-chi-serve",
+          "inizia-qui/glossario",
+          "inizia-qui/best-practices"
+        ]
+      },
+      {
+        "group": "Onboarding studente (guidato)",
+        "pages": [
+          "onboarding/panoramica",
+          "onboarding/1-anagrafica-notion",
+          "onboarding/2-pms-kross",
+          "onboarding/3-conduit",
+          "onboarding/4-smart-checkin",
+          "onboarding/5-pagamenti-stripe",
+          "onboarding/6-verifica-finale"
+        ]
+      },
+      {
+        "group": "Integrazioni",
+        "pages": [
+          "integrazioni/krossbooking",
+          "integrazioni/conduit",
+          "integrazioni/notion",
+          "integrazioni/shelly",
+          "integrazioni/switchbot",
+          "integrazioni/waba",
+          "integrazioni/ghl",
+          "integrazioni/pricelabs"
+        ]
+      },
+      {
+        "group": "Troubleshooting",
+        "pages": [
+          "troubleshooting/metodo",
+          "troubleshooting/switchbot",
+          "troubleshooting/shelly",
+          "troubleshooting/conduit",
+          "troubleshooting/kross",
+          "troubleshooting/notion",
+          "troubleshooting/waba"
+        ]
+      },
+      {
+        "group": "Casistiche (playbook)",
+        "pages": [
+          "casistiche/late-early-checkin",
+          "casistiche/extra-upsell",
+          "casistiche/escalation-telefono",
+          "casistiche/checkin-non-completato"
+        ]
+      },
+      {
+        "group": "Riferimenti",
+        "pages": [
+          "riferimenti/repo-api",
+          "riferimenti/mcp-catalog",
+          "riferimenti/credenziali",
+          "riferimenti/skill-index"
         ]
       }
     ],
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Piattaforma Mattone",
+          "href": "https://app.mattone.co",
+          "icon": "house"
         }
       ]
     }
@@ -38,35 +90,13 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.mintlify.com"
+      "label": "Piattaforma",
+      "href": "https://app.mattone.co"
     }
   },
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude",
-      "perplexity",
-      "mcp",
-      "cursor",
-      "vscode"
-    ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    "options": ["copy", "view", "claude", "chatgpt"]
   }
 }

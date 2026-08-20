@@ -1,0 +1,31 @@
+---
+title: "Best practice operative"
+description: "Le regole d'oro per collegare e debuggare senza rompere nulla."
+---
+
+
+Valgono per **ogni** integrazione. Seguendole, l'80% dei problemi non nasce.
+
+## 1. Segui l'ordine, non improvvisare
+Ogni collegamento ha un **prima** e un **dopo**. L'ordine sbagliato rompe ciò che gira (es. montare un tool Conduit senza la sua skill → l'agente lo ignora). Apri la pagina Integrazioni e segui gli step numerati.
+
+## 2. Verifica SEMPRE i log dell'esito reale
+<Warning>Non fidarti di ciò che l'app *mostra*. Fidati di ciò che i **log** dicono.</Warning>
+Caso reale (SwitchBot, 20/08): l'app diceva "scarico", i **Vercel runtime log** mostravano codice **161 (device offline)** — problema diverso (batteria OK). Senza i log avremmo cambiato le batterie a vuoto.
+- **Dove**: Vercel runtime logs, risposta grezza dell'API (spesso col codice errore), console browser.
+
+## 3. Ogni deploy/fix DEVE dire cosa non va e come si risolve
+Quando fallisce, l'utente deve vedere **una notifica chiara: problema + come si risolve** — mai un errore muto o fuorviante. E lo scenario va **documentato** qui col codice. Modello: [Troubleshooting SwitchBot](/troubleshooting/switchbot).
+
+## 4. Ogni tool Conduit va SEMPRE con la sua skill
+Tool senza skill = l'agente lo **ignora** o ripiega sul path nativo (inaffidabile) → risposte sbagliate. La skill è **parte** della procedura, non un extra.
+
+## 5. Credenziali mai in chat né nei repo
+Zero segreti nei repo/docs → **Vault** cifrato (o env Vercel). Se un cliente manda una chiave in chat, va **ruotata**. Vedi [Credenziali](/riferimenti/credenziali).
+
+## 6. Prima di dire "fatto", smoke test
+Onboarding finito = **verificato**: apertura testata, KB provata, link pagamento generato. Vedi [Verifica finale](/onboarding/6-verifica-finale).
+
+## 7. Sai dove sta il codice
+Ogni integrazione ha un repo API di riferimento. Vedi [Indice repo API](/riferimenti/repo-api).
+

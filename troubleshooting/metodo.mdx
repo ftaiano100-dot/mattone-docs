@@ -1,0 +1,18 @@
+---
+title: "Metodo di troubleshooting"
+description: "Come si debugga qualsiasi integrazione, in 5 mosse."
+---
+
+
+Vale per tutto. Non partire a cambiare cose a caso.
+
+<Steps>
+  <Step title="Riproduci">Fai accadere il problema di proposito (es. premi "Apri" sul link). Serve un caso concreto.</Step>
+  <Step title="Leggi i LOG">Guarda l'esito **reale**: Vercel runtime logs, risposta grezza dell'API (spesso col codice errore), console browser. **Il log batte l'impressione.**</Step>
+  <Step title="Isola">Auth o dispositivo? Nostro codice o servizio esterno? `401` = credenziali; `161` = device offline; `429` = rate limit. Il codice dice dove guardare.</Step>
+  <Step title="Verifica l'ipotesi">Testa la causa prima del fix (es. il cliente fa l'azione dall'app *nello stesso momento* in cui provi tu). Non imporre una causa senza prova.</Step>
+  <Step title="Notifica + documenta">Il fix deve mostrare all'utente **cosa non va e come si risolve**, e lo scenario va aggiunto alla pagina Troubleshooting giusta (col codice).</Step>
+</Steps>
+
+<Tip>Caso scuola: [SwitchBot 161](/troubleshooting/switchbot) — l'app diceva "scarico", i log dicevano "device offline". La differenza ha cambiato il fix.</Tip>
+
