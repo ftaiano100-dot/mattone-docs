@@ -15,6 +15,18 @@ Esiste un accesso Conduit **"coach"** (un token) che **vede e legge TUTTI gli sp
 - **Monitorare**: conversazioni, **percentuale di automazione** (quanto risolve l'assistente da solo), tempo risparmiato, per studente.
 - **Supporto al volo**: vedere lo **stato di un assistente** quando uno studente segnala un problema.
 
+## Cosa possiamo fare sugli studenti, per servizio (leva di delivery a scala)
+Non è teoria: sono cose che il team **già fa dal brain** (Claude Code + i connettori). Con gli accessi collegati, poche persone gestiscono molti studenti.
+
+| Servizio | Con cosa | Cosa possiamo fare | Doc ufficiale |
+|---|---|---|---|
+| **Conduit** | token coach | Iniettare/aggiornare **KB, strumenti (custom tool), istruzioni (skill), workflow e config dell'agente** su **tutti** i workspace studenti; monitorare automazione e conversazioni; audit anti-leak. | https://docs.conduit.ai |
+| **Notion degli studenti** | integrazione Notion collegata | **Leggere e scrivere** il registro appartamenti, allinearlo al template, e alimentarlo nel **bridge → KB Conduit**. | https://developers.notion.com |
+| **GHL degli studenti** | PIT per-location | **Leggere** lead, pipeline, valori e spesa (per ROAS/CAC); gestire **sub-account e rebilling**. | https://highlevel.stoplight.io |
+| **PriceLabs degli studenti** | OAuth (SE lo collegano) | Cosa si **potrebbe** fare: gestione **pricing dinamico**, override, insight revenue in linguaggio naturale. | https://hello.pricelabs.co/mcp-api-integration/ |
+
+<Info>È così che l'onboarding e il supporto diventano "a volumi": lo stesso miglioramento (una skill, un fix KB, un workflow) si **propaga a molti studenti** invece di rifarlo uno per uno.</Info>
+
 ## Come usarlo (senza esporre il segreto)
 - Il valore vive **solo** nel Vault / env privata, col nome `CONDUIT_COACH_TOKEN`. **Dove prenderlo**: chiedilo/leggilo dal Vault del team — **non è pubblico**, non incollarlo nei docs, nei repo o in chat.
 - Da Claude Code lo si usa come accesso Conduit "partner/coach" (il connettore che vede tutti gli spazi), tenuto separato da quello del singolo cliente.

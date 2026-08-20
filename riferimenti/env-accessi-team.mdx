@@ -1,0 +1,49 @@
+---
+title: "Env & accessi del team"
+description: "Indice dei nomi di variabili d'ambiente e segreti usati dalla piattaforma: a cosa serve ciascuno e dove prenderlo. ZERO valori reali."
+---
+
+
+Indice dei **nomi** delle variabili d'ambiente e dei segreti che fanno funzionare la piattaforma. Serve solo a orientarsi: **nessun valore reale qui**. I valori vivono cifrati nel **Vault** (Supabase) o nelle **env di Vercel** / gestore accessi del team.
+
+<Warning>Regola zero-segreti: nessun valore in questi docs, nei repo o in chat. Se un segreto viene esposto, **ruotalo subito** (vedi [Credenziali](/riferimenti/credenziali)).</Warning>
+
+## Assistente (Conduit)
+| Nome | A cosa serve | Dove prenderlo |
+|---|---|---|
+| `CONDUIT_COACH_TOKEN` | Token API Conduit **"Claude_Mattone_Master"**: accesso dinamico a **tutti** i workspace degli studenti (gestione a scala). Vedi [Token Conduit coach](/delivery/token-conduit-coach). | Vault / gestore accessi del team. Rigenerabile da Conduit con permessi `read_write`. |
+
+## KrossBooking (PMS)
+| Nome | A cosa serve | Dove prenderlo |
+|---|---|---|
+| `KROSS_PARTNER_APIKEY` | La **chiave generica** partner Mattone (uguale per tutti i partner). La usa il ponte per l'accesso Kross. | Vault. Emessa da Kross nel Partner Portal. |
+| `kross_terna_<token>` (via `cred_secret_id`) | Le **3 credenziali** del singolo cliente (`hotel_id` + `username` + `password`), cifrate per-studente. La riga `pms_integrations` punta al segreto con `cred_secret_id`. | Vault. Le 3 credenziali arrivano dal Partner Portal → API → Credenziali (vedi [Accessi Kross](/integrazioni/kross/accessi)). |
+| `KROSS_PROXY_URL` (+ credenziali proxy) | L'indirizzo (con autenticazione) del **proxy** da cui esce tutto il traffico Kross (unico IP autorizzato). | Vault / env del ponte. |
+
+## Ponte (gateway `mcp.mattone.co`)
+| Nome | A cosa serve | Dove prenderlo |
+|---|---|---|
+| `GATEWAY_SHARED_SECRET` | Segreto condiviso che protegge le chiamate verso il ponte (che gli strumenti dell'assistente siano davvero i nostri). | Env del ponte (Vercel) / Vault. |
+
+## Pagamenti (Stripe)
+| Nome | A cosa serve | Dove prenderlo |
+|---|---|---|
+| `stripe_key_<token>` | La **chiave a permessi minimi** (Restricted Key) dello studente. Serve sia ai link di pagamento in chat sia al checkout del sito direct booking. | Vault. La crea lo studente nella sua dashboard Stripe. |
+
+## Smart lock (Shelly)
+| Nome | A cosa serve | Dove prenderlo |
+|---|---|---|
+| `shelly_config_<token>` | La config Shelly dello studente: `{ server, auth_key, devices }`. La usa il ponte per aprire le porte. | Vault. Dall'account Shelly Cloud dello studente. |
+| `SHELLY_<ACCOUNT>_AUTH_KEY` (+ `..._SERVER_URI`) | Le credenziali Shelly **per-account** (modello Cosmica, in env Vercel di `cosmica-booking`). | Env Vercel / Vault. Da Shelly Cloud (account owner). |
+
+## Altri PMS (Hostaway)
+| Nome | A cosa serve | Dove prenderlo |
+|---|---|---|
+| `HOSTAWAY_API_KEY` (+ `HOSTAWAY_ACCOUNT_ID`) | Accesso al PMS **Hostaway** (per gli studenti su Hostaway e per Operations Dubai). | Env / Vault. Da Hostaway → Settings → Integrations → API. |
+
+## Marketing (GHL)
+| Nome | A cosa serve | Dove prenderlo |
+|---|---|---|
+| **PIT GHL** (per-location) | La chiave della **location** (account CRM) dello studente su GoHighLevel: legge lead, valori, spesa. Un PIT per location. | Env / Vault. Da GHL → Settings → Private Integrations. Vedi [PIT & location](/integrazioni/ghl/pit-location). |
+
+<Note>Questa pagina elenca **solo i nomi**. Per i valori: Vault (Supabase, service-role, solo server-side) o gestore accessi del team. Alcuni nomi possono variare leggermente nel codice — è un indice di orientamento, non la fonte autoritativa (quella è il Vault + le env di Vercel).</Note>

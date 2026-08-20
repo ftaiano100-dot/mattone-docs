@@ -24,6 +24,13 @@ In entrambi i casi credenziali e chiave stanno **nel Vault** e il ponte le usa q
 
 <Info>In sintesi: **nuovo studente → chiave generica nostra**; **cliente con chiave sua → chiave sua**; **PMS diverso → altra integrazione**. Ma il **ponte è sempre `mcp.mattone.co`** e i dati Kross arrivano via **API v5**. Vedi [Accessi](/integrazioni/kross/accessi) e [Collegamento](/integrazioni/kross/collegamento).</Info>
 
+### Come funziona sotto (per il team tecnico)
+Un solo **percorso canonico**, uguale per tutti gli studenti:
+- Ogni studente è un **tenant** identificato dall'`id` (uuid) della sua riga in `pms_integrations`.
+- Quella riga ha un `cred_secret_id` che punta alle **credenziali cifrate nel Vault** (le 3 credenziali del cliente + la chiave).
+- Il ponte, riconosciuto lo studente, legge quelle credenziali e chiama Kross **sempre attraverso il proxy** (unico IP autorizzato).
+- **L'unica cosa che cambia tra studenti è quale `api_key` c'è dentro le credenziali**: la **propria** per gli own (es. Solisera), la **generica nostra** per i partner (es. HostManager360). Percorso, ponte ed egress (proxy) sono **identici per tutti**.
+
 ## Sezioni correlate
 
 <CardGroup cols={2}>
@@ -47,3 +54,7 @@ In entrambi i casi credenziali e chiave stanno **nel Vault** e il ponte le usa q
 <Note>
   In caso di IP blocking su Kross, verifica che il gateway `mcp.mattone.co` sia aggiornato con l'IP corretto nella whitelist Kross. Se il blocco persiste, contatta il team tecnico per aggiornare la configurazione del gateway.
 </Note>
+
+## Fonti ufficiali
+- **KrossBooking API v5** — non c'è una doc pubblica: è riservata al partner (accessibile dal portale partner / `apiv5` con la chiave). Per la doc → richiedere a Kross (`fabiod@krossbooking.com`).
+- La consuma **Conduit** (nostro assistente): doc Conduit → https://docs.conduit.ai
