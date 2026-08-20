@@ -1,17 +1,52 @@
 ---
-title: "Notion — DB Apartments"
-description: "Struttura del registro + allineamento al template."
+title: "Notion DB Apartments: struttura e allineamento al template"
+sidebarTitle: "DB Apartments"
+description: "Campi obbligatori del database Apartments in Notion, come allinearlo al template Mattone e come verificare che il bridge sincronizzi correttamente."
 ---
 
-Il DB *Apartments* è l'anagrafica: nome, indirizzo, PMS, listing_id, smart-lock, note accesso. Va **allineato al template**.
+Il DB Apartments è il registro anagrafico degli appartamenti — è qui che lo studente inserisce e aggiorna tutte le informazioni sulle proprie strutture. Perché il bridge funzioni correttamente e generi voci KB accurate in Conduit, il database deve essere allineato al template Mattone: stessi nomi di campo, stessi tipi e, soprattutto, lo stesso `listing_id` presente in KrossBooking.
 
-## Prerequisiti
-_(da compilare)_
+## Campi obbligatori
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+Questi campi devono essere presenti nel DB Apartments con il tipo Notion corretto. Se uno o più campi mancano o hanno un tipo diverso, il bridge non riuscirà a creare le cartelle KB in Conduit.
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+| Campo | Tipo Notion | Descrizione |
+|---|---|---|
+| Nome | Title | Nome dell'appartamento (es. "Bilocale Navigli") |
+| Indirizzo | Text | Indirizzo completo con CAP e città |
+| listing_id | Number | ID univoco nel PMS (KrossBooking) — campo critico |
+| PMS | Select | KrossBooking / Hostaway / altro |
+| Smart Lock | Select | Nessuno / Shelly / SwitchBot |
+| Note accesso | Text | Istruzioni di accesso per l'ospite (codice, orari, ecc.) |
+| Foto | Files | Foto principali dell'appartamento |
+| Attivo | Checkbox | Selezionato se l'appartamento è in uso e deve essere sincronizzato |
 
-<Note>**In costruzione.** Fonte da portare: project_notion_mattone_integration (template audit) + notion-to-conduit-kb-onboarding.md.</Note>
+## Allineamento al template
+
+Se il database dello studente è stato creato da zero o non rispetta la struttura richiesta, segui questi passaggi per allinearlo al template Mattone.
+
+<Steps>
+  <Step title="Duplica il template Apartments nel workspace dello studente">
+    Apri il template Mattone Apartments (link disponibile nella piattaforma Mattone, sezione Risorse). Clicca su **Duplica** in alto a destra di Notion per copiarlo nel workspace dello studente. Il template include già tutti i campi obbligatori con i tipi corretti.
+  </Step>
+  <Step title="Compila i campi obbligatori per ogni appartamento">
+    Per ogni appartamento, inserisci Nome, Indirizzo, Note accesso e carica almeno una foto. Imposta il campo **Attivo** su spuntato per tutti gli appartamenti che devono essere sincronizzati.
+  </Step>
+  <Step title="Verifica che listing_id corrisponda all'ID in KrossBooking">
+    Per ogni appartamento, apri KrossBooking → **Strutture** → seleziona l'appartamento. Controlla che il `listing_id` nel DB Notion coincida esattamente con quello nel PMS. Questo è il campo che collega i dati KB alla prenotazione corretta.
+  </Step>
+  <Step title="Imposta il campo Smart Lock al tipo corretto">
+    Nel campo **Smart Lock**, seleziona il dispositivo installato nell'appartamento: Nessuno, Shelly o SwitchBot. Questa informazione serve al bridge per popolare le istruzioni di accesso nella KB.
+  </Step>
+  <Step title="Avvia il test di sincronizzazione del bridge">
+    Nella piattaforma Mattone, vai su **Connessioni → Notion → Sincronizza ora**. Dopo 2–3 minuti, verifica che le cartelle KB di Conduit siano state create o aggiornate per ogni appartamento attivo.
+  </Step>
+</Steps>
+
+<Warning>
+  Il campo `listing_id` è il campo critico dell'integrazione. Un `listing_id` errato o mancante fa sì che il bridge crei cartelle KB disconnesse dalla prenotazione, oppure le colleghi all'appartamento sbagliato. Controlla sempre questo campo prima di dichiarare il setup completato.
+</Warning>
+
+<Tip>
+  Per trovare il `listing_id` corretto di un appartamento, vai su **KrossBooking → Strutture**, seleziona l'appartamento e guarda l'URL nel browser: l'ID numerico che appare nell'URL è il `listing_id` da inserire nel DB Notion.
+</Tip>

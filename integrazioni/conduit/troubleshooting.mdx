@@ -1,15 +1,46 @@
 ---
-title: "Conduit — troubleshooting"
-description: "Leak KB, reservationIds vuoto, save bug, dispo."
+title: "Troubleshooting Conduit: leak KB, tool ignorati e bug noti"
+sidebarTitle: "Troubleshooting"
+description: "Tabella sintomo-causa-soluzione per i problemi Conduit più comuni: leak di Knowledge Base, tool non attivati, workflow fermi e bug noti con workaround."
 ---
 
+Usa questa pagina come prima tappa quando qualcosa non funziona nell'agente Conduit di uno studente. I problemi più frequenti rientrano in due categorie: errori di scope sulla KB (l'AI risponde con informazioni dell'appartamento sbagliato) e tool ignorati perché la skill abbinata è assente o mal formulata. Per la maggior parte dei casi puoi risolvere senza aprire un ticket al supporto Conduit — segui la colonna "Soluzione" nell'ordine indicato.
 
-## Sintomo → Causa → Soluzione
-| Sintomo | Causa probabile | Come si risolve |
+## Tabella sintomo → causa → soluzione
+
+| Sintomo | Causa probabile | Soluzione |
 |---|---|---|
-| L'AI dà l'info dell'appartamento sbagliato | KB globale (no scope) | riscoping su directory per-listing |
-| Risponde su prenotazione sbagliata | `reservationIds` vuoto (OTA senza listing scope) | fix scope Conduit eng + KB per-listing |
-| "Occupato" quando è libero | tool nativo / manca skill / parsing dispo | `check-availability` + skill; fix parsing |
-| Salvataggio KB fallisce | save bug UPDATE | ticket Conduit (Raniel) |
+| **L'AI dà informazioni dell'appartamento sbagliato** | KB globale senza scope `entity_ids` | Riscopa la directory KB sul `listing_id` corretto. Aggiungi `entity_ids: [listingId]` alla directory e verifica che tutti gli articoli siano dentro la cartella scopata, non al livello radice. |
+| **Risponde su una prenotazione sbagliata** | `reservationIds` vuoto oppure OTA senza listing scope nella KB | Fix scope lato Conduit engineering + verifica che la KB sia per-listing con `entity_ids` corretti. Apri ticket con workspace ID e `listing_id`. |
+| **Dice "occupato" quando l'appartamento è libero** | Tool nativo invece di `check-availability`, skill assente, o parsing disponibilità errato | Aggiungi il tool `check-availability` al workspace e configura la skill abbinata. Se il tool c'è ma non viene chiamato, controlla che la skill sia attiva e riformula il trigger. Verifica il parsing delle date. |
+| **Il salvataggio di un articolo KB fallisce silenziosamente** | Bug noto su operazione UPDATE in Conduit | Non aggiornare l'articolo esistente. Apri un ticket Conduit (riferimento: **Raniel**) e nel frattempo crea un **nuovo articolo** con il contenuto aggiornato, poi archivia il vecchio. |
+| **Il tool non si attiva mai** | Skill assente oppure skill non in stato attivo | Vai nella sezione Skills del workspace, verifica che la skill abbinata al tool esista e sia abilitata. Se non esiste, aggiungila. Se esiste ma è disabilitata, attivala e ritesta. |
+| **L'agente usa il path nativo invece del tool** | Skill mancante o formulazione troppo vaga | La skill c'è ma non è abbastanza precisa nel definire il trigger. Riscrivila con istruzioni più specifiche su quando usare il tool (es. «ogni volta che l'ospite chiede di aprire la porta o di accedere all'appartamento»). |
+| **Il guardrail non si attiva** | Guardrail mal formulato oppure non salvato correttamente | Apri Agent settings e verifica che il guardrail sia presente nell'array `guardrails`. Se è presente ma non funziona, riformula la regola in modo più esplicito e diretto. Testa con più varianti del messaggio. |
+| **Il workflow non parte** | Trigger non configurato correttamente oppure workflow non in stato attivo | Apri il workflow in dashboard e verifica che il tipo di trigger sia corretto (`AI_TRIGGER`, evento prenotazione, ecc.) e che il workflow risulti **attivo**. Un workflow salvato ma non attivato non si avvia mai. |
 
-<Note>Fonti: reference_conduit_reservation_scope_bug · reference_conduit_kb_availability_fix · reference_conduit_save_bug.</Note>
+## Bug noti
+
+<Accordion title="Bug UPDATE Knowledge Base (save silenzioso)">
+  **Riferimento interno:** ticket Raniel (supporto Conduit)
+
+  **Comportamento:** quando modifichi un articolo KB esistente e salvi, la UI mostra un feedback positivo ma le modifiche non vengono persistite. L'articolo rimane con il contenuto originale.
+
+  **Workaround:** non aggiornare articoli esistenti. Crea sempre un nuovo articolo con il contenuto aggiornato e archivia o elimina il vecchio. Segnala ogni occorrenza a Raniel con workspace ID e nome dell'articolo per tracciare il bug.
+</Accordion>
+
+## Quando aprire un ticket al supporto Conduit
+
+<Note>
+  Per problemi non presenti in questa tabella o per bug Conduit confermati, apri un ticket al supporto Conduit includendo **obbligatoriamente**:
+  - Workspace ID dello studente
+  - `listing_id` dell'appartamento coinvolto
+  - Timestamp della conversazione o dell'evento anomalo
+  - Log della conversazione (screenshot o export)
+
+  Senza questi dati il supporto Conduit non può diagnosticare il problema. Raccoglili prima di aprire il ticket.
+</Note>
+
+<Tip>
+  Prima di aprire un ticket, controlla sempre se il problema è nella tabella sopra e se il workaround risolve il caso. Il supporto Conduit ha tempi di risposta variabili — risolvere in autonomia quando possibile evita blocchi operativi durante l'onboarding.
+</Tip>

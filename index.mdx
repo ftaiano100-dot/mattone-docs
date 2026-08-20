@@ -1,21 +1,45 @@
 ---
-title: "Mattone Docs"
-description: "Onboarding studenti e troubleshooting integrazioni — per il team."
+title: "Mattone Docs: la base operativa del team delivery"
+sidebarTitle: "Home"
+description: "La knowledge base operativa di Mattone: onboarding studenti, integrazioni, troubleshooting e best practice per il team delivery."
 ---
 
+Mattone Docs è la base operativa del team delivery: raccoglie tutto ciò che serve per portare online un nuovo property manager (lo "studente") e per risolvere i problemi di integrazione senza dover coinvolgere un developer senior. Qui trovi procedure guidate passo dopo passo, riferimenti tecnici, playbook per le casistiche ricorrenti e le regole d'oro che evitano l'80% degli errori sul campo.
 
-<Info>
-La knowledge base operativa del team Mattone: **onboardare un nuovo studente** e **risolvere i problemi** delle integrazioni, senza dipendere da uno sviluppatore.
-</Info>
-
-## Perché esiste
-Oggi le procedure sono sparse in più repo e non intuitive → l'onboarding guidato non viene seguito e ogni intoppo torna sul senior-dev. Questi docs mettono **tutto in un posto solo**, in ordine, in linguaggio chiaro anche per i **non-tecnici**. Il fine: **scalare la delivery** e fare in modo che nessun cliente resti bloccato.
-
-## Da dove parto
 <CardGroup cols={2}>
-  <Card title="Onboarding studente" icon="list-check" href="/onboarding/panoramica">La procedura guidata, passo per passo.</Card>
-  <Card title="Integrazioni" icon="plug" href="/integrazioni/krossbooking">Come funziona e come si collega ogni pezzo.</Card>
-  <Card title="Troubleshooting" icon="wrench" href="/troubleshooting/metodo">Qual è il problema e come si risolve.</Card>
-  <Card title="Best practice" icon="star" href="/inizia-qui/best-practices">Le regole d'oro: log, ordine, credenziali.</Card>
+  <Card title="Onboarding Studente" icon="list-check" href="/onboarding/panoramica">
+    La procedura guidata passo per passo per portare online un nuovo property manager: dall'anagrafica alla verifica finale.
+  </Card>
+  <Card title="Integrazioni" icon="plug" href="/integrazioni/kross/panoramica">
+    Come funziona e come si collega ogni pezzo: KrossBooking, Conduit, smart lock, pagamenti e CRM.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/troubleshooting/metodo">
+    Il metodo di debug in 5 mosse e i playbook per risolvere i problemi più comuni senza escalation.
+  </Card>
+  <Card title="Best Practice" icon="star" href="/inizia-qui/best-practices">
+    Le 7 regole d'oro operative che si applicano a ogni integrazione e prevengono la maggior parte degli errori.
+  </Card>
 </CardGroup>
 
+## Le 4 fasi dell'onboarding
+
+Prima di entrare nel dettaglio di ogni sezione, ecco una visione d'insieme delle quattro fasi che compongono ogni onboarding studente.
+
+<Steps>
+  <Step title="Anagrafica & Notion">
+    Crea il profilo dello studente su Notion, raccogli i dati degli appartamenti e configura l'accesso agli strumenti Mattone.
+  </Step>
+  <Step title="PMS + Conduit">
+    Collega KrossBooking al gateway MCP, crea il workspace Conduit dello studente, importa la Knowledge Base per ogni appartamento e configura l'agente AI.
+  </Step>
+  <Step title="Smart lock + Pagamenti">
+    Abbina le serrature SwitchBot agli appartamenti, configura i tool di apertura porta su Conduit e attiva i link di pagamento Stripe.
+  </Step>
+  <Step title="Verifica finale">
+    Esegui lo smoke test completo: apertura porta verificata, KB testata, link di pagamento generato. Solo dopo puoi dichiarare l'onboarding concluso.
+  </Step>
+</Steps>
+
+<Note>
+  Ogni sezione dedicata a un'integrazione (KrossBooking, SwitchBot, Stripe, ecc.) contiene sempre una pagina **Panoramica** — che spiega come funziona il pezzo — e una pagina **Troubleshooting** — con i codici di errore e le soluzioni. Consulta entrambe prima di aprire un ticket.
+</Note>

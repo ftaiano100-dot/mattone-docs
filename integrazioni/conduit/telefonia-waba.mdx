@@ -1,17 +1,68 @@
 ---
-title: "Conduit — Telefonia & WABA"
-description: "Numero + WhatsApp Business dell'agente."
+title: "Conduit Telefonia e WABA: numero e WhatsApp ufficiale"
+sidebarTitle: "Telefonia & WABA"
+description: "Attiva telefonia VoiceAI e WhatsApp Business su Conduit: tracce disponibili, tempistiche di ~1 settimana, prerequisiti WABA e warm transfer allo studente."
 ---
 
-Traccia separata dal resto: numero + **WABA** via assistenza Conduit (~1 sett), poi VoiceAI agent. Warm-transfer al cellulare studente. ⚠️ il collegamento WABA lo fa Francesco.
+Conduit può comunicare con gli ospiti via telefono (agente VoiceAI) e via WhatsApp Business (WABA) — questi sono i canali attraverso cui l'AI risponde, invia reminder e gestisce le escalation. Telefonia e WABA sono due tracce di configurazione separate, indipendenti dal resto del workspace (KB, tool, workflow) e richiedono circa una settimana di attivazione tramite il supporto Conduit. Pianifica questi passaggi nelle prime due settimane di onboarding: il workspace deve essere già pronto quando il canale viene attivato.
 
-## Prerequisiti
-_(da compilare)_
+## Tracce disponibili
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+### Telefonia (VoiceAI)
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+Conduit gestisce un numero di telefono dedicato per lo studente. Quando un ospite chiama quel numero, l'agente VoiceAI risponde e gestisce la conversazione vocale. Se la situazione richiede un intervento umano, il sistema esegue un **warm transfer** al numero di cellulare dello studente: l'ospite viene trasferito con il contesto della conversazione già disponibile, senza dover ripetere tutto da capo.
 
-<Note>**In costruzione.** Fonte da portare: reference_waba_numero_chre + telephony-whatsapp-escalation-playbook.md + project_conduit_telephony_students.</Note>
+Il numero telefonico è dedicato allo studente e non viene condiviso tra più workspace.
+
+### WABA (WhatsApp Business Account)
+
+Il numero WhatsApp Business ufficiale è collegato all'agente Conduit dello studente. Attraverso il canale WABA, l'agente può:
+
+- Rispondere ai messaggi degli ospiti in modo automatico
+- Inviare reminder proattivi (check-in non completato, orario check-in/out)
+- Gestire le escalation verso lo studente con messaggio di handoff
+
+Senza WABA, le notifiche automatiche non possono essere inviate via WhatsApp: le comunicazioni restano limitate alle sessioni di chat iniziate dall'ospite.
+
+## Chi gestisce il collegamento
+
+<Warning>
+  Il collegamento WABA lo gestisce **Francesco** (team Mattone) tramite assistenza Conduit — non è un'operazione self-service dello studente né del resto del team. Per avviare il processo, apri la richiesta a Francesco con le credenziali dello studente e il numero WhatsApp business da collegare.
+</Warning>
+
+## Tempistiche
+
+Il tempo medio di attivazione per WABA e numero telefonico è **circa 1 settimana** dalla richiesta al supporto Conduit. I tempi possono variare a seconda del carico del supporto e della rapidità dello studente nel fornire i documenti richiesti (vedi Prerequisiti WABA).
+
+Pianifica la richiesta appena completata la configurazione del workspace (KB, tool, workflow) — non aspettare l'ultimo momento. Se il canale non è attivo all'avvio operativo, lo studente dovrà gestire le comunicazioni manualmente nel frattempo.
+
+## Warm transfer (telefonia)
+
+Il warm transfer permette allo studente di ricevere le chiamate degli ospiti che l'agente VoiceAI non riesce a gestire autonomamente.
+
+<Steps>
+  <Step title="L'ospite chiama il numero Conduit dello studente">
+    L'agente VoiceAI risponde immediatamente e gestisce la conversazione in modo automatico: risponde alle domande, fornisce istruzioni di accesso, verifica la prenotazione.
+  </Step>
+  <Step title="L'agente VoiceAI gestisce la conversazione">
+    Per la maggior parte delle richieste (informazioni sull'appartamento, stato check-in, orari), l'agente risolve senza intervento umano. Il trasferimento avviene solo quando la situazione supera le capacità dell'agente o quando i guardrail lo richiedono.
+  </Step>
+  <Step title="Quando serve l'escalation: warm transfer al numero dello studente">
+    L'agente avvisa l'ospite del trasferimento e chiama il numero di cellulare dello studente configurato nel workspace. Lo studente riceve la chiamata con il contesto della conversazione già disponibile (nome ospite, appartamento, motivo del contatto).
+  </Step>
+  <Step title="Lo studente riceve la chiamata con contesto">
+    La chiamata arriva sul telefono dello studente con l'indicazione che si tratta di un warm transfer Conduit. Lo studente può proseguire la conversazione con l'ospite senza che questi debba ripetere il problema dall'inizio.
+  </Step>
+</Steps>
+
+## Prerequisiti WABA
+
+Prima di avviare la richiesta di attivazione WABA, verifica che lo studente abbia pronti questi elementi:
+
+- **Numero WhatsApp business dedicato**: un numero di telefono non già registrato su WhatsApp normale (personal o business). Se il numero è già associato a un account WhatsApp personale, deve essere rimosso prima di poter essere registrato come WABA.
+- **Accesso a Facebook Business Manager**: lo studente deve avere accesso al Business Manager Meta con le autorizzazioni di amministratore. Se non ce l'ha, deve crearlo prima di procedere.
+- **Documento di identità aziendale**: richiesto da Meta per la verifica del Business Manager. Tipicamente: visura camerale o altro documento di identità dell'attività.
+
+<Note>
+  Senza WABA attivo, le notifiche automatiche — reminder check-in non completato, conferma late check-out, escalation — non possono essere inviate via WhatsApp. L'agente può rispondere ai messaggi in arrivo, ma non può avviare conversazioni proattive. Pianifica l'attivazione WABA nelle prime due settimane di onboarding per evitare di perdere questi flussi nei primi giorni operativi.
+</Note>

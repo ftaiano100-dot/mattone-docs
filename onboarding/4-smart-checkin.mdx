@@ -1,17 +1,66 @@
 ---
-title: "4 · Smart check-in"
-description: "Apertura porta da link, se ha smart-lock."
+title: "Step 4 · Smart check-in: apertura porta remota da link"
+sidebarTitle: "4 · Smart Check-in"
+description: "Configura l'apertura remota via link per appartamenti con smart lock Shelly o SwitchBot. Salta lo step se lo studente non ha serrature smart."
 ---
 
-**Obiettivo:** apertura porta da link. Solo se lo studente ha smart-lock.
+Se lo studente ha una smart lock su uno o più appartamenti, configura l'apertura remota via link in modo che Conduit possa inviare all'ospite un link di accesso direttamente in chat. Se lo studente non ha nessuna smart lock, salta questo step e passa direttamente allo [Step 5 · Stripe](/onboarding/5-pagamenti-stripe). Verifica il campo `smart_lock` nel DB Apartments (Step 1) per sapere quali appartamenti richiedono questa configurazione.
+
+<Tip>
+  Testa sempre un'apertura reale durante l'onboarding — non segnare questo step come completato senza aver visto la porta aprirsi fisicamente (o aver ricevuto conferma dallo studente che la porta si è aperta) e senza aver letto i log dell'evento.
+</Tip>
 
 ## Quale device?
-- **Shelly** (relay) → [Integrazioni Shelly](/integrazioni/shelly).
-- **SwitchBot** (Smart Lock) → [Integrazioni SwitchBot](/integrazioni/switchbot). ⚠️ richiede Hub Mini + account **owner**.
 
-## Step
-1. Raccogli device + credenziali.
-2. Registra il device nel tool.
-3. **Testa un'apertura reale** e **leggi i log**.
+I device supportati sono due, con requisiti e procedure di configurazione differenti:
 
-<Note>**In costruzione.** Fonte: skill `smart-checkin-mcp` + `solisera-checkin/README`.</Note>
+<CardGroup cols={2}>
+  <Card title="Shelly (relay)" icon="bolt" href="/integrazioni/shelly/panoramica">
+    Ideale per citofoni e porte con relè. È la configurazione più semplice: richiede solo il Cloud token dell'account Shelly. Scegli questa opzione se lo studente ha già un Shelly installato sull'interfono o sul cancello.
+  </Card>
+  <Card title="SwitchBot Smart Lock" icon="lock" href="/integrazioni/switchbot/panoramica">
+    Serratura elettronica standalone. Richiede Hub Mini collegato alla rete Wi-Fi dell'appartamento e l'account owner SwitchBot. Scegli questa opzione se lo studente ha installato un SwitchBot Smart Lock.
+  </Card>
+</CardGroup>
+
+<Warning>
+  SwitchBot: usa SEMPRE l'account owner, non member. L'account member non ha il permesso di sblocco remoto e la configurazione sembrerà funzionare ma fallirà al momento del test reale.
+</Warning>
+
+## Step (per entrambi i device)
+
+<Steps>
+  <Step title="Raccogli le credenziali del device">
+    A seconda del device presente nell'appartamento, chiedi allo studente tramite canale sicuro:
+
+    **Shelly:**
+    - Cloud token dell'account Shelly associato al device
+
+    **SwitchBot:**
+    - Owner token (dall'app SwitchBot → Profilo → Sviluppatore)
+    - Device ID della serratura (dall'app SwitchBot → dettaglio device)
+
+    Verifica che le credenziali provengano dall'account **owner**, non da un account secondario o member.
+  </Step>
+
+  <Step title="Registra il device nel tool">
+    Nella piattaforma Mattone, apri il pannello del tool smart lock per lo studente e inserisci le credenziali raccolte. Associa il device all'appartamento corretto usando il `listing_id` del DB Apartments.
+
+    Salva la configurazione — le credenziali vengono cifrate nel Vault.
+  </Step>
+
+  <Step title="Esegui un test di apertura reale e leggi i log">
+    Dalla piattaforma, genera un link di apertura di test e usalo (o chiedi allo studente di usarlo sul posto). Verifica che la porta si apra fisicamente.
+
+    Dopo il test, apri immediatamente il pannello log e verifica che l'evento di apertura sia registrato correttamente con:
+    - Timestamp corretto
+    - `listing_id` corretto (non di un altro appartamento)
+    - Esito `success`
+
+    Se il log mostra errori o l'appartamento nel log non è quello atteso, non procedere — consulta la guida di troubleshooting del device ([Shelly](/integrazioni/shelly/panoramica) o [SwitchBot](/integrazioni/switchbot/panoramica)).
+  </Step>
+</Steps>
+
+---
+
+Step completato? Procedi con → [Step 5 · Stripe](/onboarding/5-pagamenti-stripe)

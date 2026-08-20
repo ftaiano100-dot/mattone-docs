@@ -1,17 +1,54 @@
 ---
-title: "Shelly — collegamento"
-description: "Aggiungere un device Shelly (1 entry)."
+title: "Collegare un device Shelly per lo smart check-in"
+sidebarTitle: "Collegamento"
+description: "Come registrare un device Shelly nella piattaforma Mattone usando il token Shelly Cloud per abilitare l'apertura remota della porta."
 ---
 
-Aggiungere una proprietà = **1 entry** in `SHELLY_DEVICES` (slug, deviceId 12-hex, label, type citofono/porta, account). Multi-account supportato. Poi commit+push → auto-deploy.
+Per abilitare l'apertura remota della porta tramite Shelly, devi registrare il device nella piattaforma Mattone usando il token Shelly Cloud generato dallo studente. Il token è la chiave di accesso alle API Shelly Cloud: viene conservato in modo cifrato nel Vault e non deve mai circolare fuori da quel contesto.
 
 ## Prerequisiti
-_(da compilare)_
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+Prima di iniziare, assicurati che siano tutti soddisfatti:
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+- Device Shelly **fisicamente installato** sulla porta o citofono dell'immobile
+- Account Shelly Cloud **creato dallo studente** e associato al device
+- Device **visibile come online** nell'app o nel portale Shelly Cloud
 
-<Note>**In costruzione.** Fonte da portare: skill smart-checkin-mcp (Onboarding Workflow A) + reference_shelly_devices.</Note>
+## Collegamento
+
+<Steps>
+  <Step title="Genera il token Shelly Cloud">
+    Lo studente accede al portale Shelly Cloud (o all'app Shelly Smart Control), va in **Account → Impostazioni → API token** e clicca su **Genera nuovo token**. Copia il token generato — sarà visibile una sola volta.
+  </Step>
+  <Step title="Invia il token in modo sicuro al team Mattone">
+    Lo studente invia il token al team Mattone tramite il canale sicuro concordato (mai via chat ordinaria, email non cifrata o documenti condivisi). Il team riceve anche il **Device ID** del device Shelly, visibile nelle impostazioni del device in Shelly Cloud.
+  </Step>
+  <Step title="Salva il token nel Vault">
+    Il team Mattone salva il token cifrato nel Vault, associandolo alla proprietà dello studente. Nessun membro del team deve conservare il token in locale o in strumenti non approvati.
+  </Step>
+  <Step title="Aggiungi il device in piattaforma">
+    Nella piattaforma Mattone, vai su **Devices → Aggiungi Shelly**. Inserisci il token Shelly Cloud e il Device ID del device, quindi salva la configurazione.
+  </Step>
+  <Step title="Verifica la connessione">
+    La piattaforma testa la connessione al device. Il device deve risultare **online** nel pannello Devices. Se appare offline, verifica che il device sia connesso al WiFi e che il token sia corretto.
+  </Step>
+  <Step title="Test di apertura reale">
+    Esegui un'apertura di test dalla piattaforma e verifica nei log che il relay si sia attivato correttamente. Il log deve mostrare una risposta di successo (non un errore). Idealmente, esegui il primo test con qualcuno fisicamente presente all'immobile.
+  </Step>
+</Steps>
+
+<Warning>
+  Salva il token Shelly **solo nel Vault** — mai in messaggi, email, fogli di calcolo o documenti condivisi. Un token esposto consente il controllo remoto del device a chiunque lo possieda.
+</Warning>
+
+## Verifica
+
+Dopo il collegamento, controlla che tutto funzioni correttamente:
+
+- Il device appare come **online** nel pannello Devices della piattaforma
+- Il test di apertura **attiva fisicamente il relay** (la porta o il citofono risponde)
+- I log mostrano una **risposta di successo**, senza codici di errore
+
+<Tip>
+  Verifica che il relay Shelly attivi il circuito corretto — alcuni edifici hanno più relay sullo stesso citofono o più porte controllabili. Esegui sempre il primo test con una persona fisicamente presente all'immobile per confermare quale porta si apre.
+</Tip>

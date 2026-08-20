@@ -1,17 +1,36 @@
 ---
-title: "GHL — Lead & valore (ROAS/CAC)"
-description: "Cosa legge la piattaforma per il marketing."
+title: "Lead e valore da GHL: ROAS, CAC e dati campagna"
+sidebarTitle: "Lead & Valore"
+description: "Quali campi GHL legge Mattone per ogni studente, come vengono usati per calcolare ROAS e CAC e con quale frequenza i dati si aggiornano."
 ---
 
-La piattaforma legge N lead, costo lead, valore opportunità, spesa (inserita dal CSM) → **CPL/CPA/ROAS/CAC**. Valore opportunità = fatturato lordo o % del potenziale immobile.
+Mattone legge da GHL i dati di lead, valore delle opportunità e spesa pubblicitaria di ciascuno studente per calcolare automaticamente il ROAS (Return On Ad Spend) e il CAC (Customer Acquisition Cost). Questa pagina spiega quali campi vengono letti, a cosa servono e come la piattaforma li aggrega per produrre i KPI visibili nella dashboard.
 
-## Prerequisiti
-_(da compilare)_
+## Dati letti da GHL
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+Per ogni studente collegato, la piattaforma legge periodicamente i seguenti campi dalla location GHL corrispondente:
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+| Campo GHL | Cosa rappresenta | Usato per |
+|---|---|---|
+| **Contact source** | Il canale o la campagna da cui proviene il lead (es. Facebook Ads, Google Ads, organico) | Attribuzione ROAS — collega ogni lead alla campagna che lo ha generato |
+| **Opportunity value** | Il valore stimato o effettivo del contratto associato al lead nella pipeline GHL | Calcolo del CAC — rappresenta il ricavo potenziale o realizzato per deal |
+| **Pipeline stage** | La fase del funnel in cui si trova il lead (es. Nuovo lead, In trattativa, Cliente chiuso) | Conversion tracking — traccia la progressione dal primo contatto alla chiusura |
+| **Campaign ID** | L'identificativo della campagna pubblicitaria di provenienza del lead | Ad spend attribution — collega il lead alla spesa della campagna corrispondente |
 
-<Note>**In costruzione.** Fonte da portare: project_mattone_marketing_strategy + /marketing recap.</Note>
+## Come vengono usati
+
+La piattaforma aggrega questi campi per ogni studente e calcola due metriche principali:
+
+**ROAS (Return On Ad Spend)**
+`ROAS = Valore totale opportunità chiuse / Spesa pubblicitaria totale`
+
+Un ROAS superiore a 1 significa che per ogni euro speso in pubblicità ne rientra più di uno dal valore dei contratti. Mattone mostra il ROAS per campagna e aggregato per studente.
+
+**CAC (Customer Acquisition Cost)**
+`CAC = Spesa pubblicitaria totale / Numero di deal chiusi`
+
+Indica quanto costa, in media, acquisire un cliente pagante. Questo dato viene usato durante le sessioni di review con lo studente per ottimizzare l'allocazione del budget pubblicitario.
+
+<Note>
+  I dati GHL si aggiornano **ogni ora** tramite polling dell'API. Se un valore nella dashboard sembra errato o non aggiornato, attendi un ciclo completo di aggiornamento (massimo 60 minuti) prima di escalare. Se dopo un'ora il dato è ancora errato, verifica prima che l'Opportunity value sia compilato correttamente nel CRM GHL dello studente — un valore vuoto o zero produce ROAS e CAC non significativi.
+</Note>

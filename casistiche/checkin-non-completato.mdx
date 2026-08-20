@@ -1,15 +1,78 @@
 ---
-title: "Ospite non completa il check-in online"
-description: "Nudge automatici, gating unlock, escalation."
+title: "Playbook: ospite che non completa il check-in online"
+sidebarTitle: "Check-in Incompleto"
+description: "Gestisci gli ospiti che non completano il portale di check-in online: reminder automatici, blocco del link porta e intervento manuale del team."
 ---
 
-## Quando succede
-_(da compilare)_
+Quando un ospite non ha ancora completato il check-in online entro le soglie di remind configurate, Conduit invia automaticamente una serie di promemoria crescenti via WhatsApp e — se l'ospite arriva senza aver completato il portale — blocca l'invio del link di apertura porta fino alla conferma del completamento. Questo playbook descrive l'intero flusso automatico, le azioni che il team deve intraprendere nei casi in cui il sistema non è sufficiente e le verifiche tecniche da eseguire in caso di anomalie.
+
+## Quando si attiva
+
+Il flusso si attiva quando tutte e tre le seguenti condizioni sono vere:
+
+- L'ospite ha una prenotazione attiva con check-in online obbligatorio (impostato nelle preferenze dello studente su Mattone)
+- Il portale di check-in mostra lo stato "incompleto" per quella prenotazione
+- Mancano meno di 48 ore all'arrivo previsto
+
+Conduit monitora continuamente lo stato dei portali tramite il tool `get-incomplete-portals` e avvia la sequenza di reminder in base alla finestra temporale rimanente.
 
 ## Cosa fa il sistema (in ordine)
-_(da compilare)_
+
+La sequenza automatica si sviluppa in cinque passaggi:
+
+1. **Monitoraggio continuo** — Conduit chiama il tool `get-incomplete-portals` a intervalli regolari per ottenere la lista delle prenotazioni con check-in non completato nelle prossime 48 ore.
+2. **Reminder T-48h** — Al raggiungimento della soglia delle 48 ore prima dell'arrivo, Conduit invia all'ospite un messaggio WhatsApp amichevole con il link diretto al portale di check-in.
+3. **Reminder T-24h** — Se il portale è ancora incompleto, Conduit invia un secondo messaggio con tono più urgente, sottolineando che il completamento è necessario per ricevere le istruzioni di accesso.
+4. **Reminder T-2h e notifica al team** — Due ore prima dell'arrivo, se il portale è ancora incompleto, Conduit invia un ultimo messaggio urgente all'ospite e notifica simultaneamente lo studente (e/o il team di delivery) affinché possano intervenire.
+5. **Blocco del link porta** — Il link di apertura della serratura smart non viene mai inviato all'ospite finché il portale non risulta completato e confermato. Questo blocco è automatico e non può essere aggirato da Conduit.
+
+<Warning>
+Non inviare mai il link di apertura porta a un ospite che non ha completato il check-in online. L'identificazione dell'ospite tramite il portale è un **requisito legale** in Italia (obbligo di comunicazione alle autorità di pubblica sicurezza ai sensi del Testo Unico delle Leggi di Pubblica Sicurezza). Inviare l'accesso senza identificazione espone lo studente a sanzioni amministrative.
+</Warning>
 
 ## Cosa fa il team
-_(passo passo, linguaggio plain)_
 
-<Note>**In costruzione.** Fonte: skill smart-checkin-mcp (reminder cadence).</Note>
+Quando il sistema non è sufficiente o l'ospite contatta direttamente il team, segui questi passaggi:
+
+<Steps>
+  <Step title="L'ospite contatta il team direttamente">
+    Se l'ospite scrive o chiama chiedendo dove trovare il link al portale, invia manualmente il link del check-in online per quel `listing_id`. Trovi il link nella scheda della prenotazione in dashboard. Spiega brevemente all'ospite cosa deve fare (caricare documento d'identità, firmare il regolamento, inserire i dati degli accompagnatori).
+  </Step>
+  <Step title="Il portale continua a dare errori tecnici">
+    Se l'ospite segnala che il portale non funziona (errore al caricamento, impossibilità di caricare il documento, pagina che non si carica), verifica se il problema è isolato a quella prenotazione o sistemico. Controlla il log degli errori del portale in dashboard. Se si tratta di un problema tecnico confermato, apri un ticket di supporto e nel frattempo prepara una procedura manuale di identificazione.
+  </Step>
+  <Step title="L'ospite arriva senza aver completato il check-in">
+    Se l'ospite è fisicamente in loco senza check-in completato, il team deve effettuare l'identificazione manuale: copia del documento d'identità, firma del regolamento cartaceo se disponibile. Una volta identificato l'ospite con certezza, invia il link di accesso manualmente e sblocca la porta. Segnala l'incidente nelle note della prenotazione in dashboard specificando il metodo di identificazione usato.
+  </Step>
+  <Step title="Chiudi e documenta l'incidente">
+    Dopo che la situazione è risolta, aggiungi una nota alla prenotazione in dashboard con: data e ora dell'intervento manuale, motivo del mancato completamento (ospite non ha visto i reminder, portale in errore, ecc.) e azione intrapresa. Questi dati aiutano a identificare pattern e migliorare il flusso.
+  </Step>
+</Steps>
+
+## Verifiche rapide
+
+Se il flusso di reminder non si attiva o il portale non funziona correttamente, esegui questa checklist prima di escalare:
+
+<CardGroup cols={3}>
+  <Card title="Tool get-incomplete-portals" icon="magnifying-glass" href="/integrazioni/conduit/troubleshooting">
+    Il tool è presente nell'agente Conduit? La skill associata è attiva? Sta girando agli intervalli corretti?
+  </Card>
+  <Card title="WABA collegata per i reminder" icon="whatsapp" href="/integrazioni/waba/troubleshooting">
+    Il canale WhatsApp Business è attivo per questo studente? I messaggi di reminder partono regolarmente?
+  </Card>
+  <Card title="Link portale per listing_id" icon="link" href="/integrazioni/kross/troubleshooting">
+    Il link del portale è configurato correttamente per quel `listing_id` in KrossBooking? È raggiungibile dall'esterno?
+  </Card>
+</CardGroup>
+
+<Tip>
+Se il portale fallisce sistematicamente per uno specifico appartamento ma funziona correttamente per gli altri, quasi sempre il problema è nel `listing_id` configurato in KrossBooking: verifica che il `listing_id` dell'appartamento in Mattone corrisponda esattamente a quello registrato in KrossBooking. Un mismatch causa errori silenziosi nel recupero dei dati di prenotazione da parte del portale.
+</Tip>
+
+<Accordion title="Cosa fare se l'ospite non usa WhatsApp">
+  Se l'ospite non ha WhatsApp o ha un numero non registrato su WABA, i reminder automatici non vengono recapitati. In questo caso Conduit dovrebbe rilevare il fallimento nella consegna e notificare il team. Verifica che questa notifica sia configurata nel workflow. In alternativa, il link al portale può essere inviato via email o SMS — verifica con lo studente quale canale di fallback preferisce e configuralo nella scheda del listing.
+</Accordion>
+
+<Accordion title="Come forzare manualmente il check dell'incomplete portals">
+  Se sospetti che il tool `get-incomplete-portals` non stia girando, puoi forzare un controllo manuale dalla dashboard Mattone: vai nella sezione "Prenotazioni in arrivo", filtra per "Check-in incompleto" e verifica l'elenco. Se ci sono prenotazioni con check-in mancante che non hanno ricevuto reminder, è probabile che il tool o il workflow di scheduling siano fermi.
+</Accordion>

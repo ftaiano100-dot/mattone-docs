@@ -1,15 +1,38 @@
 ---
-title: "GHL — panoramica"
-description: "Marketing/CRM + rebilling."
+title: "GoHighLevel: CRM, marketing e rebilling Mattone"
+sidebarTitle: "Panoramica"
+description: "Come Mattone usa GHL per tracciare lead, calcolare ROAS e CAC per studente e gestire la fatturazione dei sub-account dal terzo mese."
 ---
 
+GHL (GoHighLevel) è la piattaforma CRM e marketing usata da Mattone per leggere i lead degli studenti, calcolare il ritorno sulla spesa pubblicitaria (ROAS) e il costo di acquisizione cliente (CAC), e gestire la fatturazione dei sub-account a partire dal terzo mese di abbonamento. Ogni studente Mattone ha una location GHL dedicata, collegata alla piattaforma tramite un token di integrazione privato (PIT).
 
-**GHL (GoHighLevel)** è il CRM/marketing: da qui la piattaforma legge lead, valore, spesa → ROAS/CAC, e gestisce il rebilling dei sub-account.
+## Cosa legge la piattaforma
+
+Per ogni studente, Mattone legge da GHL i seguenti dati:
+
+- **Lead source** — da quale campagna o canale proviene ogni lead
+- **Lead value / Opportunity value** — valore stimato o effettivo del contratto associato al lead
+- **Ad spend** — spesa pubblicitaria della campagna di provenienza
+
+Questi dati vengono aggregati per calcolare il **ROAS** (Revenue / Ad Spend) e il **CAC** (Ad Spend / Contratti chiusi) di ciascuno studente, visualizzabili nella dashboard di piattaforma.
+
+## Sezioni correlate
 
 <CardGroup cols={2}>
-  <Card title="PIT & location" href="/integrazioni/ghl/pit-location" icon="key">Token per location.</Card>
-  <Card title="Lead & valore (ROAS/CAC)" href="/integrazioni/ghl/lead-valore" icon="chart-line">Cosa legge la piattaforma.</Card>
-  <Card title="Rebilling" href="/integrazioni/ghl/rebilling" icon="money-bill">Sub-account, dal 3° mese.</Card>
-  <Card title="Troubleshooting" href="/integrazioni/ghl/troubleshooting" icon="wrench">PIT scaduto, dati mancanti.</Card>
+  <Card title="PIT & Location" icon="key" href="/integrazioni/ghl/pit-location">
+    Come generare il Private Integration Token per una location GHL e configurare l'accesso alla piattaforma Mattone.
+  </Card>
+  <Card title="Lead & Valore" icon="chart-line" href="/integrazioni/ghl/lead-valore">
+    Quali campi GHL vengono letti, come vengono usati per calcolare ROAS e CAC e con quale frequenza si aggiornano.
+  </Card>
+  <Card title="Rebilling" icon="money-bill" href="/integrazioni/ghl/rebilling">
+    Come funziona la fatturazione dei sub-account GHL dal terzo mese e come attivare il rebilling per uno studente.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/integrazioni/ghl/troubleshooting">
+    Tabella sintomo → causa → soluzione per i problemi più comuni dell'integrazione GHL su Mattone.
+  </Card>
 </CardGroup>
 
+<Note>
+  GHL richiede un PIT (Private Integration Token) separato per ogni location. Un singolo token non può coprire più sub-account. Consulta la pagina [PIT & Location](/integrazioni/ghl/pit-location) per la procedura di generazione e configurazione.
+</Note>

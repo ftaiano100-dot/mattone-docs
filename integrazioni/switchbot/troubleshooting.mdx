@@ -1,33 +1,34 @@
 ---
-title: "SwitchBot — troubleshooting (161)"
-description: "Non apre dal link: codici, owner vs member."
+title: "Troubleshooting SwitchBot: errore 161 e device offline"
+sidebarTitle: "Troubleshooting"
+description: "Come risolvere l'errore 161 di SwitchBot e altri problemi comuni: Hub Mini offline, account member, Cloud Service disabilitato e serratura fuori portata."
 ---
 
+Il problema più frequente con SwitchBot è il codice errore 161 (device offline) — che viene spesso scambiato per un problema di batteria scarica. Prima di sostituire le batterie o modificare qualsiasi configurazione, leggi sempre i log: il codice di errore esatto ti dice subito dove si trova il problema reale.
 
-<Warning>Standby: lo status può dire `onlineStatus:"offline"` e `battery:0` **anche se la serratura è viva**. Un comando la sveglia. Il portale **prova sempre il comando**.</Warning>
+## Caso reale: SwitchBot 161 (20/08)
 
-## Leggi il CODICE (`rawStatus`)
-| Codice | Significato | Cosa fare |
+<Warning>
+  **Esempio da un caso reale del team Mattone.**
+
+  L'app SwitchBot mostrava la serratura come "scarica". I Vercel runtime log mostravano codice **161 (device offline)**. Il problema era l'Hub Mini offline — non la batteria scarica.
+
+  Senza i log avremmo cambiato le batterie a vuoto, senza risolvere nulla. La connessione dell'Hub Mini al WiFi 2.4GHz era caduta; riavviando l'Hub Mini il problema si è risolto in meno di due minuti.
+
+  **Log prima di tutto — sempre.**
+</Warning>
+
+## Tabella sintomi, cause e soluzioni
+
+| Sintomo | Causa probabile | Soluzione |
 |---|---|---|
-| `100` | ok | aperto ✓ |
-| `161` | device offline | hub vivo ma non raggiunge la lock → vedi sotto |
-| `171` | hub offline | ricollega Hub a corrente + WiFi 2.4GHz, luce blu |
-| `190` | ri-sincronizzare | apri una volta dall'app, poi riprova |
-| `160` | comando non supportato | verifica sia una Lock |
-| `151/152` | device error/not found | controlla il `deviceId` |
-| `401` | token non valido | rigenera Token+Secret |
+| Errore 161 (device offline) | Hub Mini offline — ha perso la connessione WiFi | Verifica il LED dell'Hub Mini (deve essere BLU fisso); riavvia l'Hub Mini; verifica che il WiFi 2.4GHz sia disponibile e stabile |
+| Non apre ma nessun errore esplicito | Account member invece di owner usato per il token | Chiedi allo studente di generare un nuovo token dall'account OWNER della Home SwitchBot; aggiorna il Vault |
+| Token non valido (errore 401) | Token rigenerato dallo studente o Developer Mode disabilitata | Chiedi allo studente di riabilitare Developer Mode e rigenerare il token; aggiorna il Vault con il nuovo token |
+| Cloud Service non attivo | Cloud Service disabilitato nell'app SwitchBot | App SwitchBot → Smart Lock → Cloud Service → Attiva; attendi 1–2 minuti e ritesta |
+| Hub Mini offline (LED giallo o rosso) | WiFi 2.4GHz non disponibile o Hub Mini senza corrente | Verifica che il router trasmetta su 2.4GHz; verifica l'alimentazione dell'Hub Mini; riavvia Hub Mini |
+| Serratura non risponde ai comandi (Hub online) | Serratura fisicamente fuori portata Bluetooth (>5m) dall'Hub Mini | Avvicina l'Hub Mini alla serratura; verifica che non ci siano muri spessi o ostacoli tra Hub e serratura |
 
-## Il caso 161 — cause in ordine (batteria esclusa)
-<Steps>
-  <Step title="OWNER o MEMBER? (#1)">L'API comanda solo i device che l'account **POSSIEDE**, non quelli **condivisi**. Token di un account membro → apre dall'app ma API torna 161. **Fix:** Token dell'account **owner** (o farsi promuovere Admin).</Step>
-  <Step title="Range Hub↔Lock (#2)">Serratura entro ~5 m dall'Hub; muri/metallo/TV azzerano. **Fix:** avvicina l'Hub. (Escluso se apre da remoto.)</Step>
-  <Step title="Cloud Service off (#3)">Riattiva "Cloud Service" sulla lock nell'app.</Step>
-</Steps>
-
-### Perché l'app apre ma il link no
-App = Bluetooth diretto (se vicino) **o** cloud→Hub→lock (da remoto). Il link usa solo il cloud con le **nostre** credenziali → "da app apre" non smentisce il 161.
-
-**Verifiche che chiudono il caso:** (1) *"La Home dell'Hub è tua o condivisa?"* condivisa → #1. (2) *Test simultaneo:* cliente apre da remoto mentre provi l'API; apre lui + tu 161 → #1; falliscono entrambi → #2.
-
-<Note>Fonti: [SwitchBot API](https://github.com/OpenWonderLabs/SwitchBotAPI) · docs viva `solisera-checkin/README.md`.</Note>
-
+<Tip>
+  Per diagnosticare rapidamente senza accedere ai log Vercel, usa il tool `check-device-status` da Conduit — restituisce il codice risposta esatto della serratura in tempo reale, permettendoti di distinguere subito tra Hub offline (161), token non valido (401) e Cloud Service disabilitato.
+</Tip>

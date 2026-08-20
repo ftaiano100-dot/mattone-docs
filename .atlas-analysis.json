@@ -1,24 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
+  "projectType": "saas",
+  "projectName": "Mattone",
+  "projectDescription": "Mattone è la piattaforma operativa per property manager: onboarding guidato, integrazioni AI (Conduit), PMS, smart lock e automazioni — tutto in un posto solo per il team delivery.",
   "theme": "almond",
-  "name": "Mattone Docs",
-  "colors": {
-    "primary": "#EA580C",
-    "light": "#F97316",
-    "dark": "#C2410C"
-  },
-  "favicon": "/favicon.svg",
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "primary": {
-      "type": "button",
-      "label": "Piattaforma",
-      "href": "https://app.mattone.co"
-    }
-  },
+  "primaryColor": "#EA580C",
+  "lightColor": "#F97316",
+  "darkColor": "#C2410C",
   "navigation": {
     "tabs": [
       {
@@ -126,23 +113,32 @@
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Piattaforma Mattone",
-          "href": "https://app.mattone.co",
-          "icon": "house"
-        }
-      ]
-    }
-  },
-  "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "claude",
-      "chatgpt"
     ]
-  }
+  },
+  "keyFeatures": [
+    "Onboarding guidato passo-passo per ogni nuovo studente (property manager)",
+    "Agente AI Conduit: KB per-listing, custom tool, workflow deterministici, guardrail",
+    "Integrazione PMS KrossBooking: lettura prenotazioni, ospiti, stato check-in",
+    "Smart check-in remoto via Shelly (relay) o SwitchBot Smart Lock",
+    "Pagamenti extra/upsell via Stripe payment link generati dall'AI",
+    "CRM/marketing con GoHighLevel: lead, ROAS/CAC, rebilling sub-account",
+    "Revenue management dinamico con PriceLabs",
+    "WhatsApp Business (WABA) collegato all'agente Conduit",
+    "Registro appartamenti canonico su Notion con bridge verso KB Conduit",
+    "Credenziali zero-segreti: Vault Supabase cifrato, zero repo exposure",
+    "Metodo di troubleshooting strutturato: riproduzione → log → isolamento → fix → documentazione",
+    "Playbook operativi (casistiche) per late check-out, extra/upsell, escalation telefonica"
+  ],
+  "publicApiSurface": [
+    "Gateway MCP: mcp.mattone.co (proxy multi-tenant verso Kross/Shelly/Stripe)",
+    "Kross API: POST /v5/auth/get-token, check-availability, get-reservation-status, get-checkin-instructions, get-in-house-guests, get-incomplete-portals",
+    "Conduit custom tools: open-door, check-device-status, get-access-link, stripe-payment-link, check-portal-status",
+    "Conduit MCP: create_workflow, patch_agent (guardrails array)",
+    "Shelly relay API: apertura citofono/porta da link remoto",
+    "SwitchBot Smart Lock API: token owner, Device ID, Hub Mini cloud control",
+    "Stripe Restricted Key: Products/Prices/Payment Links write",
+    "GHL PIT (Private Integration Token): per-location API key",
+    "PriceLabs API: collegamento pricing dinamico",
+    "WABA (WhatsApp Business Account): numero ufficiale agente Conduit"
+  ]
 }

@@ -1,15 +1,70 @@
 ---
-title: "Extra / Upsell"
-description: "Catalogo extra → listino → Stripe → fatturato aggiuntivo."
+title: "Playbook: extra e upsell via Conduit e Stripe"
+sidebarTitle: "Extra & Upsell"
+description: "Gestisci la vendita di servizi extra tramite Conduit: dalla ricerca del prezzo in KB alla generazione del link Stripe e alla conferma dell'ospite."
 ---
 
-## Quando succede
-_(da compilare)_
+Quando un ospite richiede un servizio aggiuntivo — un trasferimento in aeroporto, una pulizia extra, la colazione, il parcheggio o qualsiasi altro extra previsto dallo studente — Conduit cerca il prezzo nella KB del listino, genera un link di pagamento Stripe con l'importo corretto e lo invia direttamente in chat. Questo playbook copre l'intero flusso automatico, spiega come intervenire quando qualcosa non funziona e fornisce un catalogo di riferimento dei servizi extra più comuni.
+
+## Quando si attiva
+
+Il flusso si attiva ogni volta che un ospite chiede, tramite WhatsApp o chat, un servizio soggetto a pagamento separato:
+
+- Durante il soggiorno (es. "posso avere una pulizia extra domani?")
+- Prima dell'arrivo (es. "è possibile prenotare il trasferimento dall'aeroporto?")
+- In fase di check-in (es. "c'è il parcheggio disponibile?")
+
+Conduit riconosce la richiesta anche in linguaggio colloquiale e la abbina al servizio corrispondente nel catalogo della KB.
 
 ## Cosa fa il sistema (in ordine)
-_(da compilare)_
 
-## Cosa fa il team
-_(passo passo, linguaggio plain)_
+Il flusso automatico si svolge in cinque passaggi:
 
-<Note>**In costruzione.** Fonte: listino-extra-upsell-procedura.md + reference_conduit_stripe_payments.</Note>
+1. **Ricezione della richiesta** — L'ospite chiede un extra via chat; Conduit classifica la richiesta e identifica il servizio.
+2. **Ricerca prezzo in KB** — Conduit interroga la KB del listino dello studente, filtrando per `listing_id`, per trovare il prezzo del servizio richiesto.
+3. **Generazione link Stripe** — Conduit chiama il tool `stripe-payment-link` passando il nome del servizio e l'importo recuperato dalla KB, ottenendo un link univoco.
+4. **Invio all'ospite** — Conduit invia il link direttamente in chat con un messaggio esplicativo (es. "Ecco il link per procedere al pagamento della pulizia extra: [link]").
+5. **Conferma post-pagamento** — Se il webhook Stripe è configurato, alla ricezione del pagamento Conduit invia all'ospite un messaggio di conferma e, se previsto dal workflow, notifica il fornitore del servizio.
+
+<Info>
+Il webhook Stripe non è configurato di default su ogni installazione. Se l'ospite paga ma non riceve conferma, è molto probabile che il webhook manchi. Vedi la sezione "Quando interviene il team" per i dettagli.
+</Info>
+
+## Quando interviene il team
+
+<Steps>
+  <Step title="Conduit non conosce il prezzo del servizio">
+    La KB del listino è mancante o non è scopata correttamente al `listing_id` di quell'appartamento. Accedi alla sezione KB dello studente, verifica che esista un documento listino e che contenga il servizio richiesto. Se il documento c'è ma il prezzo non viene trovato, controlla che il tag `listing_id` del documento corrisponda a quello della prenotazione.
+  </Step>
+  <Step title="Conduit non genera il link di pagamento">
+    Il tool `stripe-payment-link` è assente o la skill non è attiva per quell'agente. Vai nella configurazione dell'agente Conduit, verifica che il tool sia nell'elenco degli strumenti abilitati e che la skill corrispondente sia in stato attivo. Controlla anche che le credenziali Stripe dello studente (API key) siano collegate correttamente.
+  </Step>
+  <Step title="Il link viene generato con un importo sbagliato">
+    Il valore nella KB del listino non è aggiornato. Apri il documento listino nella KB dello studente, correggi il prezzo del servizio e salva. Chiedi all'ospite di ignorare il link precedente e genera un nuovo link dalla dashboard o chiedi a Conduit di ripetere l'operazione.
+  </Step>
+  <Step title="L'ospite ha pagato ma non riceve la conferma">
+    Il webhook Stripe non è configurato o non è raggiungibile. Verifica nella dashboard Stripe che l'endpoint webhook sia impostato per quell'account e che sia attivo. Se il webhook non è mai stato configurato, seguire la procedura di setup webhook nella documentazione di integrazione Stripe.
+  </Step>
+</Steps>
+
+## Catalogo extra tipici
+
+La tabella seguente riporta i servizi extra più comuni nelle strutture gestite su Mattone, con prezzi indicativi e note operative. Aggiorna il listino in KB con i valori reali dello studente.
+
+| Extra | Prezzo indicativo | Note |
+|---|---|---|
+| Trasferimento aeroporto (A/R) | €35–€60 a tratta | Dipende dalla distanza e dal fornitore; richiede coordinamento con terzi |
+| Pulizia extra | €40–€80 | Variabile in base alla metratura; notifica il team pulizie via workflow |
+| Colazione in appartamento | €15–€25 a persona | Richiede fornitore locale abilitato; non sempre disponibile |
+| Late check-out (fino a 2h) | €20–€40 | Subordinato alla disponibilità verificata con `check-availability` |
+| Early check-in (fino a 2h) | €20–€40 | Come sopra; verificare sempre disponibilità |
+| Parcheggio privato | €10–€20 al giorno | Solo se la struttura dispone di posto auto; aggiungere alla KB per listing |
+| Kit di benvenuto personalizzato | €25–€50 | Composizione variabile; accordarsi con lo studente in fase di onboarding |
+
+<Warning>
+La KB del listino **deve essere scopata per `listing_id`**: una KB globale (non filtrata per appartamento) causa a Conduit di restituire prezzi errati, appartenenti ad altri listing dello stesso studente. Verifica sempre che ogni documento listino abbia il tag `listing_id` corretto prima di attivare il flusso upsell su un nuovo appartamento.
+</Warning>
+
+<Tip>
+Se uno studente gestisce più appartamenti con prezzi diversi, crea un documento listino separato per ciascun `listing_id` invece di un unico documento generico. Questo garantisce che Conduit mostri sempre il prezzo corretto per l'appartamento in cui si trova l'ospite.
+</Tip>

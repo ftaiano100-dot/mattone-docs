@@ -1,16 +1,52 @@
 ---
-title: "Kross — collegamento"
-description: "Terna API per-cliente e test connessione."
+title: "Collegare KrossBooking: API credentials e test connessione"
+sidebarTitle: "Collegamento"
+description: "Guida passo-passo per ottenere le credenziali Kross di uno studente, salvarle nel Vault e verificare che la connessione sia attiva."
 ---
 
+Per collegare l'account KrossBooking di uno studente alla piattaforma Mattone, hai bisogno di tre credenziali che lo studente recupera direttamente dal proprio portale Kross. Segui questi passaggi nell'ordine indicato: saltare o invertire uno step è la causa più frequente di errori di connessione.
 
-## Cosa serve
-Dallo studente, dal **portale Kross → API**: **hotel_id + username + password**.
+## Prerequisiti
 
-## Step (in ordine)
+Prima di iniziare, assicurati che:
+
+- L'anagrafica dello studente su Notion sia **completa e approvata**
+- Lo studente abbia accesso al proprio portale KrossBooking con permessi di amministratore
+- Lo studente ti abbia fornito — su canale sicuro — le seguenti informazioni dalla sezione **API** del portale Kross:
+  - `hotel_id` — identificativo numerico della struttura
+  - `username` — nome utente API (distinto dal login web)
+  - `password` — password API associata all'utente
+
+## Step
+
 <Steps>
-  <Step title="Raccogli la terna">hotel_id, username, password dal portale Kross dello studente.</Step>
-  <Step title="Salva in piattaforma">Admin → *Collega Kross* → inserisci la terna → salva (cifrata nel Vault).</Step>
-  <Step title="Testa">Il sistema chiama il gateway `mcp.mattone.co` → deve tornare **verde**. Se rosso → [Troubleshooting](/integrazioni/kross/troubleshooting).</Step>
+  <Step title="Lo studente recupera le credenziali API da Kross">
+    Lo studente accede al proprio portale KrossBooking, naviga nella sezione **API** (o **Impostazioni → Integrazioni**) e copia i tre valori: `hotel_id`, `username` e `password`. Se la sezione API non è visibile, lo studente deve contattare il supporto Kross per abilitarla.
+  </Step>
+  <Step title="Inserisci le credenziali nell'Admin di Mattone">
+    Accedi all'Admin della piattaforma Mattone. Vai in **Connessioni → Collega Kross**, inserisci i tre valori ricevuti dallo studente e salva. Il sistema cifra automaticamente le credenziali e le archivia nel Vault — non vengono mai memorizzate in chiaro.
+  </Step>
+  <Step title="Il sistema verifica la connessione via gateway">
+    Dopo il salvataggio, la piattaforma esegue automaticamente un test di connessione passando per `mcp.mattone.co`. Attendi che il risultato appaia nell'interfaccia: il processo richiede normalmente meno di 10 secondi.
+  </Step>
+  <Step title="Connessione verde: procedi alla configurazione di Conduit">
+    Se il test restituisce stato **verde**, la connessione è attiva. Puoi procedere con la configurazione dell'assistente Conduit per questo studente, partendo dal collegamento della Knowledge Base e dei flussi di risposta.
+  </Step>
+  <Step title="Connessione rossa: vai al Troubleshooting">
+    Se il test restituisce stato **rosso**, non procedere. Consulta la pagina [Troubleshooting KrossBooking](/integrazioni/kross/troubleshooting) per identificare la causa e applicare la soluzione. Le cause più frequenti sono credenziali errate o `hotel_id` non corrispondente.
+  </Step>
 </Steps>
 
+<Warning>
+  Le credenziali Kross (`hotel_id`, `username`, `password`) devono essere inviate **esclusivamente su canale sicuro** — mai in una chat di gruppo, email, o documento condiviso. Una volta ricevute, salvale immediatamente nel Vault ed elimina qualsiasi copia temporanea. L'esposizione di queste credenziali può compromettere l'intera operatività della struttura dello studente.
+</Warning>
+
+## Verifica della connessione
+
+Una connessione riuscita si riconosce da questi segnali:
+
+- Lo stato nella scheda studente mostra **"Kross: connesso"** con indicatore verde
+- Conduit è in grado di recuperare almeno una prenotazione dalla struttura (puoi verificarlo dalla sezione **Debug → Ultime prenotazioni** nell'Admin)
+- Non sono presenti errori `401` nei log di sistema relativi a quel `hotel_id`
+
+Se tutti e tre i segnali sono presenti, l'integrazione è operativa e puoi procedere con gli step successivi dell'onboarding.

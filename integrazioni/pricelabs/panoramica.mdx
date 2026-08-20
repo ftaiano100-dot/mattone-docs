@@ -1,13 +1,37 @@
 ---
-title: "PriceLabs — panoramica"
-description: "Revenue management / pricing dinamico."
+title: "PriceLabs: gestione del pricing dinamico degli alloggi"
+sidebarTitle: "Panoramica"
+description: "Panoramica dell'integrazione PriceLabs: come collega il tuo account, come ottimizza le tariffe automaticamente e i due modelli di gestione disponibili."
 ---
 
-
-**PriceLabs** gestisce il pricing dinamico. Una volta collegate le API, è la piattaforma a gestire la tariffazione.
+PriceLabs gestisce il pricing dinamico degli appartamenti dello studente — una volta connesse le API, la piattaforma aggiorna automaticamente le tariffe in KrossBooking sulla base dei dati di mercato, della stagionalità e della domanda in tempo reale. Il team Mattone può gestire la strategia di pricing in autonomia oppure delegarla allo studente, a seconda del modello scelto in fase di onboarding.
 
 <CardGroup cols={2}>
-  <Card title="Collegamento" href="/integrazioni/pricelabs/collegamento" icon="link">Collegare le API PriceLabs.</Card>
-  <Card title="Revenue management" href="/integrazioni/pricelabs/revenue-management" icon="chart-line">Self vs delegato (upsell).</Card>
+  <Card title="Collegamento" icon="link" href="/integrazioni/pricelabs/collegamento">
+    Connetti l'account PriceLabs dello studente alla piattaforma Mattone tramite API key.
+  </Card>
+  <Card title="Revenue Management" icon="chart-line" href="/integrazioni/pricelabs/revenue-management">
+    Modelli self-managed e delegato, e concetti chiave del dynamic pricing con PriceLabs.
+  </Card>
 </CardGroup>
 
+## Come funziona
+
+PriceLabs si collega direttamente a KrossBooking come sistema PMS e aggiorna le tariffe degli appartamenti automaticamente, più volte al giorno. Il processo è il seguente:
+
+1. PriceLabs analizza i dati di mercato locali, i competitor, la stagionalità e la domanda corrente.
+2. Calcola il prezzo ottimale per ogni data e ogni listing.
+3. Invia i prezzi aggiornati a KrossBooking tramite API — le OTA (Airbnb, Booking.com, ecc.) ricevono i nuovi prezzi in pochi minuti.
+4. La piattaforma Mattone legge i dati di ricavo da PriceLabs per il reporting revenue dello studente.
+
+## Modelli di gestione
+
+Ci sono due modi per gestire PriceLabs dopo il collegamento:
+
+**Self-managed** — Lo studente accede al proprio account PriceLabs, imposta il prezzo base, i limiti min/max e le personalizzazioni per ogni listing. Mattone fornisce supporto e linee guida ma non interviene sulla strategia.
+
+**Delegato (upsell)** — Il team Mattone gestisce l'intera strategia di pricing per conto dello studente: prezzi stagionali, boost per eventi locali, sconti last-minute, analisi della concorrenza. Questo modello è disponibile come servizio aggiuntivo a pagamento.
+
+<Note>
+  PriceLabs richiede un account separato da parte dello studente — non è incluso nella piattaforma Mattone. Il collegamento viene effettuato durante l'onboarding, una volta che KrossBooking è già connesso e funzionante. Senza KrossBooking attivo, PriceLabs non ha dove inviare i prezzi.
+</Note>

@@ -1,16 +1,41 @@
 ---
-title: "Indice repo API"
-description: "Dove sta il codice di ogni integrazione da controllare."
+title: "Indice repo API: dove sta il codice di ogni integrazione"
+sidebarTitle: "Repo API"
+description: "Trova rapidamente il repository giusto per ogni integrazione Mattone: KrossBooking, Conduit, smart lock, pagamenti e piattaforma core."
 ---
 
+Quando devi collegare o fare debug su un'integrazione, il punto di partenza è il codice sorgente nei repository ufficiali. Questo indice ti permette di trovare subito il repo corretto senza dover cercare nella lista completa dei progetti — abbina ogni integrazione al suo repo e alla cartella rilevante in pochi secondi.
 
-Quando colleghi o debugghi, il codice/reference vive qui:
+## Indice dei repository
 
 | Integrazione | Repo | Cosa contiene |
 |---|---|---|
-| KrossBooking | `api-kross-mattone`, `krossbooking-mcp` | client, gateway, scope |
-| Gateway multi-tenant | `mattone-mcp-gateway` | `mcp.mattone.co` |
-| Conduit | skill `conduit-api-reference` | schemi + endpoint |
-| Shelly / SwitchBot | `cosmica-booking`, `solisera-checkin` | MCP + guest portal |
-| Piattaforma | `mattone-platform` | bridge KB, provisioning |
+| KrossBooking | `api-kross-mattone`, `krossbooking-mcp` | Client Kross, gateway multi-tenant, endpoint scope |
+| Gateway multi-tenant | `mattone-mcp-gateway` | mcp.mattone.co — proxy verso Kross / Shelly / Stripe |
+| Conduit | skill `conduit-api-reference` | Schemi endpoint, MCP Conduit |
+| Shelly / SwitchBot | `cosmica-booking`, `solisera-checkin` | MCP smart lock + guest portal |
+| Piattaforma | `mattone-platform` | Bridge KB Notion→Conduit, provisioning studenti |
 
+## Come usare questo indice
+
+<Steps>
+  <Step title="Identifica l'integrazione">
+    Parti dal problema o dalla funzione che stai cercando: è un problema di disponibilità? Guarda KrossBooking. È una porta che non si apre? Guarda Shelly / SwitchBot.
+  </Step>
+  <Step title="Trova il repo nella tabella">
+    Cerca la riga corrispondente all'integrazione e annota il nome del repo (o della skill) indicato nella colonna **Repo**.
+  </Step>
+  <Step title="Naviga nella cartella giusta">
+    All'interno del repo, la struttura standard prevede queste sottocartelle principali:
+    - `team-runbook/` — procedure operative e note di manutenzione
+    - `provisioning/` — script e config per l'attivazione di nuovi studenti
+    - `conduit-custom-tool/` — definizione dei tool MCP collegati a Conduit
+  </Step>
+  <Step title="Consulta o segnala">
+    Se trovi la risposta, aggiorna le note di onboarding o troubleshooting di conseguenza. Se trovi un bug, apri una segnalazione nel canale di riferimento.
+  </Step>
+</Steps>
+
+<Note>
+  I repo sono in sola lettura per i non-dev. Se trovi un bug o un'incongruenza, aprilo nel canale di riferimento Slack o nell'issue tracker — non modificare direttamente il codice sorgente.
+</Note>

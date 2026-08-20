@@ -1,13 +1,33 @@
 ---
-title: "WhatsApp Business (WABA) — panoramica"
-description: "Numero + WhatsApp ufficiale per l'agente."
+title: "WABA: WhatsApp Business collegato all'agente Conduit"
+sidebarTitle: "Panoramica"
+description: "Panoramica dell'integrazione WABA in Mattone: il numero WhatsApp Business collegato a Conduit per messaggi automatici, reminder check-in e notifiche ospite."
 ---
 
-
-**WABA** = il numero WhatsApp ufficiale collegato all'agente Conduit. ⚠️ Il collegamento lo fa **Francesco**.
+WABA (WhatsApp Business Account) è il numero WhatsApp ufficiale collegato all'agente AI Conduit — abilita messaggi automatici, reminder di check-in, notifiche di escalation e tutta la comunicazione con l'ospite via WhatsApp. Senza WABA, Conduit non può contattare gli ospiti tramite WhatsApp e ricade su canali alternativi meno affidabili.
 
 <CardGroup cols={2}>
-  <Card title="Collegamento" href="/integrazioni/waba/collegamento" icon="link">Numero → agente (via Facebook/Conduit).</Card>
-  <Card title="Troubleshooting" href="/integrazioni/waba/troubleshooting" icon="wrench">Numero non collegato, url non accettato.</Card>
+  <Card title="Collegamento" icon="link" href="/integrazioni/waba/collegamento">
+    Come attivare il numero WhatsApp Business e collegarlo al workspace Conduit dello studente.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/integrazioni/waba/troubleshooting">
+    Risolvi i problemi più comuni: numero non collegato, verifica Meta bloccata, messaggi non recapitati.
+  </Card>
 </CardGroup>
 
+## Cosa abilita il WABA
+
+Una volta attivo, il WABA sblocca queste funzionalità nel workflow Conduit:
+
+- **Messaggi automatici all'ospite** — reminder di check-in, conferma prenotazione e istruzioni di arrivo inviate via WhatsApp
+- **Notifiche di escalation verso lo studente** — avvisi automatici quando l'ospite ha bisogno di assistenza diretta
+- **Risposta ospiti via WhatsApp** — l'ospite può rispondere ai messaggi Conduit direttamente in chat WhatsApp, invece di dover usare email o SMS
+- **Warm transfer notifications** — passaggio contestuale della conversazione dallo studente all'agente e viceversa
+
+<Warning>
+  Il collegamento WABA è gestito da **Francesco** (team Mattone) — non è un'operazione self-service che lo studente può completare da solo. Pianifica **circa 1 settimana** di tempo per l'attivazione tramite Conduit support: il processo include la verifica Meta e l'approvazione del numero.
+</Warning>
+
+<Note>
+  Senza WABA, tutte le comunicazioni automatiche Conduit → ospite avvengono via canali alternativi (email o SMS), con minore affidabilità nei tassi di consegna e lettura. Per un'esperienza ospite ottimale, il WABA deve essere attivo prima del go-live della proprietà.
+</Note>

@@ -1,17 +1,46 @@
 ---
-title: "GHL — PIT & location"
-description: "Private Integration Token per location."
+title: "GHL PIT: token per location e configurazione accesso"
+sidebarTitle: "PIT & Location"
+description: "Come generare il Private Integration Token GHL per una location studente, quali scope concedere e come salvarlo in modo sicuro su Mattone."
 ---
 
-Ogni location GHL ha il suo **PIT** (full-API). Es. Mattone location `jiGluXaOMd573r5hhcqg`.
+Ogni location GHL richiede un Private Integration Token (PIT) per permettere a Mattone di leggere i dati di lead e spesa pubblicitaria. Il PIT è un token API con scope limitato, generato dall'amministratore della location — non è condiviso tra sub-account e non può essere usato per accedere ad altre location. Questa pagina spiega come generarlo, quali permessi assegnare e come consegnarlo al team Mattone in modo sicuro.
 
-## Prerequisiti
-_(da compilare)_
+## Cos'è il PIT
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+Il PIT (Private Integration Token) è una chiave API per-location disponibile nelle impostazioni di GHL sotto **Settings → Private Integrations**. A differenza delle API key globali dell'agenzia, il PIT limita l'accesso a una singola location/sub-account e ai soli scope che hai autorizzato al momento della creazione. Questo significa che anche se il token venisse compromesso, non darebbe accesso alle altre location degli studenti.
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+## Come ottenerlo
 
-<Note>**In costruzione.** Fonte da portare: reference_ghl_integration + reference_ghl_pit_tokens.</Note>
+<Steps>
+  <Step title="Accedi a GHL come amministratore della location">
+    Lo studente (o tu, se hai accesso admin alla sua location) accede a GHL e si assicura di essere nel contesto della **location corretta** — non dell'account agenzia. Verifica il nome della location in alto a sinistra nell'interfaccia.
+  </Step>
+  <Step title="Vai in Settings → Private Integrations">
+    Nel menu laterale di GHL, vai in **Settings** e seleziona **Private Integrations**. Se la voce non è visibile, l'account potrebbe non avere i permessi necessari — contatta il supporto GHL o il team Mattone.
+  </Step>
+  <Step title="Crea una nuova integrazione">
+    Clicca su **Create new integration**. Assegna un nome descrittivo, ad esempio `"Mattone Platform"`. Questo nome ti permetterà di identificare il token in futuro se devi verificarne lo stato o rigenerarlo.
+  </Step>
+  <Step title="Seleziona gli scope necessari">
+    Seleziona **esattamente** questi tre scope — non aggiungere altri per minimizzare il rischio:
+    - **Contacts Read** — per leggere i lead e i dati di contatto
+    - **Opportunities Read** — per leggere il valore delle opportunità nel funnel
+    - **Campaigns Read** — per l'attribuzione della spesa pubblicitaria
+
+    Clicca su **Save** o **Generate** per creare l'integrazione.
+  </Step>
+  <Step title="Copia il token generato">
+    GHL mostra il token generato **una sola volta** — copialo immediatamente in un posto sicuro temporaneo (ad esempio un gestore di password). Se esci dalla pagina senza copiarlo, dovrai rigenerare il token.
+  </Step>
+  <Step title="Consegna il token al team Mattone su canale sicuro">
+    Invia il token al team Mattone **solo su canale sicuro** — mai in una chat di gruppo, email non cifrata o documento condiviso. Usa il canale di consegna credenziali indicato nel tuo processo di onboarding.
+  </Step>
+  <Step title="Il team salva il token come variabile d'ambiente">
+    Il team tecnico Mattone salva il token nel sistema come variabile d'ambiente `GHL_PIT_<location_id>`, dove `<location_id>` è l'ID univoco della location GHL dello studente. Da questo momento la piattaforma può accedere ai dati GHL dello studente.
+  </Step>
+</Steps>
+
+<Warning>
+  Il PIT **scade immediatamente** se l'integrazione "Mattone Platform" viene eliminata da GHL Settings — anche accidentalmente. Se i dati di lead o ROAS di uno studente smettono di aggiornarsi, verifica prima di tutto che l'integrazione sia ancora attiva in GHL → Settings → Private Integrations. Se è stata eliminata, genera un nuovo PIT seguendo questa procedura e aggiorna la variabile d'ambiente con il team tecnico.
+</Warning>

@@ -1,13 +1,53 @@
 ---
-title: "Notion — troubleshooting"
-description: "Sync rotto, template disallineato."
+title: "Troubleshooting Notion: sync rotto e template disallineato"
+sidebarTitle: "Troubleshooting"
+description: "Tabella sintomo-causa-soluzione per diagnosticare i problemi più comuni dell'integrazione Notion: OAuth revocato, listing_id errati e webhook inattivi."
 ---
 
+Usa questa guida per diagnosticare i problemi dell'integrazione Notion. I casi più frequenti sono la connessione OAuth revocata o scaduta e il disallineamento del `listing_id` tra il DB Notion e KrossBooking — due situazioni che bloccano la sincronizzazione in modo silenzioso, senza errori evidenti.
 
-## Sintomo → Causa → Soluzione
-| Sintomo | Causa | Soluzione |
+## Tabella di diagnosi
+
+| Sintomo | Causa probabile | Soluzione |
 |---|---|---|
-| Sync Notion→Conduit non parte | write-path non allineato all'API MCP live | usa `create_directory`/`create_knowledge` corretti |
-| Campi mancanti in KB | DB non allineato al template | completa il DB Apartments |
+| KB Conduit non si aggiorna | OAuth Notion revocato o scaduto | Ricollegare Notion OAuth in piattaforma Mattone (**Connessioni → Notion → Collega**) |
+| `listing_id` mancante in un record | Campo non compilato nel DB Apartments | Compilare il campo `listing_id` per ogni appartamento attivo nel DB Notion |
+| KB contiene dati sbagliati (appartamento diverso) | `listing_id` Notion ≠ `listing_id` KrossBooking | Allineare il `listing_id` tra DB Notion e KrossBooking (vedi [DB Apartments](/integrazioni/notion/db-apartments)) |
+| Appartamento non visibile nella piattaforma Mattone | DB Apartments non selezionato durante l'OAuth | Rifare il flusso OAuth e selezionare esplicitamente il DB Apartments nella schermata di autorizzazione Notion |
+| Bridge non crea la cartella KB per un listing | Template disallineato o campi obbligatori mancanti | Allineare il DB al template Mattone e compilare tutti i campi obbligatori, poi forzare una sincronizzazione manuale |
+| Sync ritardato (>10 minuti dopo una modifica) | Webhook Notion non attivo o non registrato | Verificare lo stato del webhook in **Piattaforma Mattone → Impostazioni → Webhook Notion** |
 
-<Note>Fonte: project_notion_conduit_kb_bridge.</Note>
+## Approfondimenti per caso
+
+<Accordion title="Come ricollegare l'OAuth Notion">
+  Se lo studente ha revocato l'accesso da Notion o il token è scaduto, la connessione risulterà **rossa** o **arancione** in piattaforma. Segui questi passaggi:
+
+  1. Vai su **Connessioni → Notion** nella piattaforma Mattone.
+  2. Clicca su **Scollega** per rimuovere il token precedente.
+  3. Clicca su **Collega** e ripeti il flusso OAuth completo.
+  4. Durante l'autorizzazione, assicurati che lo studente selezioni il DB Apartments.
+  5. Verifica che lo stato torni **verde** e che il DB sia visibile.
+</Accordion>
+
+<Accordion title="Come identificare un listing_id errato">
+  Un `listing_id` sbagliato non produce errori evidenti — il bridge sincronizza comunque, ma con lo scope errato. I sintomi sono: Conduit risponde con le informazioni dell'appartamento A quando dovrebbe rispondere su B, oppure le cartelle KB appaiono vuote.
+
+  Per verificare:
+  1. Apri **KrossBooking → Strutture** e nota l'ID nell'URL di ogni appartamento.
+  2. Confronta ogni ID con il `listing_id` nel DB Notion.
+  3. Correggi eventuali discrepanze direttamente nel DB Notion.
+  4. Forza una sincronizzazione manuale dalla piattaforma Mattone.
+</Accordion>
+
+<Accordion title="Come riattivare il webhook Notion">
+  Se il sync è ritardato di più di 10 minuti dopo una modifica in Notion, il webhook potrebbe non essere attivo:
+
+  1. Vai su **Piattaforma Mattone → Impostazioni → Webhook Notion**.
+  2. Verifica che l'URL webhook sia registrato e che lo stato sia **Attivo**.
+  3. Se lo stato è **Inattivo**, clicca su **Ri-registra webhook**.
+  4. Testa la sincronizzazione apportando una modifica in Notion e verificando l'aggiornamento in Conduit entro 2–3 minuti.
+</Accordion>
+
+<Tip>
+  Per un check rapido dello stato del bridge senza dover fare test su Conduit, vai su **Piattaforma Mattone → Connessioni → Notion**: trovi la data e l'ora dell'ultima sincronizzazione riuscita, l'eventuale messaggio di errore e il pulsante per forzare un sync manuale.
+</Tip>

@@ -1,20 +1,61 @@
 ---
-title: "Conduit — panoramica"
-description: "L'agente AI ospiti: come è fatto e cosa lo compone."
+title: "Conduit: l'agente AI per la gestione ospiti Mattone"
+sidebarTitle: "Panoramica"
+description: "Architettura del workspace Conduit per studenti Mattone: KB per-listing, custom tool, workflow, guardrail e canali telefonici/WABA in un'unica vista."
 ---
 
-
-**Conduit** è l'assistente AI che risponde agli ospiti. Ogni studente ha il suo **workspace** (KB + agente + tool).
+Conduit è l'assistente AI che gestisce le comunicazioni con gli ospiti al posto dello studente: risponde via WhatsApp e telefono, apre porte, genera link di pagamento e verifica disponibilità. Ogni studente ha il proprio workspace Conduit isolato, composto da una Knowledge Base per-listing, tool personalizzati, workflow deterministici e guardrail. Il team Mattone monta e configura ogni workspace durante l'onboarding; lo studente non accede direttamente alla configurazione.
 
 ## I pezzi che lo compongono
+
 <CardGroup cols={2}>
-  <Card title="Knowledge Base (KB)" href="/integrazioni/conduit/kb" icon="book">Cosa sa l'AI. Per-appartamento, mai globale.</Card>
-  <Card title="Custom tools" href="/integrazioni/conduit/custom-tools" icon="wrench">Le azioni (apri porta, link pagamento…).</Card>
-  <Card title="Workflow" href="/integrazioni/conduit/workflow" icon="diagram-project">Sequenze deterministiche (late check-in/out…).</Card>
-  <Card title="Guardrail" href="/integrazioni/conduit/guardrail" icon="shield">Le regole "non fare mai X".</Card>
-  <Card title="Telefonia & WABA" href="/integrazioni/conduit/telefonia-waba" icon="phone">Numero + WhatsApp ufficiale.</Card>
-  <Card title="Troubleshooting" href="/integrazioni/conduit/troubleshooting" icon="bug">Leak KB, reservationIds vuoto, save bug.</Card>
+  <Card title="Knowledge Base" icon="book" href="/integrazioni/conduit/kb">
+    Cosa sa l'AI: documenti WiFi, indirizzo, regole casa, lockbox. Sempre per-appartamento — mai globale.
+  </Card>
+  <Card title="Custom Tools" icon="wrench" href="/integrazioni/conduit/custom-tools">
+    Le azioni eseguibili: apri porta, genera link pagamento, verifica disponibilità. Ogni tool richiede la sua skill.
+  </Card>
+  <Card title="Workflow" icon="diagram-project" href="/integrazioni/conduit/workflow">
+    Sequenze deterministiche trigger → step → azione per late check-in/out, upsell e reminder automatici.
+  </Card>
+  <Card title="Guardrail" icon="shield" href="/integrazioni/conduit/guardrail">
+    Le regole «non fare mai X»: vincoli hard che l'agente rispetta sempre, a prescindere dalla richiesta ospite.
+  </Card>
+  <Card title="Telefonia & WABA" icon="phone" href="/integrazioni/conduit/telefonia-waba">
+    Numero dedicato e WhatsApp Business ufficiale. Traccia separata, ~1 settimana via supporto Conduit.
+  </Card>
+  <Card title="Troubleshooting" icon="bug" href="/integrazioni/conduit/troubleshooting">
+    Problemi comuni e soluzioni: leak KB, tool ignorati, workflow che non parte e bug noti.
+  </Card>
 </CardGroup>
 
-<Warning>Regola d'oro: **ogni custom tool va SEMPRE con la sua skill di prompting**, altrimenti l'agente lo ignora.</Warning>
+<Warning>
+  **Regola d'oro:** ogni custom tool va SEMPRE con la sua skill di prompting — senza skill l'agente ignora il tool o usa il path nativo (inaffidabile). Non montare mai un tool senza configurare subito la skill abbinata.
+</Warning>
 
+## Come si monta (ordine corretto)
+
+Il workspace Conduit si costruisce in sequenza: ogni livello dipende da quello precedente. Invertire l'ordine causa comportamenti imprevedibili che sono difficili da diagnosticare a posteriori.
+
+<Steps>
+  <Step title="KB per-listing">
+    Crea una cartella KB per ogni appartamento dello studente, con `entity_ids` scopati sul `listing_id` corretto. Popola ogni cartella con i documenti specifici dell'appartamento: indirizzo, WiFi, regole della casa, istruzioni lockbox. Mai creare articoli KB a livello globale.
+
+    → Guida dettagliata: [Knowledge Base per-listing](/integrazioni/conduit/kb)
+  </Step>
+  <Step title="Custom tool + skill abbinata">
+    Per ogni tool che vuoi attivare (Kross, Smart Lock, Stripe), configura **immediatamente anche la skill** di prompting corrispondente. Montare il tool senza la skill equivale a non montarlo: l'agente lo ignora.
+
+    → Guida dettagliata: [Custom Tools e skill](/integrazioni/conduit/custom-tools)
+  </Step>
+  <Step title="Workflow">
+    Configura i workflow per le automazioni deterministiche: late check-out/in, reminder check-in, upsell. I workflow usano i tool già montati nello step precedente, quindi questo step viene sempre dopo.
+
+    → Guida dettagliata: [Workflow Conduit](/integrazioni/conduit/workflow)
+  </Step>
+  <Step title="Telefonia e WABA (traccia separata)">
+    Apri la richiesta al supporto Conduit appena completata la KB e i tool — il workspace deve essere pronto prima che il canale sia attivato. Il tempo medio di attivazione è circa 1 settimana.
+
+    → Guida dettagliata: [Telefonia e WABA](/integrazioni/conduit/telefonia-waba)
+  </Step>
+</Steps>

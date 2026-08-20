@@ -1,18 +1,49 @@
 ---
-title: "Kross — rate limit & trappole"
-description: "Limiti per-struttura + errori noti dell'API."
+title: "KrossBooking API: rate limit e trappole note"
+sidebarTitle: "Rate Limit"
+description: "Limiti di frequenza per struttura sull'API Kross e cinque comportamenti non ovvi che causano errori silenziosi se non conosciuti."
 ---
 
+L'API di KrossBooking applica limiti di frequenza per struttura e presenta diversi comportamenti non ovvi che, se non conosciuti, producono errori silenziosi difficili da diagnosticare. Questa pagina documenta i limiti noti e le trappole più frequenti riscontrate durante l'integrazione con la piattaforma Mattone — leggila prima di configurare un nuovo studente o di fare debug su un flusso che non funziona come atteso.
+
+## Rate limit
+
+I limiti di frequenza di KrossBooking sono applicati **per struttura** (cioè per `hotel_id`), non per account o per IP. Se il numero di richieste supera la soglia, Kross restituisce **HTTP 429 (Too Many Requests)**.
+
+Il gateway `mcp.mattone.co` gestisce il backoff automatico in caso di 429, attendendo il tempo necessario prima di riprovare. Tuttavia, se i 429 si verificano in modo ricorrente, significa che la frequenza di polling configurata per quella struttura è troppo alta. In quel caso, riduci l'intervallo di polling nell'Admin della piattaforma o contatta il team tecnico per applicare il coalescing delle richieste parallele.
+
 ## Trappole note
-Filtri data ignorati server-side · `calendar/get-availability` (non `get-calendar`) · `/apiv5` è doc HTML · serve User-Agent browser.
 
-## Prerequisiti
-_(da compilare)_
+<Accordion title="Filtri data ignorati server-side">
+  Alcuni endpoint di KrossBooking ignorano i filtri data inviati nella richiesta e restituiscono l'intero dataset disponibile, indipendentemente dal range specificato. Questo comportamento è silenzioso: la chiamata risponde con HTTP 200 ma i dati non sono filtrati.
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+  **Come gestirlo:** dopo ogni chiamata, valida sempre la risposta controllando il numero di record restituiti e verificando che le date siano coerenti con il range richiesto. Non assumere che il filtro sia stato applicato solo perché la chiamata ha avuto successo.
+</Accordion>
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+<Accordion title="Endpoint disponibilità sbagliato">
+  Per recuperare la disponibilità di una struttura, usa **`GET /v5/calendar/get-availability`** — non `get-calendar`. I due endpoint esistono entrambi ma restituiscono dati diversi: `get-calendar` fornisce una vista del calendario che non è adatta per la logica di disponibilità usata da Conduit.
 
-<Note>**In costruzione.** Fonte da portare: reference_krossbooking_api (trappole) + fix 429 cache/coalesce.</Note>
+  **Come gestirlo:** verifica sempre che il flusso di disponibilità punti all'endpoint corretto. Se Conduit riporta disponibilità incoerente, questo è il primo posto dove controllare.
+</Accordion>
+
+<Accordion title="/apiv5 restituisce HTML di documentazione">
+  Il path `/apiv5` è l'interfaccia web della documentazione KrossBooking e restituisce **HTML**, non dati JSON. Qualsiasi chiamata effettuata a `/apiv5/...` otterrà una risposta HTML invece dei dati attesi, causando errori di parsing a valle.
+
+  **Come gestirlo:** usa sempre il path `/v5/...` per tutte le chiamate API. Se ricevi una risposta inattesa con content-type `text/html`, controlla immediatamente il path usato.
+</Accordion>
+
+<Accordion title="User-Agent browser richiesto">
+  Alcuni endpoint KrossBooking richiedono un header `User-Agent` che imiti un browser web. Le chiamate effettuate senza questo header, o con uno User-Agent da libreria HTTP standard, possono fallire con errori `403` o risposte vuote.
+
+  **Come gestirlo:** il gateway `mcp.mattone.co` aggiunge automaticamente lo User-Agent corretto a tutte le richieste. Se stai testando direttamente un endpoint Kross fuori dal gateway (ad esempio con curl o Postman), aggiungi manualmente un header `User-Agent` di tipo browser per evitare questo problema.
+</Accordion>
+
+<Accordion title="Errore 429: cache e coalescing">
+  Se una struttura genera molte richieste in parallelo — ad esempio durante picchi di traffico o quando più flussi Conduit si attivano contemporaneamente — il gateway può accumulare 429 anche con una frequenza di polling apparentemente ragionevole.
+
+  **Come gestirlo:** il gateway supporta il coalescing delle richieste parallele verso lo stesso `hotel_id`: invece di inviare N richieste identiche, ne invia una sola e distribuisce la risposta a tutti i richiedenti. Questa funzionalità non è attiva di default — contatta il team tecnico per abilitarla per la struttura interessata.
+</Accordion>
+
+<Tip>
+  Quando hai dubbi sul comportamento di un endpoint, testalo direttamente dalla console di debug del gateway prima di costruire logica sopra. Questo ti permette di vedere la risposta reale — inclusi header, status code e body — senza dover aspettare che un flusso in produzione fallisca.
+</Tip>

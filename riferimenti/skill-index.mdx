@@ -1,13 +1,30 @@
 ---
-title: "Indice skill"
-description: "Le skill Claude Code operative collegate."
+title: "Indice skill Claude Code operative di Mattone"
+sidebarTitle: "Skill Index"
+description: "Elenco di tutte le skill Claude Code collegate agli agenti Conduit di Mattone: cosa copre ogni skill e con quali tool MCP va abbinata."
 ---
 
+Queste skill Claude Code sono le istruzioni operative collegate agli agenti Conduit di Mattone. Ogni skill dice all'agente quando usare un determinato tool e come gestire una situazione specifica — senza la skill, il tool resta silenzioso anche se è attivo. Usa questo indice per capire quale skill attivare durante un onboarding o per fare debug su un agente che non risponde come previsto.
 
-| Skill | Cosa copre |
-|---|---|
-| `smart-checkin-mcp` | Shelly/SwitchBot + guest portal + onboarding smart-lock |
-| `conduit-editing-playbook` | scritture sicure KB/skill/guardrail Conduit |
-| `conduit-api-reference` | schemi + endpoint + MCP Conduit |
-| `onboarding-studente-kross-conduit` | onboarding Kross+Conduit |
+## Indice delle skill operative
 
+| Skill | Cosa copre | Usata con |
+|---|---|---|
+| `smart-checkin-mcp` | Shelly/SwitchBot + guest portal + onboarding smart lock | `open-door`, `check-device-status`, `get-access-link` |
+| `conduit-editing-playbook` | Scritture sicure su KB/skill/guardrail Conduit, checklist pre-push, anti-pattern | Tutte le operazioni Conduit |
+| `conduit-api-reference` | Schemi endpoint + MCP Conduit | Dev/debug Conduit |
+| `onboarding-studente-kross-conduit` | Procedura completa di onboarding Kross + Conduit per un nuovo studente | Onboarding nuovo studente |
+| `payment-link-generator` | Generazione link Stripe per extra e upsell durante il soggiorno | `stripe-payment-link` |
+
+## Regola fondamentale
+
+Ogni custom tool deve avere la sua skill corrispondente — la coppia è indivisibile:
+
+- Una **skill senza tool** è inutile: l'agente riceve istruzioni per fare qualcosa, ma non ha il mezzo per farlo.
+- Un **tool senza skill** viene ignorato: il mezzo c'è, ma l'agente non sa quando né come usarlo.
+
+Prima di dichiarare un onboarding completato, verifica sempre che ogni tool assegnato allo studente abbia la sua skill abbinata e che entrambi siano attivi nel profilo Conduit.
+
+<Note>
+  Per aggiungere o modificare una skill, contatta il team tecnico. Le skill sono gestite centralmente nel repo Mattone e non sono modificabili dallo studente — eventuali personalizzazioni devono passare dal team di delivery, che valuta l'impatto sugli altri studenti che usano la stessa skill.
+</Note>

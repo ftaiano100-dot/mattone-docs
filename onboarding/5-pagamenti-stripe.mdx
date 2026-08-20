@@ -1,16 +1,78 @@
 ---
-title: "5 · Pagamenti — Stripe"
-description: "Payment link per extra/upsell in chat."
+title: "Step 5 · Pagamenti extra via Stripe: setup e Conduit"
+sidebarTitle: "5 · Stripe"
+description: "Configura Stripe con una Restricted Key a permessi minimi per permettere a Conduit di generare link di pagamento per extra e upsell direttamente in chat."
 ---
 
-**Obiettivo:** far generare a Conduit i link Stripe per gli extra.
+Configura Stripe in modo che Conduit possa generare link di pagamento per extra e upsell direttamente nella chat con l'ospite — costi del parcheggio, set di asciugamani aggiuntivi, early check-in e qualsiasi altro servizio a pagamento che lo studente vuole offrire. La connessione richiede una Restricted Key con permessi minimi: non usare mai la Secret Key.
 
-## Serve
-- **Restricted key** Stripe (permessi minimi: Products/Prices/Payment Links = Write, resto None). Mai la Secret Key.
+<Warning>
+  Mai usare la Secret Key (`sk_live_…`) — usa solo la Restricted Key (`rk_live_…`) con i permessi minimi necessari. La Secret Key dà accesso completo all'account Stripe dello studente, inclusi rimborsi e modifiche al piano.
+</Warning>
 
-## Step
-1. Studente crea `rk_live_…` e la manda **in modo sicuro** (mai in chat di gruppo).
-2. Salvala cifrata nel Vault.
-3. Monta tool `stripe-payment-link` + skill `payment-link-generator`.
+## Cosa serve
 
-<Note>**In costruzione.** Fonte: `conduit-custom-tool/STRIPE-PAYMENT-LINK-attivazione-e-test.md`.</Note>
+Lo studente deve creare una **Restricted Key** (`rk_live_…`) nel suo dashboard Stripe con esattamente questi permessi:
+
+| Risorsa | Permesso |
+|---|---|
+| Products | Write |
+| Prices | Write |
+| Payment Links | Write |
+| Tutto il resto | None |
+
+Nient'altro deve essere abilitato. Se lo studente non sa come creare una Restricted Key, fornisci le istruzioni dello step 1 qui sotto.
+
+## Step (in ordine)
+
+<Steps>
+  <Step title="Lo studente crea la Restricted Key nel dashboard Stripe">
+    Istruzioni da fornire allo studente:
+
+    1. Accedi a [dashboard.stripe.com](https://dashboard.stripe.com)
+    2. Vai su **Developers → API Keys**
+    3. Clicca su **Create restricted key**
+    4. Assegna un nome descrittivo (es. *Mattone - Conduit*)
+    5. Imposta i permessi: `Products` = Write, `Prices` = Write, `Payment Links` = Write, tutto il resto = None
+    6. Clicca **Create key** e copia immediatamente il valore — viene mostrato una sola volta
+
+    La chiave ha il formato `rk_live_…`.
+  </Step>
+
+  <Step title="Lo studente invia la chiave tramite canale sicuro">
+    Lo studente deve inviare la chiave **solo tramite canale sicuro** (non in chat di gruppo, non in email non cifrata, non via WhatsApp personale).
+
+    Usa il canale dedicato alle credenziali previsto dal tuo processo operativo.
+  </Step>
+
+  <Step title="Salva la chiave nel Vault">
+    Ricevuta la chiave, salvala immediatamente nel Vault della piattaforma Mattone, associata allo studente. Non tenerla in chiaro in nessun documento, foglio di lavoro o chat.
+  </Step>
+
+  <Step title="Monta il tool e la skill in Conduit">
+    Nel workspace Conduit dello studente, monta:
+
+    - **Tool** `stripe-payment-link` — collegato alla Restricted Key salvata nel Vault
+    - **Skill** `payment-link-generator` — istruisce l'agente su quando e come proporre un pagamento all'ospite
+
+    Ricorda: tool senza skill = agente che ignora il tool. Montagli sempre insieme.
+  </Step>
+
+  <Step title="Testa la generazione di un link di pagamento">
+    Dal pannello di test, chiedi a Conduit di generare un link di pagamento per un extra fittizio (es. *"Aggiungi il parcheggio per 10€"*). Verifica che:
+
+    - Conduit risponde generando un URL Stripe valido
+    - Il link aperto nel browser mostra la pagina di pagamento corretta con il prezzo indicato
+    - Il log registra l'evento senza errori
+
+    Se il test fallisce con errore di permessi, la Restricted Key non ha i permessi corretti — chiedi allo studente di ricontrollarli o di ricreare la chiave.
+  </Step>
+</Steps>
+
+<Warning>
+  Se la chiave viene condivisa accidentalmente in una chat pubblica o di gruppo, va ruotata immediatamente. Chiedi allo studente di disabilitare la chiave compromessa dal dashboard Stripe e di crearne una nuova con gli stessi permessi. Aggiorna il Vault con la nuova chiave e rimonta il tool in Conduit.
+</Warning>
+
+---
+
+Step completato? Procedi con → [Step 6 · Verifica finale](/onboarding/6-verifica-finale)

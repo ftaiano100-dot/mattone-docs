@@ -1,14 +1,65 @@
 ---
-title: "3 · Conduit"
-description: "Il cervello AI ospiti: KB, tool, workflow, telefonia."
+title: "Step 3 · Configurare l'agente Conduit per lo studente"
+sidebarTitle: "3 · Conduit"
+description: "Imposta l'agente AI Conduit: KB per-listing da Notion, custom tool con skill abbinate, workflow automatici e canale telefonico/WABA per lo studente."
 ---
 
-**Obiettivo:** montare l'agente Conduit dello studente.
+Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogni studente ha il proprio workspace isolato composto da KB, agente e tool. La configurazione va eseguita in un ordine preciso: prima la base di conoscenza, poi i tool con le relative skill, poi i workflow, e infine il canale telefonico/WABA. Saltare o invertire questi passaggi causa comportamenti imprevisti nell'agente.
+
+<Warning>
+  KB globale = leak tra appartamenti. Ogni KB deve avere lo scope sulla directory per-listing — non creare mai una KB condivisa tra più appartamenti dello stesso studente.
+</Warning>
 
 ## Ordine corretto
-1. **KB per-listing** dal Notion (bridge) — MAI KB globale (leak tra appartamenti).
-2. **Custom tool** (Kross/Shelly/Stripe) — ognuno **SEMPRE** con la sua **prompting skill**.
-3. **Workflow** (late check-in/out, ecc.).
-4. **Telefonia + WABA** — traccia separata, via assistenza Conduit.
 
-<Note>**In costruzione.** Fonte da portare: `api-kross-mattone/PROVISIONING.md`, `conduit-reasoning/*`, `telephony-whatsapp-escalation-playbook.md`.</Note>
+<Steps>
+  <Step title="KB per-listing dal Notion">
+    Usa il bridge Notion → Conduit per creare una cartella KB separata per ogni appartamento. Ogni cartella deve avere gli `entity_id` scopati sul `listing_id` corrispondente: questo garantisce che Conduit risponda all'ospite del Loft Navigli A solo con le informazioni del Loft Navigli A, senza contaminazione da altri appartamenti.
+
+    **Non creare mai una KB globale per lo studente** — anche se sembra più comodo, causa leak di dati tra appartamenti (es. istruzioni di accesso sbagliate, listino errato, regole della casa di un altro immobile).
+
+    → Guida dettagliata: [KB per-listing e bridge Notion](/integrazioni/conduit/kb)
+  </Step>
+
+  <Step title="Custom tool con skill abbinate">
+    Per ogni tool che vuoi attivare (Kross, Shelly, Stripe), devi configurare **sempre anche la skill di prompting** corrispondente. Senza la skill, l'agente non sa quando e come usare il tool e lo ignora completamente.
+
+    Monta i tool nell'ordine in cui li hai configurati negli step precedenti:
+
+    - **Kross tool** → skill `kross-reservation-reader` (richiede Step 2 completato)
+    - **Shelly tool** o **SwitchBot tool** → skill `smart-lock-opener` (richiede Step 4 completato)
+    - **Stripe tool** → skill `payment-link-generator` (richiede Step 5 completato)
+
+    Se uno step non è ancora completato, monta i tool corrispondenti solo dopo aver terminato quello step.
+
+    → Guida dettagliata: [Custom tool e skill](/integrazioni/conduit/custom-tools)
+  </Step>
+
+  <Step title="Workflow">
+    Configura i workflow per le automazioni deterministiche: late check-in/out, messaggi di benvenuto programmati, promemoria per la restituzione delle chiavi e qualsiasi altra sequenza che non richiede ragionamento dell'agente ma solo esecuzione di regole fisse.
+
+    I workflow si attivano su trigger (es. *X ore prima del check-in*) e possono usare i tool già montati nello step precedente.
+
+    → Guida dettagliata: [Workflow Conduit](/integrazioni/conduit/workflow)
+  </Step>
+
+  <Step title="Telefonia + WABA">
+    Questo è un percorso separato che richiede intervento del supporto Conduit. Il tempo medio di attivazione è **circa 1 settimana** dalla richiesta. Pianificalo in anticipo.
+
+    La configurazione include:
+    - Numero telefonico dedicato con warm transfer al telefono dello studente
+    - Account WhatsApp Business API (WABA) collegato al workspace dello studente
+
+    Apri il ticket al supporto Conduit appena hai completato la KB e i tool — in questo modo quando il canale è pronto, il workspace è già configurato correttamente.
+
+    → Guida dettagliata: [Telefonia e WABA](/integrazioni/conduit/telefonia-waba)
+  </Step>
+</Steps>
+
+<Note>
+  Per la documentazione completa dell'integrazione Conduit — architettura del workspace, limiti, gestione degli errori e best practice — consulta [/integrazioni/conduit/panoramica](/integrazioni/conduit/panoramica).
+</Note>
+
+---
+
+Step completato? Procedi con → [Step 4 · Smart check-in](/onboarding/4-smart-checkin)

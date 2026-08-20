@@ -1,17 +1,53 @@
 ---
-title: "Notion — Bridge verso Conduit KB"
-description: "Come il Notion alimenta la KB per-listing."
+title: "Bridge Notion → Conduit KB: sincronizzazione per-listing"
+sidebarTitle: "Bridge Conduit"
+description: "Come il bridge trasforma i record del DB Apartments in nodi KB isolati per ogni listing in Conduit e come verificare che la sincronizzazione funzioni."
 ---
 
-Il **bridge** trasforma le pagine Notion in nodi KB Conduit **per-listing** (scope sulla directory appartamento).
+Il bridge trasforma automaticamente i record del DB Apartments in Notion in cartelle KB per-listing all'interno di Conduit — garantendo che la conoscenza dell'AI su ogni appartamento sia sempre aggiornata e correttamente isolata dagli altri listing. Non è necessario aprire Conduit per modificare manualmente gli articoli: ogni aggiornamento in Notion si propaga alla KB nel giro di pochi minuti.
 
-## Prerequisiti
-_(da compilare)_
+## Come funziona il bridge
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+Il processo di sincronizzazione si svolge in quattro fasi automatiche:
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+1. **Lettura del DB Notion** — La piattaforma Mattone legge il DB Apartments tramite l'API Notion (autenticata via OAuth). Vengono presi in considerazione solo gli appartamenti con il campo **Attivo** spuntato.
+2. **Creazione o aggiornamento della cartella KB** — Per ogni appartamento, il bridge crea (o aggiorna) una cartella KB in Conduit con la proprietà `entity_ids: [listing_id]`. Questa proprietà è il meccanismo di scope che associa la cartella a uno specifico listing nel PMS.
+3. **Popolamento degli articoli KB** — Il bridge genera automaticamente gli articoli all'interno della cartella: istruzioni di accesso, credenziali WiFi, regole della casa, listino. Il contenuto viene estratto dai campi del record Notion.
+4. **Scope per-listing** — L'isolamento è applicato a livello di cartella, non di singolo articolo. Ogni ospite che interagisce con Conduit riceve solo le informazioni relative al proprio listing — senza rischio di contaminazione tra appartamenti diversi.
 
-<Note>**In costruzione.** Fonte da portare: project_notion_conduit_kb_bridge (transform PR).</Note>
+## Quando si aggiorna
+
+Il bridge si aggiorna in due modi:
+
+- **Su evento webhook** — Ogni volta che un record del DB Apartments viene modificato in Notion, Notion invia un webhook alla piattaforma Mattone che avvia immediatamente la sincronizzazione. Le modifiche si propagano alla KB **entro 2–5 minuti**.
+- **Sincronizzazione periodica** — Il bridge esegue comunque una sincronizzazione completa con cadenza regolare, come rete di sicurezza nel caso in cui un webhook non venga ricevuto.
+
+## Come verificarlo
+
+Dopo una modifica in Notion, usa questa procedura per confermare che il bridge abbia sincronizzato correttamente i dati.
+
+<Steps>
+  <Step title="Apporta una modifica riconoscibile a un appartamento in Notion">
+    Apri il DB Apartments e cambia un valore facile da verificare in seguito — per esempio aggiorna la password WiFi nelle **Note accesso** di un appartamento specifico.
+  </Step>
+  <Step title="Attendi 2–3 minuti">
+    Il bridge rileva la modifica via webhook e aggiorna la KB di Conduit. Se il webhook non è attivo, potrebbe volerci fino alla prossima sincronizzazione periodica (vedi Troubleshooting).
+  </Step>
+  <Step title="Interroga Conduit sul WiFi di quell'appartamento">
+    Apri Conduit e poni una domanda sul WiFi dell'appartamento modificato, simulando la conversazione di un ospite. Per esempio: *"Qual è la password del WiFi?"*
+  </Step>
+  <Step title="Verifica che la risposta rifletta il nuovo valore">
+    Conduit deve rispondere con la password aggiornata, non con quella precedente. Se riporta il vecchio valore, la sincronizzazione non è avvenuta — vai alla sezione Troubleshooting.
+  </Step>
+  <Step title="Esegui l'anti-leak check su un appartamento diverso">
+    Ripeti la stessa domanda simulando un ospite di un **appartamento diverso**. Conduit deve rispondere con i dati del secondo appartamento, non con quelli del primo. Questo verifica che lo scope per-listing funzioni correttamente e che non ci sia contaminazione tra listing.
+  </Step>
+</Steps>
+
+<Warning>
+  Se il `listing_id` nel DB Notion non corrisponde a quello in KrossBooking, il bridge crea cartelle KB con uno scope errato: le informazioni non vengono consegnate all'ospite giusto, oppure le cartelle rimangono disconnesse da qualsiasi prenotazione. Verifica sempre l'allineamento del `listing_id` prima di dichiarare il setup completato.
+</Warning>
+
+<Note>
+  Il bridge è un componente interno della piattaforma Mattone — non è necessario configurarlo manualmente. In caso di sincronizzazione rotta o anomalie, consulta la pagina [Troubleshooting Notion](/integrazioni/notion/troubleshooting) per la diagnosi e la risoluzione.
+</Note>

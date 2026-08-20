@@ -1,19 +1,73 @@
 ---
-title: "Conduit — Custom tools"
-description: "Le azioni dell'AI + la regola tool↔skill."
+title: "Conduit Custom Tools: azioni AI e regola tool+skill"
+sidebarTitle: "Custom Tools"
+description: "Catalogo e configurazione dei custom tool Conduit: Kross, Smart Lock e Stripe. Come verificare che tool e skill abbinata funzionino insieme correttamente."
 ---
 
+Un custom tool è un'azione concreta che l'agente Conduit può eseguire su richiesta dell'ospite: aprire una porta, generare un link di pagamento, verificare la disponibilità per certe date. I tool vengono provisionati dal team Mattone sul workspace dello studente — lo studente non li configura da solo. Il principio fondamentale da ricordare è che ogni tool deve avere la sua skill di prompting abbinata: senza di essa, l'agente non sa né quando né come usare il tool.
 
-Un **custom tool** è un'azione che l'AI può eseguire (aprire porta, generare link Stripe, controllare disponibilità).
+## Regola d'oro: tool + skill sempre insieme
 
-## Regola d'oro: tool + skill SEMPRE insieme
-Aggiungere un tool **senza** la skill che spiega all'agente *quando/come* usarlo = l'agente lo **ignora** o ripiega sul path nativo (inaffidabile). La skill di prompting è **parte** della procedura di inserimento.
+Aggiungere un tool senza la skill che spiega all'agente quando e come usarlo è equivalente a non aggiungerlo. L'agente Conduit non "scopre" autonomamente i tool disponibili: deve ricevere istruzioni esplicite tramite la skill su quale trigger usare il tool, quali parametri passare e come interpretare la risposta.
 
-## Catalogo tool (Cosmica → studente)
-Kross: `check-availability`, `check-portal-status`, `get-reservation-status`, `get-checkin-instructions`, `get-in-house-guests`, `get-incomplete-portals` · Smart-lock: `open-door`, `check-device-status`, `get-access-link` · Stripe: `stripe-payment-link`. Ognuno con la sua skill.
+<Warning>
+  Non montare mai un tool senza configurare immediatamente la sua skill abbinata. Un tool senza skill viene ignorato dall'agente oppure causa un fallback al path nativo, che è inaffidabile e difficile da diagnosticare. Il catalogo delle skill è in [`riferimenti/skill-index`](/riferimenti/skill-index).
+</Warning>
+
+## Catalogo tool disponibili
+
+### Kross (prenotazioni e check-in)
+
+| Tool | Descrizione | Skill abbinata |
+|---|---|---|
+| `check-availability` | Verifica la disponibilità dell'appartamento per un intervallo di date | `kross-availability-checker` |
+| `check-portal-status` | Controlla lo stato del portale check-in dell'ospite (completato / incompleto) | `kross-portal-status` |
+| `get-reservation-status` | Recupera i dettagli completi di una prenotazione attiva | `kross-reservation-reader` |
+| `get-checkin-instructions` | Restituisce le istruzioni di accesso personalizzate per la prenotazione | `kross-checkin-instructions` |
+| `get-in-house-guests` | Elenca gli ospiti attualmente in casa per il listing | `kross-in-house-reader` |
+| `get-incomplete-portals` | Restituisce l'elenco delle prenotazioni con portale check-in non completato | `kross-incomplete-portals` |
+
+### Smart Lock (serrature)
+
+| Tool | Descrizione | Skill abbinata |
+|---|---|---|
+| `open-door` | Apre la porta dello smart lock collegato al listing | `smart-lock-opener` |
+| `check-device-status` | Verifica lo stato online/offline del dispositivo smart lock | `smart-lock-status` |
+| `get-access-link` | Genera un link di apertura temporaneo da inviare all'ospite | `smart-lock-link-generator` |
+
+### Stripe (pagamenti)
+
+| Tool | Descrizione | Skill abbinata |
+|---|---|---|
+| `stripe-payment-link` | Genera un link di pagamento Stripe per l'importo specificato (late check-out, extra, deposito) | `payment-link-generator` |
 
 ## Chi li monta
-⚠️ I custom tool li monta **il team** (provisioning), non lo studente. Fonte di verità = `catalog.json`.
 
-<Note>Fonte: `api-kross-mattone/conduit-custom-tool/` (catalog.json + README) + PROVISIONING.md. NB: i custom tool si registrano via dashboard/provisioning, non tutti via MCP.</Note>
+I custom tool sono provisionati esclusivamente dal team Mattone durante l'onboarding o su richiesta successiva. Lo studente non ha accesso alla configurazione dei tool. La fonte di verità per il catalogo completo e le configurazioni è il file `catalog.json` nel repository `api-kross-mattone/conduit-custom-tool/`.
 
+<Warning>
+  Non modificare o rimuovere tool dal workspace di uno studente senza verificare prima quali workflow e skill dipendono da quel tool. La rimozione di un tool attivo blocca silenziosamente tutti i flussi che lo usano.
+</Warning>
+
+## Come verificare che un tool funzioni
+
+Dopo aver montato un tool, esegui sempre questa verifica prima di dichiarare l'onboarding completato.
+
+<Steps>
+  <Step title="Verifica che il tool appaia nell'elenco del workspace">
+    Apri il workspace Conduit dello studente e vai nella sezione Tools. Controlla che il tool appena montato sia presente nell'elenco e risulti abilitato. Se non compare, il provisioning non è andato a buon fine: ripeti l'operazione dal catalogo.
+  </Step>
+  <Step title="Verifica che la skill abbinata esista e sia attiva">
+    Vai nella sezione Skills del workspace. Cerca la skill corrispondente al tool (vedi tabella sopra). Verifica che sia in stato **attivo** — una skill salvata ma disabilitata ha lo stesso effetto di una skill assente: il tool viene ignorato.
+  </Step>
+  <Step title="Testa con un messaggio ospite realistico">
+    Apri una conversazione di test nel workspace e invia un messaggio che dovrebbe attivare il tool. Per esempio, per `open-door` invia "Puoi aprire la porta?"; per `stripe-payment-link` invia "Vorrei fare il late check-out, quanto costa?". Usa un linguaggio naturale, non comandi tecnici — così validi che la skill funziona nelle condizioni reali.
+  </Step>
+  <Step title="Controlla i log per confermare che il tool sia stato chiamato">
+    Dopo il test, apri i log della conversazione e verifica che il tool sia stato chiamato esplicitamente (vedrai il nome del tool e i parametri passati). Se nei log compare il path nativo invece del tool — o se l'agente risponde genericamente senza chiamare il tool — la skill non sta funzionando: ricontrolla la formulazione e lo stato di attivazione.
+  </Step>
+</Steps>
+
+<Tip>
+  Se l'agente chiama il tool ma restituisce un errore, il problema è quasi sempre nel parametro `listing_id`: verifica che la skill passi il `listing_id` corretto e che il tool sia configurato per il listing giusto.
+</Tip>

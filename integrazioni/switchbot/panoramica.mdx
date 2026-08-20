@@ -1,15 +1,42 @@
 ---
-title: "SwitchBot — panoramica"
-description: "Smart Lock via Hub Mini: alternativa a Shelly."
+title: "SwitchBot Smart Lock: apertura remota con Hub Mini"
+sidebarTitle: "Panoramica"
+description: "Panoramica dell'integrazione SwitchBot Smart Lock in Mattone: prerequisiti, differenze con Shelly e come abilitare l'apertura remota tramite Hub Mini."
 ---
 
+SwitchBot Smart Lock (Lock o Lock Pro) permette di aprire la porta da remoto tramite un link — richiede un Hub Mini per il controllo cloud ed è l'alternativa a Shelly per gli studenti che hanno già hardware SwitchBot installato. A differenza di Shelly, SwitchBot non comunica direttamente via WiFi: il comando passa dall'Hub Mini alla serratura tramite Bluetooth, e dall'Hub Mini al cloud tramite WiFi.
 
-**SwitchBot** Smart Lock (Lock/Lock Pro): l'ospite apre da link; richiede un **Hub Mini** in loco per il controllo da cloud. Alternativa a Shelly per chi ha già SwitchBot.
+## Prerequisiti CRITICI
+
+<Warning>
+  Prima di procedere con qualsiasi configurazione o test, verifica che **tutti** questi prerequisiti siano soddisfatti:
+
+  - **Hub Mini su WiFi 2.4GHz** — il LED frontale deve essere **BLU fisso** (= connesso al cloud). Un LED giallo o rosso indica che l'Hub è offline.
+  - **Serratura entro ~5 metri dall'Hub Mini** — la comunicazione avviene via Bluetooth; distanze maggiori o muri spessi possono interrompere il segnale.
+  - **Token dall'account OWNER della Home** — l'account member non ha i permessi necessari per il controllo remoto tramite API.
+  - **Cloud Service attivo sulla serratura** — verifica nell'app SwitchBot: Smart Lock → Cloud Service → deve essere attivato.
+</Warning>
 
 <CardGroup cols={2}>
-  <Card title="Collegamento" href="/integrazioni/switchbot/collegamento" icon="link">Token, Device ID, registro, test.</Card>
-  <Card title="Troubleshooting (161)" href="/integrazioni/switchbot/troubleshooting" icon="wrench">Non apre dal link: owner vs member.</Card>
+  <Card title="Collegamento" icon="link" href="/integrazioni/switchbot/collegamento">
+    Guida passo per passo per collegare SwitchBot Smart Lock con token, Device ID e test di apertura.
+  </Card>
+  <Card title="Troubleshooting (161)" icon="wrench" href="/integrazioni/switchbot/troubleshooting">
+    Risolvi l'errore 161 e altri problemi comuni: Hub Mini offline, account member, Cloud Service disabilitato.
+  </Card>
 </CardGroup>
 
-<Warning>Prerequisiti: Hub Mini su WiFi 2.4GHz (LED blu), serratura entro ~5 m, Token dall'account **owner** della Home, Cloud Service attivo.</Warning>
+## SwitchBot vs Shelly
 
+Scegli SwitchBot se lo studente ha già l'hardware SwitchBot installato e non vuole sostituirlo. Scegli Shelly per nuove installazioni: la configurazione è più semplice, non richiede hub intermedio e il device si connette direttamente al WiFi dell'immobile.
+
+| | SwitchBot | Shelly |
+|---|---|---|
+| Hub richiesto | Sì (Hub Mini) | No |
+| Comunicazione serratura | Bluetooth → Hub → Cloud | WiFi → Cloud |
+| Complessità setup | Media | Bassa |
+| Ideale per | Chi ha già SwitchBot | Nuove installazioni |
+
+<Note>
+  Il LED dell'Hub Mini **deve essere BLU** — un LED giallo o rosso indica che l'Hub è offline e nessun comando raggiunge la serratura. Controlla sempre il LED prima di eseguire test o segnalare un'anomalia.
+</Note>

@@ -1,17 +1,49 @@
 ---
-title: "PriceLabs — collegamento"
-description: "Collegare le API PriceLabs."
+title: "Collegare PriceLabs: API key e configurazione account"
+sidebarTitle: "Collegamento"
+description: "Come generare la API key PriceLabs, inserirla in Mattone e configurare il collegamento con KrossBooking per l'aggiornamento automatico dei prezzi."
 ---
 
-Collegamento API (costo $1/unità/mese extra). Una volta collegato, insight nella piattaforma + punti.
+Collega PriceLabs alla piattaforma Mattone per permettere la lettura dei dati di pricing e l'aggiornamento automatico delle tariffe KrossBooking dello studente. Il collegamento richiede due azioni distinte: inserire la API key in Mattone **e** configurare KrossBooking come PMS direttamente dentro PriceLabs — entrambe sono necessarie perché i prezzi si aggiornino correttamente.
 
 ## Prerequisiti
-_(da compilare)_
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+Prima di iniziare, verifica che siano soddisfatte queste condizioni:
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+- **KrossBooking è già connesso** alla piattaforma Mattone (step 2 del flusso di onboarding). Se KrossBooking non è attivo, PriceLabs non ha un canale per inviare i prezzi al PMS.
+- **Lo studente ha un account PriceLabs attivo** — l'account deve essere già creato su [pricelabs.co](https://pricelabs.co). Se non ce l'ha, deve registrarsi prima di procedere.
 
-<Note>**In costruzione.** Fonte da portare: reference_pricelabs_mcp + project_pricelabs_mcp_students.</Note>
+## Collegamento
+
+<Steps>
+  <Step title="Genera la API key in PriceLabs">
+    Lo studente accede al proprio account PriceLabs, poi va su **Account → API Key → Genera nuova chiave**. Copia la chiave generata — verrà mostrata una sola volta.
+  </Step>
+  <Step title="Copia la API key">
+    Usa il pulsante **Copia** accanto alla chiave per salvarla negli appunti. Se la finestra viene chiusa prima di copiarla, bisognerà generarne una nuova (le vecchie chiavi vengono invalidate).
+  </Step>
+  <Step title="Incolla la API key nella piattaforma Mattone">
+    Nella piattaforma Mattone, vai su **Connessioni → PriceLabs**, incolla la API key nel campo dedicato e clicca su **Salva**. La piattaforma testa automaticamente la connessione.
+  </Step>
+  <Step title="Verifica che la connessione risulti verde">
+    Dopo il salvataggio, lo stato della connessione deve diventare **verde** (Connesso). Se rimane rosso, la chiave è errata o non ha i permessi necessari — genera una nuova API key e riprova.
+  </Step>
+  <Step title="Collega KrossBooking come PMS dentro PriceLabs">
+    Questo passaggio va fatto **direttamente in PriceLabs** — non è sufficiente inserire la API key in Mattone. In PriceLabs, vai su **Integrazioni → Channel Manager / PMS → Aggiungi** e seleziona **KrossBooking**. Inserisci le credenziali KrossBooking quando richiesto.
+  </Step>
+  <Step title="Verifica la sincronizzazione dei listing e dei prezzi">
+    In PriceLabs, vai su **Dashboard** e controlla che i listing dello studente siano visibili. Verifica che la colonna **Sync PMS** mostri uno stato attivo. In KrossBooking, controlla che le tariffe future siano state aggiornate da PriceLabs.
+  </Step>
+</Steps>
+
+<Warning>
+  Il collegamento PriceLabs ↔ KrossBooking **deve essere configurato anche dentro PriceLabs**, non solo nella piattaforma Mattone. Senza questo secondo passaggio, la API key permette alla piattaforma Mattone di leggere i dati PriceLabs, ma i prezzi non vengono mai inviati a KrossBooking e le tariffe sul PMS rimangono statiche.
+</Warning>
+
+## Verifica
+
+Il collegamento è completato e funzionante quando:
+
+- La API key in **Connessioni → PriceLabs** mostra stato **verde**.
+- In PriceLabs sono visibili almeno un listing dello studente.
+- La sincronizzazione prezzi con KrossBooking è **attiva** (colonna Sync PMS verde in PriceLabs).

@@ -1,13 +1,21 @@
 ---
-title: "GHL — troubleshooting"
-description: "PIT scaduto, dati mancanti."
+title: "Troubleshooting GHL: PIT scaduto e dati mancanti"
+sidebarTitle: "Troubleshooting"
+description: "Tabella sintomo → causa → soluzione per i problemi più frequenti dell'integrazione GHL: PIT scaduto, dati lead mancanti e scope insufficienti."
 ---
 
+Usa questa pagina per diagnosticare i problemi dell'integrazione GHL. I problemi più comuni sono due: un PIT scaduto o eliminato accidentalmente da GHL, e dati di lead mancanti a causa di scope errati al momento della creazione del token. Prima di escalare, verifica sempre lo stato del PIT in GHL Settings — risolve la maggior parte dei casi.
 
-## Sintomo → Causa → Soluzione
-| Sintomo | Causa | Soluzione |
+## Tabella di diagnosi
+
+| Sintomo | Causa probabile | Soluzione |
 |---|---|---|
-| KPI marketing vuoti | PIT mancante/scaduto o spesa non inserita | rigenera PIT; il CSM inserisce la spesa |
-| Valore lead a zero | opportunità senza valore in GHL | inserisci il valore (a mano o % del potenziale) |
+| **Dati lead non si aggiornano** | PIT scaduto o eliminato da GHL | Vai in GHL → Settings → Private Integrations e verifica che l'integrazione "Mattone Platform" sia ancora attiva; se è stata eliminata, rigenera il PIT seguendo la [procedura completa](/integrazioni/ghl/pit-location) |
+| **ROAS mostra 0 o N/A** | Opportunity value non compilato nel CRM GHL dello studente | Chiedi allo studente di verificare che tutte le opportunità in pipeline abbiano un valore numerico compilato in GHL; senza questo campo il calcolo del ROAS non è possibile |
+| **Campagna non attribuita** | Campaign ID mancante sul contatto GHL — il tracking UTM non è configurato correttamente | Verifica nell'account GHL dello studente che l'integrazione campagne sia attiva e che i parametri UTM siano configurati sulle landing page e negli annunci |
+| **Rebilling non parte** | Attivazione manuale non eseguita a fine mese 2 | Attiva manualmente il rebilling nell'account agenzia GHL per il sub-account dello studente; consulta la [pagina Rebilling](/integrazioni/ghl/rebilling) per i dettagli |
+| **Scopes insufficienti (403)** | PIT creato con scope errati o incompleti al momento della generazione | Elimina il PIT attuale in GHL Settings e rigenera una nuova integrazione con gli scope corretti: **Contacts Read**, **Opportunities Read**, **Campaigns Read**; aggiorna la variabile `GHL_PIT_<location_id>` nel team tecnico |
 
-<Note>Fonte: reference_ghl_integration + reference_ghl_pit_tokens.</Note>
+<Tip>
+  Per verificare rapidamente se il PIT di uno studente è ancora valido senza aspettare un errore in produzione, vai in **GHL → Settings → Private Integrations** e controlla che l'integrazione denominata "Mattone Platform" sia presente e attiva. Se lo stato mostra "Active", il token è operativo. Se la voce è assente, il token è stato eliminato e va rigenerato prima del prossimo ciclo di aggiornamento dati.
+</Tip>

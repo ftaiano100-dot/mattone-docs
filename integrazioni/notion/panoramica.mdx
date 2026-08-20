@@ -1,15 +1,32 @@
 ---
-title: "Notion — panoramica"
-description: "Il registro appartamenti = anagrafica canonica."
+title: "Notion: registro appartamenti e anagrafica canonica"
+sidebarTitle: "Panoramica"
+description: "Notion è la fonte canonica dell'anagrafica appartamenti: da qui si generano la KB di Conduit, il listino e i contratti per ogni studente."
 ---
 
-
-**Notion** ospita il registro appartamenti dello studente: l'anagrafica da cui nascono KB Conduit, listino, contratti.
+Notion ospita il registro degli appartamenti dello studente — è la fonte di verità da cui vengono generati automaticamente la knowledge base di Conduit, il listino e i contratti. Qualsiasi modifica ai dati di un appartamento va fatta qui: il bridge si occupa di propagarla alla KB senza intervento manuale.
 
 <CardGroup cols={2}>
-  <Card title="Collegamento (OAuth)" href="/integrazioni/notion/collegamento" icon="link">Collegare il workspace Notion.</Card>
-  <Card title="DB Apartments" href="/integrazioni/notion/db-apartments" icon="table">Struttura + allineamento al template.</Card>
-  <Card title="Bridge → Conduit KB" href="/integrazioni/notion/bridge-conduit" icon="arrow-right-arrow-left">Da Notion alla KB per-listing.</Card>
-  <Card title="Troubleshooting" href="/integrazioni/notion/troubleshooting" icon="wrench">Sync rotto, template disallineato.</Card>
+  <Card title="Collegamento (OAuth)" icon="link" href="/integrazioni/notion/collegamento">
+    Collega il workspace Notion dello studente alla piattaforma Mattone tramite OAuth.
+  </Card>
+  <Card title="DB Apartments" icon="table" href="/integrazioni/notion/db-apartments">
+    Struttura del database Apartments e allineamento al template Mattone.
+  </Card>
+  <Card title="Bridge → Conduit KB" icon="arrow-right-arrow-left" href="/integrazioni/notion/bridge-conduit">
+    Come il bridge trasforma i record Notion in nodi KB per-listing in Conduit.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/integrazioni/notion/troubleshooting">
+    Diagnostica e risoluzione dei problemi più comuni dell'integrazione Notion.
+  </Card>
 </CardGroup>
 
+## Perché Notion
+
+Notion è il workspace operativo dello studente: contiene già tutte le informazioni sugli appartamenti in un formato strutturato e facilmente aggiornabile. Usarlo come unica fonte canonica evita la duplicazione dei dati e il rischio di disallineamenti.
+
+Ogni volta che lo studente aggiorna un record nel DB Apartments — cambia le istruzioni di accesso, aggiunge una foto, modifica il regolamento — il bridge rileva la modifica e aggiorna automaticamente la KB di Conduit per quel listing. Non è mai necessario aprire Conduit e modificare manualmente gli articoli KB.
+
+<Note>
+  Notion è il workspace dello studente — se il workspace Notion non è collegato via OAuth, il bridge non funziona e la KB di Conduit non si aggiorna. Verifica sempre lo stato della connessione prima di una sessione di onboarding.
+</Note>

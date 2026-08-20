@@ -1,17 +1,63 @@
 ---
-title: "1 · Anagrafica & Notion"
-description: "Registro appartamenti dello studente = base di tutto."
+title: "Step 1 · Anagrafica e registro appartamenti su Notion"
+sidebarTitle: "1 · Anagrafica"
+description: "Crea e allinea il database Apartments su Notion: fonte canonica per KB, listino e contratti. Deve essere completo prima di ogni altro step."
 ---
 
-**Obiettivo:** registro appartamenti completo e ordinato su Notion. Base di KB, listino, contratti.
+Il registro appartamenti su Notion è la fonte canonica da cui dipendono tutti gli altri sistemi: la Knowledge Base di Conduit, il listino prezzi, i contratti e le istruzioni di accesso. Nessun altro step può essere completato correttamente se questo database non è allineato al template Mattone e compilato con tutti i dati reali dello studente. Prenditi il tempo necessario per farlo bene prima di proseguire.
 
-## Prima
-- Notion dello studente collegato (OAuth su `/connessioni`).
-- Elenco appartamenti reali: nome, indirizzo, PMS, listing_id.
+## Prerequisiti
+
+Prima di iniziare questo step, verifica che siano soddisfatte queste condizioni:
+
+- Il workspace Notion dello studente è connesso alla piattaforma Mattone tramite OAuth (dalla sezione Connessioni della piattaforma Mattone)
+- Hai in mano la lista reale degli appartamenti gestiti dallo studente, ciascuno con:
+  - Nome dell'appartamento (es. *Loft Navigli A*)
+  - Indirizzo completo
+  - PMS di riferimento (es. KrossBooking)
+  - `listing_id` assegnato dal PMS
 
 ## Step (in ordine)
-1. Verifica che il DB *Apartments* esista e sia allineato al template.
-2. Compila i campi mancanti (foto, indirizzo, note accesso).
-3. Segna quali appartamenti hanno smart-lock e quale PMS.
 
-<Note>**In costruzione.** Fonte da portare: `api-kross-mattone/team-runbook/notion-to-conduit-kb-onboarding.md` + bridge KB (mattone-platform PR #17).</Note>
+<Steps>
+  <Step title="Verifica che il database Apartments esiste ed è allineato al template">
+    Apri il workspace Notion dello studente e individua il database *Apartments*. Controlla che la struttura delle colonne corrisponda esattamente al template Mattone: se mancano proprietà obbligatorie (es. `listing_id`, `smart_lock`, `pms`) o ne esistono di extra non previste, allinea il database prima di procedere.
+
+    Consulta la guida alla struttura del DB e all'allineamento del template su [/integrazioni/notion/db-apartments](/integrazioni/notion/db-apartments).
+  </Step>
+
+  <Step title="Compila i campi mancanti per ogni appartamento">
+    Per ogni riga del database, verifica e completa i seguenti campi:
+
+    - **Foto** — almeno una foto dell'appartamento (usata nella KB)
+    - **Indirizzo** — indirizzo completo comprensivo di CAP e città
+    - **Note di accesso** — istruzioni per raggiungere l'appartamento, codici citofono, indicazioni per il parcheggio
+    - **listing_id** — identificativo univoco dell'appartamento nel PMS; questo campo è obbligatorio e deve essere valorizzato per ogni appartamento
+
+    Se un campo non è applicabile, inserisci esplicitamente `N/A` per indicare che è stato valutato e non lasciarlo vuoto.
+  </Step>
+
+  <Step title="Indica smart lock e PMS per ogni appartamento">
+    Per ogni appartamento, compila:
+
+    - **Smart lock** — imposta il valore corretto: `Shelly`, `SwitchBot`, oppure `Nessuna`. Questo campo determina se lo Step 4 (Smart check-in) si applica o meno a quell'appartamento.
+    - **PMS** — seleziona il PMS associato (es. `KrossBooking`). In questa fase lo studente usa un solo PMS, ma il campo deve essere valorizzato correttamente per ogni appartamento.
+  </Step>
+</Steps>
+
+## Verifica
+
+Questo step è **completo** quando:
+
+- Il database *Apartments* su Notion è allineato alla struttura del template Mattone (nessuna colonna obbligatoria mancante)
+- Ogni appartamento ha il campo `listing_id` valorizzato con l'ID reale dal PMS
+- I campi foto, indirizzo e note di accesso sono compilati per tutti gli appartamenti
+- Il campo `smart_lock` è impostato in modo accurato per ogni appartamento
+
+<Note>
+  Per la struttura dettagliata del DB Apartments e la guida all'allineamento del template, consulta [/integrazioni/notion/db-apartments](/integrazioni/notion/db-apartments).
+</Note>
+
+---
+
+Step completato? Procedi con → [Step 2 · KrossBooking](/onboarding/2-pms-kross)

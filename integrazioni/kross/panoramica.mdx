@@ -1,20 +1,38 @@
 ---
-title: "KrossBooking — panoramica"
-description: "Il PMS degli studenti: cosa fa e come ci colleghiamo."
+title: "KrossBooking: il PMS degli studenti Mattone"
+sidebarTitle: "Panoramica"
+description: "Scopri come KrossBooking si integra con Mattone per leggere prenotazioni, dati ospiti e stato del check-in in tempo reale."
 ---
 
-
-**KrossBooking** è il gestionale prenotazioni della maggior parte degli studenti. Da qui Conduit legge prenotazioni, ospiti, stato check-in.
+KrossBooking è il sistema di gestione prenotazioni (PMS) usato dalla maggior parte degli studenti Mattone. Attraverso questa integrazione, Conduit legge in tempo reale le prenotazioni attive, i dati degli ospiti e lo stato del check-in, permettendo all'assistente AI di rispondere con informazioni sempre aggiornate e di automatizzare i flussi operativi legati agli arrivi e alle partenze.
 
 ## Modello di collegamento
-- **Studenti** = modello **partner** (gateway `mcp.mattone.co`): la terna per-cliente (hotel_id + username + password) sta cifrata nel Vault; il gateway chiama Kross via proxy (1 IP whitelistato).
-- **Cosmica** = chiave **own**, connettore nativo diretto.
 
-## Sotto-argomenti
+Mattone supporta due modelli di connessione a KrossBooking, a seconda del tipo di account:
+
+**Studenti (modello partner via gateway)**
+Gli studenti Mattone si collegano tramite il gateway multi-tenant `mcp.mattone.co`. Ogni studente ha un set di credenziali dedicato — `hotel_id`, `username` e `password` — recuperato dal portale Kross e salvato cifrato nel Vault di piattaforma. Il gateway effettua le chiamate verso Kross tramite un unico IP in whitelist, evitando blocchi legati a IP multipli.
+
+**Cosmica (connettore nativo diretto)**
+Cosmica dispone di una propria chiave API e utilizza un connettore nativo diretto senza passare dal gateway condiviso.
+
+## Sezioni correlate
+
 <CardGroup cols={2}>
-  <Card title="Collegamento" href="/integrazioni/kross/collegamento" icon="link">Terna API, step, test verde.</Card>
-  <Card title="Endpoint & scope" href="/integrazioni/kross/endpoint-scope" icon="code">Auth, read/write, cosa possiamo fare.</Card>
-  <Card title="Rate limit & trappole" href="/integrazioni/kross/rate-limit-trappole" icon="triangle-exclamation">Limiti + errori tipici dell'API.</Card>
-  <Card title="Troubleshooting" href="/integrazioni/kross/troubleshooting" icon="wrench">Auth fallita, 429, foto mancanti.</Card>
+  <Card title="Collegamento" icon="link" href="/integrazioni/kross/collegamento">
+    Come ottenere le credenziali Kross e collegare l'account di uno studente alla piattaforma Mattone.
+  </Card>
+  <Card title="Endpoint & Scope" icon="code" href="/integrazioni/kross/endpoint-scope">
+    Autenticazione, endpoint disponibili e scopo di ciascuna chiamata API verso KrossBooking.
+  </Card>
+  <Card title="Rate Limit & Trappole" icon="triangle-exclamation" href="/integrazioni/kross/rate-limit-trappole">
+    Limiti di frequenza delle chiamate e comportamenti non ovvi dell'API che causano errori silenziosi.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/integrazioni/kross/troubleshooting">
+    Tabella sintomo → causa → soluzione per i problemi più comuni dell'integrazione KrossBooking.
+  </Card>
 </CardGroup>
 
+<Note>
+  In caso di IP blocking su Kross, verifica che il gateway `mcp.mattone.co` sia aggiornato con l'IP corretto nella whitelist Kross. Se il blocco persiste, contatta il team tecnico per aggiornare la configurazione del gateway.
+</Note>

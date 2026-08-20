@@ -1,17 +1,54 @@
 ---
-title: "WABA — collegamento"
-description: "Collegare il numero WhatsApp Business all'agente."
+title: "Collegare WABA: numero WhatsApp Business e Conduit"
+sidebarTitle: "Collegamento"
+description: "Come attivare un numero WhatsApp Business Account per Conduit: prerequisiti, processo di provisioning via Meta Business Manager e verifica finale."
 ---
 
-Collegamento via **Facebook/assistenza Conduit**. Step ordinati: verifica dominio sito → registra numero → collega all'agente. ⚠️ lo fa Francesco.
+Collegare il WABA richiede un numero di telefono non ancora registrato su WhatsApp e l'accesso a Meta Business Manager — il processo dura circa 1 settimana e viene gestito dal team Mattone tramite Conduit support. Lo studente partecipa principalmente nella fase di verifica aziendale su Meta.
 
 ## Prerequisiti
-_(da compilare)_
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+Prima di aprire la richiesta di provisioning, verifica che lo studente abbia tutto il necessario:
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+- **Numero di telefono** non registrato su WhatsApp normale (account privato o Business) — oppure da portare via processo di migrazione (più lungo)
+- **Accesso a Meta Business Manager** — se lo studente non ha un account, deve crearne uno su [business.facebook.com](https://business.facebook.com)
+- **Documento di identità aziendale** per la verifica Meta (visura camerale o documento equivalente)
+- **Circa 1 settimana** di tempo disponibile per l'approvazione — non avviare il processo se il go-live è imminente
 
-<Note>**In costruzione.** Fonte da portare: reference_waba_numero_chre + telephony playbook.</Note>
+## Processo
+
+<Steps>
+  <Step title="Lo studente prepara i prerequisiti">
+    Lo studente verifica di avere il numero di telefono libero, l'accesso a Meta Business Manager e i documenti aziendali pronti. Comunica a Francesco che è pronto per iniziare.
+  </Step>
+  <Step title="Francesco apre la richiesta di provisioning">
+    Francesco (team Mattone) apre una richiesta di provisioning WABA tramite Conduit support, indicando il numero di telefono dello studente e il workspace Conduit di destinazione.
+  </Step>
+  <Step title="Conduit support crea il WABA">
+    Il team Conduit support crea il WABA e lo collega al workspace Conduit dello studente. Questa operazione avviene lato Conduit e non richiede azioni da parte dello studente.
+  </Step>
+  <Step title="Meta invia la richiesta di verifica">
+    Meta invia una richiesta di verifica aziendale al Meta Business Manager dello studente. Lo studente riceve una notifica nell'account Manager.
+  </Step>
+  <Step title="Lo studente approva la verifica in Meta Business Manager">
+    Lo studente accede a [business.facebook.com](https://business.facebook.com), trova la richiesta di verifica e completa il processo caricando i documenti aziendali richiesti. Francesco può assistere se necessario.
+  </Step>
+  <Step title="WABA attivo — test di invio">
+    Una volta approvato da Meta, il WABA è attivo. Invia un messaggio di test al numero per verificare che la ricezione funzioni correttamente. Controlla che il numero appaia nelle impostazioni Conduit del workspace.
+  </Step>
+</Steps>
+
+<Warning>
+  Non usare un numero già attivo su WhatsApp normale (account privato) — il processo di migrazione da WhatsApp normale a WhatsApp Business API è complesso, richiede tempo aggiuntivo e può causare un periodo di downtime durante il quale il numero non riceve messaggi.
+</Warning>
+
+## Verifica
+
+Dopo l'attivazione, controlla che tutto sia corretto:
+
+- Il WABA appare come **attivo** nelle impostazioni Conduit del workspace dello studente
+- Un **messaggio di test** inviato al numero viene ricevuto correttamente
+
+<Note>
+  Dopo l'attivazione, il numero appare nelle impostazioni Conduit del workspace e le skill di escalation e reminder si attivano automaticamente — non è necessaria alcuna configurazione aggiuntiva lato Mattone per i flussi standard.
+</Note>

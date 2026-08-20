@@ -1,18 +1,62 @@
 ---
-title: "Metodo di troubleshooting"
-description: "Come si debugga qualsiasi integrazione, in 5 mosse."
+title: "Metodo di troubleshooting per le integrazioni Mattone"
+sidebarTitle: "Metodo"
+description: "Il metodo in 5 mosse per diagnosticare qualsiasi problema di integrazione Mattone: dalla riproduzione alla documentazione della soluzione."
 ---
 
-
-Vale per tutto. Non partire a cambiare cose a caso.
+Questo metodo funziona per qualsiasi integrazione — KrossBooking, Conduit, SwitchBot, Stripe, GHL. Non iniziare mai a cambiare impostazioni a caso: ogni modifica non guidata da una diagnosi rischia di oscurare il problema originale e crearne di nuovi. Segui queste 5 mosse nell'ordine in cui sono scritte.
 
 <Steps>
-  <Step title="Riproduci">Fai accadere il problema di proposito (es. premi "Apri" sul link). Serve un caso concreto.</Step>
-  <Step title="Leggi i LOG">Guarda l'esito **reale**: Vercel runtime logs, risposta grezza dell'API (spesso col codice errore), console browser. **Il log batte l'impressione.**</Step>
-  <Step title="Isola">Auth o dispositivo? Nostro codice o servizio esterno? `401` = credenziali; `161` = device offline; `429` = rate limit. Il codice dice dove guardare.</Step>
-  <Step title="Verifica l'ipotesi">Testa la causa prima del fix (es. il cliente fa l'azione dall'app *nello stesso momento* in cui provi tu). Non imporre una causa senza prova.</Step>
-  <Step title="Notifica + documenta">Il fix deve mostrare all'utente **cosa non va e come si risolve**, e lo scenario va aggiunto alla pagina Troubleshooting giusta (col codice).</Step>
+  <Step title="Riproduci">
+    Provoca il problema intenzionalmente. Se la porta non si apre, premi "Apri" dal link e osserva esattamente cosa succede. Se l'agente non risponde, invia il messaggio che dovrebbe triggerare il tool e nota la risposta effettiva.
+
+    Hai bisogno di un caso concreto e riproducibile prima di procedere. Un problema che "a volte capita" o che "qualcuno ha detto che succede" non è ancora un problema su cui puoi lavorare — prima devi vederlo tu stesso.
+  </Step>
+  <Step title="Leggi i LOG">
+    Guarda l'esito reale, non quello che l'interfaccia ti mostra. Le fonti da controllare sono:
+
+    - **Vercel runtime logs** — per i tool MCP e le chiamate server
+    - **Risposta grezza dell'API** — spesso contiene il codice di errore numerico con il significato preciso
+    - **Console del browser** — per i flussi frontend e i redirect di pagamento
+
+    <Warning>
+      **Il log batte l'impressione.** Se l'app dice "scarico" e il log dice `161 - device offline`, il log ha ragione. Agisci sempre sul log, mai sull'impressione.
+    </Warning>
+  </Step>
+  <Step title="Isola">
+    Identifica dove si trova il problema usando il codice di errore come bussola:
+
+    - **401** → problema di autenticazione: credenziali mancanti, scadute o errate nel Vault
+    - **161** → device offline: l'Hub Mini SwitchBot non è raggiungibile (WiFi, alimentazione)
+    - **429** → rate limit: troppe chiamate in un breve intervallo verso l'API esterna
+    - **404** → risorsa non trovata: listing_id errato, tool non esistente, endpoint sbagliato
+    - **500** → errore interno del servizio: può essere nostro o del servizio esterno
+
+    La domanda da rispondere è: il problema è nell'autenticazione o nel device? È nel nostro codice o nel servizio esterno? Il codice di errore ti dice dove guardare — non serve ancora sapere come risolvere.
+  </Step>
+  <Step title="Verifica l'ipotesi">
+    Prima di applicare una soluzione, testa la causa. Se pensi che il problema sia una credenziale scaduta, verifica che quella credenziale sia effettivamente scaduta — non cambiare la configurazione basandoti su una supposizione.
+
+    Un modo semplice: formula la tua ipotesi come "Il problema è X perché il log mostra Y". Se non riesci a completare questa frase con evidenza concreta dal log, torna al passo 2 e leggi più in profondità.
+
+    Cambiare qualcosa senza aver verificato l'ipotesi è la causa principale di debug che si allunga invece di risolversi.
+  </Step>
+  <Step title="Notifica + documenta">
+    Una volta risolto il problema, fai due cose prima di chiudere:
+
+    1. **Notifica** — assicurati che l'utente (studente o operatore) veda un messaggio chiaro che spiega cosa è successo e come è stato risolto. Niente errori silenziosi, niente messaggi generici.
+    2. **Documenta** — aggiungi lo scenario alla pagina Troubleshooting dell'integrazione corrispondente con: il codice di errore, la causa, la soluzione applicata. Il prossimo a incontrare lo stesso problema potrebbe essere un account manager non tecnico alle 22:00.
+  </Step>
 </Steps>
 
-<Tip>Caso scuola: [SwitchBot 161](/troubleshooting/switchbot) — l'app diceva "scarico", i log dicevano "device offline". La differenza ha cambiato il fix.</Tip>
+<Tip>
+  **Caso studio — SwitchBot codice 161:** lo studente segnala che la porta non risponde. L'app SwitchBot mostra la batteria come "scarica". Seguendo il metodo: (1) riproduci il problema premendo "Apri" dal link; (2) leggi i Vercel runtime logs → risposta `161`; (3) isola: `161` = device offline, non batteria scarica; (4) verifica: l'Hub Mini risulta disconnesso dal WiFi dell'appartamento; (5) soluzione: ripristina la connessione WiFi dell'Hub Mini. Il fix basato sull'app (sostituire le batterie) sarebbe stato inutile. Il fix basato sul log (ripristino WiFi) ha risolto il problema in 10 minuti.
+</Tip>
 
+<Note>
+  Per i codici di errore specifici di ogni integrazione, consulta le pagine Troubleshooting dedicate:
+  - **KrossBooking** → `/integrazioni/kross/troubleshooting`
+  - **SwitchBot / Smart lock** → `/integrazioni/switchbot/troubleshooting`
+  - **Stripe / Pagamenti** → `/integrazioni/stripe/troubleshooting`
+  - **Conduit / Agente AI** → `/integrazioni/conduit/troubleshooting`
+</Note>

@@ -1,34 +1,57 @@
 ---
-title: "Manutenzione — come aggiornare questi docs"
-description: "Come aggiungere/aggiornare contenuti senza rompere l'ordine."
+title: "Come aggiornare e mantenere Mattone Docs"
+sidebarTitle: "Manutenzione Docs"
+description: "Guida pratica per il team Mattone: dove inserire nuovi contenuti, come pubblicare una modifica e le regole di stile per tenere la documentazione coerente."
 ---
 
+Questa documentazione è la fonte di verità unica per il team di delivery — quando impari qualcosa di nuovo, da un incidente, da una sessione di supporto Conduit o da un cliente, quel contenuto va qui, nel posto giusto, non in un nuovo file casuale. Una documentazione frammentata è peggio di nessuna documentazione: il team smette di fidarsi e comincia a tenersi le informazioni in privato.
 
-Questi docs sono l'**unica fonte** (single source). Quando impari qualcosa di nuovo — da un incidente, da Conduit (Raniel), da Cosmica (Simone), da un cliente — **va messo qui**, nel posto giusto, non in un file nuovo a caso.
+## Dove metto una cosa nuova
 
-## La struttura (non cambiarla a caso)
-- **Guida** = trasversale (inizia qui, onboarding, casistiche, riferimenti).
-- **Integrazioni** = un **gruppo per integrazione** (macro), con **sotto-pagine** per argomento (KB, custom tools, workflow, troubleshooting…).
-- Ogni integrazione ha SEMPRE: `panoramica` (con le card ai sotto-argomenti) + `troubleshooting` (Sintomo→Causa→Soluzione + codici).
+Prima di creare una pagina nuova, chiediti dove va il contenuto che hai in mano. Nella maggior parte dei casi esiste già la pagina giusta — va solo aggiornata.
 
-## Dove metto una cosa nuova (albero decisionale)
-1. È una **lezione/errore risolto**? → nella pagina **troubleshooting** dell'integrazione giusta (aggiungi una riga alla tabella + il codice/scenario).
-2. È **come si collega/come funziona** un pezzo? → nella sotto-pagina dell'integrazione (es. Conduit → KB / custom-tools / workflow).
-3. È una **procedura ricorrente** (late check-out, extra…)? → in **Casistiche**.
-4. È una **regola operativa** valida per tutto? → in **Best practice**.
-5. È una **nuova integrazione**? → nuovo gruppo in `docs.json` + `panoramica` + sotto-pagine (copia il pattern di una esistente).
-
-<Warning>Non creare pagine parallele sullo stesso tema (confondono). Aggiorna quella che c'è.</Warning>
+<AccordionGroup>
+  <Accordion title="È una lezione o un errore risolto?">
+    Va nella pagina **troubleshooting** dell'integrazione giusta. Aggiungi una riga alla tabella esistente con il codice errore (o sintomo), la causa e la soluzione. Non creare una pagina "errori" separata — tienila vicina all'integrazione a cui appartiene.
+  </Accordion>
+  <Accordion title="È come si collega o funziona un pezzo?">
+    Va nella **sotto-pagina dell'integrazione** corrispondente. Ad esempio, se hai capito come funziona la sincronizzazione della KB con Notion, la spiegazione va in **Conduit → KB**. Se riguarda la configurazione di uno smart lock, va in **Shelly / SwitchBot → configurazione**.
+  </Accordion>
+  <Accordion title="È una procedura ricorrente?">
+    Va in **Casistiche**. Le casistiche sono procedure step-by-step per situazioni che si ripresentano (es. "ospite bloccato fuori", "prenotazione non sincronizzata", "link pagamento non arriva"). Se la stessa sequenza di azioni si ripete più di due volte, documentala lì.
+  </Accordion>
+  <Accordion title="È una regola operativa valida per tutto il team?">
+    Va in **Best practice**. Le best practice sono regole trasversali che non appartengono a una singola integrazione — sicurezza, comunicazione con gli studenti, gestione delle escalation, regole zero-segreti.
+  </Accordion>
+  <Accordion title="È una nuova integrazione?">
+    Crea un nuovo gruppo in `docs.json` seguendo il pattern delle integrazioni esistenti: aggiungi una **panoramica** e le **sotto-pagine** necessarie (configurazione, troubleshooting, tool/skill). Non inventare una struttura nuova — copia il pattern di un gruppo esistente (es. KrossBooking) e adattalo.
+  </Accordion>
+</AccordionGroup>
 
 ## Come si pubblica
-Edita l'`.mdx` → commit → `git push origin main` → **Mintlify auto-deploya**. Se aggiungi/rinomini pagine, aggiorna `docs.json` (l'ordine nella nav = l'ordine che vede il team).
+
+Ogni modifica alla documentazione segue questo flusso:
+
+1. Modifica il file `.mdx` corrispondente nel workspace
+2. Esegui il commit con un messaggio descrittivo (es. `docs: aggiunto troubleshooting porta Shelly offline`)
+3. Lancia `git push origin main`
+4. Mintlify effettua il deploy automatico — la modifica è live in pochi minuti
+
+Se stai **aggiungendo o rinominando pagine**, aggiorna anche `docs.json` prima del push — altrimenti la pagina non compare nella sidebar anche se il file esiste.
 
 ## Regole di stile
-- Linguaggio **plain**, anche per i non-dev. Frasi corte.
-- Ogni troubleshooting = **cosa non va + come si risolve** (mai solo l'errore).
-- Cita la **fonte** (repo/file) quando porti contenuto da altri repo, così è tracciabile.
-- I dettagli tecnici profondi (schemi API, codice) → linka il **repo API**, non incollare segreti.
 
-## Stato del porting (da dove viene il contenuto)
-Molte sotto-pagine sono ancora **stub** con la fonte indicata (`api-kross-mattone/…`, memoria, skill). Riempendole, **non perdere nulla**: porta le lezioni Raniel (KB per-listing, save bug, dispo), Simone (ops Cosmica), il **bridge Notion↔Conduit** della piattaforma, il catalogo tool. Poi si depreca `mattone-integrations-docs`.
+Segui queste regole per mantenere la documentazione coerente e leggibile anche per chi non ha un background tecnico.
 
+- **Linguaggio plain, anche per i non-dev.** Evita acronimi senza spiegazione e gergo tecnico non necessario. Se devi usare un termine tecnico, spiegalo la prima volta che compare.
+- **Ogni troubleshooting = problema + soluzione.** Non inserire mai solo il messaggio d'errore senza la soluzione. Una tabella incompleta è fuorviante.
+- **Cita la fonte quando porti contenuto da altri repo.** Se la spiegazione viene da `krossbooking-mcp/team-runbook/`, scrivilo — aiuta chi vuole approfondire a trovare il contesto originale.
+- **Dettagli tecnici profondi (schemi API, payload) → linka il repo, non incollarli qui.** La documentazione è una guida operativa, non un dump del codice. E soprattutto: non incollare mai secrets o chiavi, nemmeno di esempio.
+
+<Warning>
+  Non creare pagine parallele sullo stesso tema. Se esiste già una pagina su "configurazione Shelly", aggiorna quella — non aprirne un'altra con un titolo leggermente diverso. Le pagine duplicate causano confusione e vengono abbandonate: nel giro di settimane nessuno sa quale delle due è aggiornata.
+</Warning>
+
+<Note>
+  La struttura di `docs.json` rispecchia esattamente la struttura della sidebar visibile nel portale. Se rinomini un file `.mdx` o sposti una pagina da un gruppo all'altro, aggiorna `docs.json` di conseguenza — altrimenti la sidebar mostra link rotti o voci fantasma.
+</Note>

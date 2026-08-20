@@ -1,17 +1,50 @@
 ---
-title: "PriceLabs — revenue management"
-description: "Self vs gestione delegata (upsell)."
+title: "Revenue management con PriceLabs: self vs delegato"
+sidebarTitle: "Revenue Management"
+description: "I due modelli di gestione tariffaria — self-managed e delegato — e i concetti fondamentali di PriceLabs per ottimizzare i ricavi degli appartamenti."
 ---
 
-**Self:** colleghi + insight, paghi $1/struttura/mese. **Delegato:** revenue management gestito da Mattone (upsell a pagamento, account manager).
+Una volta connesso PriceLabs, lo studente può gestire in autonomia la propria strategia tariffaria oppure affidarla al team Mattone. Questa pagina spiega entrambi i modelli operativi e introduce i concetti chiave di PriceLabs che devi conoscere per guidare lo studente nella configurazione iniziale o nella delega.
 
-## Prerequisiti
-_(da compilare)_
+## Modello self-managed
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+Nel modello self-managed, lo studente gestisce direttamente le impostazioni del proprio account PriceLabs. Il team Mattone fornisce supporto e linee guida, ma non interviene sulle scelte strategiche.
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+Come funziona in pratica:
 
-<Note>**In costruzione.** Fonte da portare: project_pricelabs_mcp_students + backlog blocco 4.</Note>
+- Lo studente accede al proprio account PriceLabs e configura il **prezzo base** per ogni listing — è il punto di partenza da cui PriceLabs calcola le variazioni.
+- Imposta i **limiti min/max** per ciascun listing, definendo le soglie entro cui PriceLabs può muoversi automaticamente.
+- Personalizza le regole per stagioni, weekend, eventi locali e last-minute direttamente dalla dashboard PriceLabs.
+- KrossBooking riceve i prezzi aggiornati automaticamente senza intervento manuale.
+- Il team Mattone monitora il revenue reporting nella piattaforma e suggerisce aggiustamenti durante le sessioni di check-in mensili.
+
+## Modello delegato (upsell)
+
+Nel modello delegato, il team Mattone gestisce l'intera strategia di pricing per conto dello studente. È il modello consigliato per chi preferisce concentrarsi sulla gestione operativa senza occuparsi dell'ottimizzazione tariffaria.
+
+Il servizio include:
+
+- Definizione della strategia iniziale: prezzo base, min/max, stagionalità per ogni listing.
+- **Boost per eventi** — incrementi automatici in occasione di fiere, concerti, eventi sportivi e festività locali.
+- **Sconti last-minute** — regole per ridurre il prezzo nelle date vicine rimaste invendute, massimizzando il tasso di occupazione.
+- **Analisi della concorrenza** — revisione periodica dei prezzi dei competitor e adeguamento della strategia.
+- **Far-future pricing** — gestione delle tariffe per date a più di 6 mesi, con logiche diverse rispetto al breve periodo.
+- Report mensile di performance inviato allo studente.
+
+Questo modello è disponibile come **servizio aggiuntivo a pagamento** — consulta il listino Mattone per i dettagli.
+
+## Concetti chiave PriceLabs
+
+Questi sono i termini che incontrerai quando lavori con la dashboard PriceLabs o quando spieghi il sistema allo studente.
+
+| Concetto | Descrizione |
+|---|---|
+| Base price | Il prezzo di partenza da cui PriceLabs calcola tutte le variazioni. Va impostato in linea con il mercato locale e aggiornato periodicamente. |
+| Min/Max price | I limiti assoluti entro cui PriceLabs può variare il prezzo. PriceLabs non scenderà mai sotto il min né supererà il max, anche in presenza di forte domanda o bassa occupazione. |
+| Health score | Un indicatore (0–100) di quanto la configurazione del listing è ottimizzata. Punteggi bassi segnalano configurazioni incomplete o limiti min/max troppo restrittivi. |
+| Last-minute discount | Sconto automatico applicato alle date vicine (es. entro 7 giorni) che non hanno ancora una prenotazione, per ridurre le notti invendute. |
+| Far-future pricing | Gestione delle tariffe per date a lungo termine (tipicamente oltre 6 mesi). Di solito si usano prezzi leggermente più alti, con minor granularità rispetto al breve periodo. |
+
+<Tip>
+  Se lo studente è nuovo al dynamic pricing, suggerisci di partire con il modello **self-managed per i primi 30 giorni**: capire come PriceLabs regola i prezzi in risposta alla domanda è fondamentale per prendere decisioni informate in futuro. Dopo il primo mese, valuta insieme allo studente se il modello delegato è più adatto alle sue esigenze.
+</Tip>

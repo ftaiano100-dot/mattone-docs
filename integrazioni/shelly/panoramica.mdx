@@ -1,13 +1,32 @@
 ---
-title: "Shelly — panoramica"
-description: "Relay per citofono/porta: apertura da link."
+title: "Shelly: relay per apertura citofono e porta da remoto"
+sidebarTitle: "Panoramica"
+description: "Panoramica dell'integrazione Shelly in Mattone: come funziona il relay per il self check-in remoto via Cosmica e quando usarlo."
 ---
 
+Shelly è un dispositivo relay che apre citofoni e porte da remoto — è il modello base per il self check-in Cosmica ed è la soluzione smart lock più semplice disponibile in Mattone. Non richiede hub aggiuntivi e si connette direttamente al WiFi dell'immobile, comunicando con la piattaforma tramite il cloud Shelly.
 
-**Shelly** è un relay che apre citofono/porta da remoto. Modello base del self check-in Cosmica.
+## Quando si usa Shelly
+
+Shelly è la scelta ideale per gli studenti che hanno già un citofono elettrico o una serratura elettrica sulla porta d'ingresso. Rispetto a SwitchBot, la configurazione è più rapida perché non è necessario alcun hub intermedio: il device Shelly si installa direttamente sul circuito elettrico del citofono o della porta e si connette al WiFi dell'appartamento.
 
 <CardGroup cols={2}>
-  <Card title="Collegamento" href="/integrazioni/shelly/collegamento" icon="link">Aggiungere un device.</Card>
-  <Card title="Troubleshooting" href="/integrazioni/shelly/troubleshooting" icon="wrench">Relay offline, non apre.</Card>
+  <Card title="Collegamento" icon="link" href="/integrazioni/shelly/collegamento">
+    Guida passo per passo per registrare un device Shelly nella piattaforma Mattone.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/integrazioni/shelly/troubleshooting">
+    Risolvi i problemi più comuni: device offline, token non valido, apertura fallita.
+  </Card>
 </CardGroup>
 
+## Prerequisiti
+
+Prima di procedere con il collegamento, verifica che siano soddisfatti tutti i seguenti requisiti:
+
+- **Device Shelly installato** fisicamente sulla porta o sul citofono dell'immobile
+- **Account Shelly Cloud** creato dallo studente (su [cloud.shelly.it](https://cloud.shelly.it) o app Shelly Smart Control)
+- **Device connesso al WiFi** dell'immobile e visibile come online nell'app Shelly Cloud
+
+<Note>
+  Shelly usa il cloud Shelly come intermediario — il device deve essere online e connesso al cloud per funzionare da remoto. Se il WiFi dell'immobile cade o il device perde corrente, l'apertura remota non è possibile finché la connessione non viene ripristinata.
+</Note>

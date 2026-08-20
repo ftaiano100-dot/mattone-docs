@@ -1,19 +1,54 @@
 ---
-title: "Credenziali — dove stanno, come si ruotano"
-description: "Regola zero-segreti + Vault + rotazione."
+title: "Gestione credenziali: Vault, rotazione e sicurezza"
+sidebarTitle: "Credenziali"
+description: "Regola zero-segreti di Mattone: dove si conservano le credenziali di ogni integrazione, come si ruotano e cosa fare se una chiave viene esposta."
 ---
 
+Mattone applica una regola zero-segreti: nessuna credenziale nei repo, nella documentazione o nelle chat. Tutto ciò che è sensibile è cifrato nel Vault (Supabase) oppure nelle variabili d'ambiente Vercel. Se non sai dove trovare una chiave, la risposta è sempre una di quelle due — mai in un messaggio privato, mai in un file di testo, mai in una nota condivisa.
 
-**Regola zero-segreti:** nessuna credenziale nei repo/docs. Tutto cifrato nel **Vault Supabase**.
+## Dove stanno le credenziali
 
-## Dove stanno
-- Terna Kross, config Shelly, key Stripe per-studente → Vault (`*_<token>`).
-- Token/PIT → env Vercel.
+| Credenziale | Dove sta | Formato |
+|---|---|---|
+| Terna Kross (hotel\_id + username + password) | Vault Supabase | `kross_<token>` |
+| Config Shelly (token Cloud) | Vault Supabase | `shelly_<token>` |
+| Config SwitchBot (token + Device ID) | Vault Supabase | `switchbot_<token>` |
+| Stripe Restricted Key | Vault Supabase | `stripe_<token>` |
+| GHL PIT (per-location) | Env Vercel | `GHL_PIT_<location_id>` |
+| WABA token | Env Vercel | Gestito da Conduit |
 
 ## Come si ruota (quando esposta)
-1. Rigenera dal servizio (es. Stripe → nuova restricted key, revoca la vecchia).
-2. Aggiorna Vault/env.
-3. Verifica health-check verde.
 
-<Warning>Caso reale 20/08: chiave Stripe live incollata in WhatsApp → **ruotare**.</Warning>
+Se una credenziale viene accidentalmente esposta — in una chat, in un commit, in una email — segui questi passi nell'ordine esatto. Non aspettare di capire se c'è stato un abuso: ruota prima, indaga dopo.
 
+<Steps>
+  <Step title="Rigenera la credenziale dal servizio di origine">
+    Vai al servizio che ha emesso la chiave (es. Stripe → dashboard → nuova restricted key, revoca la vecchia) e genera una nuova credenziale. La vecchia va revocata immediatamente, non solo sostituita.
+  </Step>
+  <Step title="Aggiorna Vault o env Vercel">
+    Inserisci la nuova chiave nel posto corretto: Vault Supabase per le credenziali delle integrazioni, variabili d'ambiente Vercel per GHL PIT e WABA. Verifica che il valore vecchio sia stato sovrascritto.
+  </Step>
+  <Step title="Verifica il health-check">
+    Controlla che l'integrazione torni verde dopo la rotazione. Se il health-check rimane rosso, la chiave potrebbe essere stata inserita nel campo sbagliato o con spazi extra — riesegui la verifica.
+  </Step>
+  <Step title="Documenta l'incidente">
+    Scrivi nel canale di riferimento una nota con: data, credenziale ruotata, canale dove era stata esposta, e chi ha eseguito la rotazione. Niente dettagli tecnici, solo il log dell'incidente.
+  </Step>
+</Steps>
+
+<Warning>
+  **Caso reale — 20/08:** una chiave Stripe live è stata incollata su WhatsApp per essere condivisa con un collaboratore. È stata ruotata immediatamente appena individuata. Se succede: esegui lo step 1 prima di qualsiasi altra cosa, anche prima di rispondere al messaggio.
+</Warning>
+
+## Regola zero-segreti
+
+Le credenziali non vanno mai in:
+- Repository Git (né in commit, né in file di config, né nella history)
+- Pagine di documentazione (incluse queste — non incollare mai una chiave reale)
+- Gruppi o chat (WhatsApp, Slack, Telegram, email)
+
+Se uno studente ti invia una chiave via chat per "farti prima", **ruotala prima di usarla**. Poi spiegagli la procedura corretta per il prossimo aggiornamento.
+
+<Tip>
+  Prima di ogni onboarding, verifica che tutte le credenziali dello studente siano già presenti nel Vault — non in un thread di messaggi privati, non in un foglio Excel, non nella tua memoria. Se non le trovi nel Vault, non procedere con l'attivazione finché non sono state caricate correttamente.
+</Tip>

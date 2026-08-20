@@ -1,17 +1,65 @@
 ---
-title: "2 · PMS — KrossBooking"
-description: "Provisioning API Kross per lo studente."
+title: "Step 2 · Collegare KrossBooking come PMS dello studente"
+sidebarTitle: "2 · KrossBooking"
+description: "Connetti KrossBooking alla piattaforma Mattone per dare a Conduit accesso a prenotazioni, dati ospite e stato check-in dello studente in tempo reale."
 ---
 
-**Obiettivo:** collegare il PMS così Conduit legge prenotazioni/ospiti.
+Collega KrossBooking così che Conduit possa leggere le prenotazioni, i dati degli ospiti e lo stato del check-in per tutti gli appartamenti dello studente. Senza questa connessione attiva e verde, l'agente AI non ha accesso alle informazioni sulle prenotazioni e non può svolgere il suo lavoro. Completa questo step solo dopo aver finito l'anagrafica Notion.
 
-## Prima
-- Anagrafica Notion fatta (step 1).
-- Dallo studente: **hotel_id + username + password API** (portale Kross → API).
+<Warning>
+  Le credenziali Kross non vanno mai condivise in chat — richiedile allo studente tramite canale sicuro e salvale immediatamente nel Vault. Non tenerle in chiaro in nessun altro posto.
+</Warning>
+
+## Prerequisiti
+
+- [Step 1 · Anagrafica & Notion](/onboarding/1-anagrafica-notion) completato: il DB Apartments è allineato e tutti i `listing_id` sono valorizzati
+- Dallo studente hai ricevuto tramite canale sicuro:
+  - **hotel_id** — identificativo dell'hotel/struttura nel portale Kross
+  - **Username API** — credenziale di accesso alle API (diversa dallo username del portale web)
+  - **Password API** — ottenibile dal portale KrossBooking nella sezione *API*
 
 ## Step (in ordine)
-1. Admin piattaforma → *Collega Kross* → inserisci la terna → salva (cifrata nel Vault).
-2. Il sistema testa via gateway `mcp.mattone.co` → deve tornare **verde**.
-3. Se rosso: vedi [Troubleshooting Kross](/troubleshooting/kross).
 
-<Note>**In costruzione.** Fonte da portare: `api-kross-mattone/team-runbook/flusso-onboarding-studente-kross.md` + `provisioning/`.</Note>
+<Steps>
+  <Step title="Inserisci le credenziali nella piattaforma Mattone">
+    Dalla piattaforma Mattone, apri il pannello **Admin → Collega Kross** per lo studente in questione. Inserisci i tre valori ricevuti:
+
+    - `hotel_id`
+    - Username API
+    - Password API
+
+    Premi **Salva**. Le credenziali vengono cifrate e archiviate nel Vault — non vengono mai mostrate in chiaro dopo il salvataggio.
+  </Step>
+
+  <Step title="Verifica il test di connessione">
+    Dopo il salvataggio, il sistema esegue automaticamente un test di connessione attraverso il gateway `mcp.mattone.co`. Attendi il risultato:
+
+    - **Verde** ✅ — la connessione è attiva; Conduit può già interrogare le API Kross per questo studente. Procedi al passo successivo.
+    - **Rosso** ❌ — la connessione ha fallito. Vedi la sezione qui sotto.
+  </Step>
+
+  <Step title="In caso di esito rosso: diagnostica">
+    Se il test restituisce rosso, non procedere allo step successivo. Controlla in quest'ordine:
+
+    1. Le credenziali sono quelle **API** (non quelle del portale web)
+    2. L'`hotel_id` è corretto — lo studente a volte confonde l'ID hotel con l'ID catena
+    3. L'account API è abilitato nel portale Kross (alcuni account hanno le API disattivate di default)
+
+    Per una guida completa alla diagnostica, consulta [/integrazioni/kross/troubleshooting](/integrazioni/kross/troubleshooting).
+  </Step>
+</Steps>
+
+## Verifica
+
+Questo step è **completo** quando:
+
+- Il test di connessione via `mcp.mattone.co` restituisce **verde**
+- Da un pannello di test, Conduit riesce a recuperare almeno una prenotazione reale per lo studente (anche storica)
+
+<Note>
+  Per la documentazione completa dell'integrazione KrossBooking — endpoint disponibili, scope delle API, limiti di frequenza e casi limite — consulta [/integrazioni/kross/panoramica](/integrazioni/kross/panoramica).
+</Note>
+
+---
+
+Step completato? Procedi con → [Step 3 · Conduit](/onboarding/3-conduit)

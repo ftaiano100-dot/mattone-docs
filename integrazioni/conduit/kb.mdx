@@ -1,23 +1,58 @@
 ---
-title: "Conduit — Knowledge Base"
-description: "Come si scrive la KB senza leak tra appartamenti."
+title: "Conduit KB: knowledge base per-listing e senza leak"
+sidebarTitle: "Knowledge Base"
+description: "Configura la KB Conduit per-listing: scoping corretto con entity_ids, tipi di nodo e bridge Notion per evitare leak di dati tra appartamenti."
 ---
 
+La Knowledge Base è l'insieme di documenti che l'AI legge per rispondere agli ospiti: codice WiFi, indirizzo, regole della casa, istruzioni lockbox, listino prezzi. Deve essere organizzata strettamente per appartamento — ogni listing ha la propria KB isolata. Un errore di scoping fa sì che l'AI risponda a un ospite con le informazioni di un altro appartamento, causando un leak di dati che può avere conseguenze operative gravi (ospite che si presenta alla porta sbagliata, codice di accesso condiviso con il soggetto sbagliato, tariffe errate).
 
-La KB sono i documenti che l'AI cita (WiFi, indirizzo, regole, lockbox…).
+## Regola non negoziabile: per-listing, mai globale
 
-## Regola non negoziabile: PER-LISTING, mai globale
-Un nodo KB senza `entity_ids` viene recuperato su **ogni** conversazione di **ogni** appartamento → l'AI dà l'info dell'appartamento sbagliato (leak). 
+Un nodo KB senza `entity_ids` viene recuperato in **ogni conversazione, per ogni appartamento** dello studente. Questo significa che se crei un articolo globale (senza scope), l'AI lo usa come contesto per qualsiasi ospite — indipendentemente dall'appartamento che sta cercando. Il risultato è un leak garantito: l'ospite del Loft Navigli A riceve le istruzioni di accesso del Loft Navigli B, o il WiFi di un appartamento compare nella risposta per un altro.
 
-### Come si scoping-a bene
-- Lo **scope funziona solo sulla DIRECTORY**, non sull'articolo (`entity_ids` a livello articolo viene **ignorato** silenziosamente).
-- → crea una **cartella per-appartamento** con `entity_ids:[listingId]` e scrivi gli articoli **dentro** (ereditano lo scope).
+<Warning>
+  KB senza scope = leak garantito. Non creare MAI un articolo KB a livello globale senza `entity_ids` sulla directory. Anche un singolo articolo globale compromette l'isolamento dell'intero workspace.
+</Warning>
 
-## Tipi di nodo
-`standard` (default, retrieval soft) · `rule` (hard, per policy/security) · `structured` (listino/campi).
+## Come si fa lo scoping corretto
+
+<Steps>
+  <Step title="Crea una cartella per ogni appartamento in Conduit">
+    Nella sezione Knowledge Base del workspace Conduit dello studente, crea una nuova cartella (directory) per ciascun appartamento. Assegna alla cartella gli `entity_ids: [listingId]` corrispondenti al `listing_id` Kross dell'appartamento. Questo è il punto più critico: senza questo campo, la directory è globale.
+  </Step>
+  <Step title="Crea gli articoli DENTRO la cartella scopata">
+    Tutti gli articoli (WiFi, indirizzo, regole, lockbox, listino) devono essere creati **all'interno** della cartella, non al livello radice del workspace. Gli articoli dentro una cartella scopata ereditano automaticamente lo scope della cartella — non devi impostare `entity_ids` a livello di singolo articolo.
+  </Step>
+  <Step title="Non impostare entity_ids a livello di articolo">
+    L'impostazione di `entity_ids` a livello di singolo articolo è **ignorata silenziosamente** da Conduit. Lo scope funziona solo a livello di directory. Se imposti `entity_ids` sull'articolo credendo di averlo scopato, stai lavorando con un falso senso di sicurezza: l'articolo è di fatto globale.
+  </Step>
+  <Step title="Verifica: testa una domanda ospite cross-appartamento">
+    Dopo ogni modifica alla KB, simula una conversazione ospite per l'appartamento appena configurato e verifica che la risposta contenga solo le informazioni di quell'appartamento. Poi testa la stessa domanda simulando un ospite di un altro appartamento: la risposta non deve contenere dati del primo. Se c'è cross-contaminazione, il problema è quasi sempre una directory senza `entity_ids`.
+  </Step>
+</Steps>
+
+## Tipi di nodo KB
+
+Conduit supporta tre tipi di nodo KB. Scegli il tipo corretto in base al contenuto che stai inserendo.
+
+| Tipo | Quando usarlo | Comportamento |
+|---|---|---|
+| `standard` | Contenuto generale: indirizzo, codice WiFi, regole della casa, istruzioni lockbox | Retrieval soft — viene incluso nel contesto quando la query ospite è semanticamente rilevante |
+| `rule` | Policy di sicurezza, limitazioni rigide, istruzioni obbligatorie | Hard — viene **sempre** applicato alla conversazione, indipendentemente dalla query; non può essere ignorato dall'agente |
+| `structured` | Listino prezzi, tariffe, campi con valori numerici o date | Retrieval con match su campi — ottimizzato per ricerche strutturate (es. "quanto costa il late check-out?") |
+
+<Info>
+  Usa il tipo `rule` con parsimonia: ogni nodo `rule` viene caricato in ogni risposta dell'agente, aumentando il consumo di token. Riservalo alle policy che devono essere sempre rispettate, non al contenuto informativo generico.
+</Info>
 
 ## Bridge dal Notion
-Il registro appartamenti Notion alimenta la KB via bridge (mattone-platform) → una fonte sola, per-listing.
 
-<Note>Approfondimento: skill `conduit-editing-playbook` (checklist pre-push, anti-pattern). Fonte: reference_conduit_kb_management_rules + project_notion_conduit_kb_bridge.</Note>
+Il registro appartamenti su Notion è la fonte di verità per i dati degli appartamenti dello studente. Il bridge Notion → Conduit (componente `mattone-platform`) sincronizza automaticamente i dati Notion nella KB, creando e aggiornando le cartelle per-listing con lo scope corretto.
 
+Usare il bridge garantisce un'unica fonte canonica: quando lo studente aggiorna il WiFi o l'indirizzo su Notion, la modifica si propaga in KB senza intervento manuale del team. Ogni cartella creata dal bridge ha già gli `entity_ids` correttamente impostati sul `listing_id` Kross corrispondente.
+
+→ Per configurare il bridge: [Bridge Notion → Conduit](/integrazioni/notion/bridge-conduit)
+
+<Tip>
+  Dopo ogni modifica alla KB — sia manuale che via bridge — esegui sempre una domanda di test per verificare che la risposta arrivi dall'appartamento corretto. Non dare mai per scontato che lo scoping funzioni senza verifica diretta.
+</Tip>

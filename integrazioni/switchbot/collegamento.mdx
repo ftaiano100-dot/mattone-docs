@@ -1,19 +1,60 @@
 ---
-title: "SwitchBot — collegamento"
-description: "Token, Device ID, registro, test reale."
+title: "Collegare SwitchBot Smart Lock: token, Device ID e test"
+sidebarTitle: "Collegamento"
+description: "Come collegare SwitchBot Smart Lock a Mattone: recupero del token owner, Device ID, verifica Hub Mini e test di apertura remota con lettura dei log."
 ---
 
+Per abilitare l'apertura remota tramite SwitchBot, hai bisogno del token owner e del Device ID dall'account SwitchBot dello studente — segui questi passaggi nell'ordine esatto. Un errore nell'ordine o l'uso dell'account sbagliato causa il fallimento silenzioso dei comandi, spesso senza un messaggio di errore chiaro.
 
-## Step di collegamento (in ordine)
+## Prerequisiti
+
+Prima di iniziare, verifica che siano tutti attivi:
+
+- **Hub Mini online** — LED frontale BLU fisso (non giallo, non rosso)
+- **Serratura entro ~5 metri dall'Hub Mini** — verifica la posizione fisica
+- **Cloud Service attivo** sulla serratura nell'app SwitchBot (Smart Lock → Cloud Service → attivo)
+
+## Collegamento
+
 <Steps>
-  <Step title="Genera Token + Secret">App SwitchBot → Profilo → Preferenze → tap 10× sulla versione → Developer Options → **Generate**. ⚠️ dall'account **proprietario** dell'Hub (causa #1 dei problemi).</Step>
-  <Step title="Prendi il Device ID">App → serratura → ⚙️ → Device Info.</Step>
-  <Step title="Registra il device">Entry nel registro (slug, deviceId, deviceType, propertyName) + env `SWITCHBOT_TOKEN`/`SWITCHBOT_SECRET`.</Step>
-  <Step title="Testa e leggi i log">Apri dal link. Se fallisce, leggi `rawStatus` → [Troubleshooting](/integrazioni/switchbot/troubleshooting).</Step>
+  <Step title="Abilita la modalità sviluppatore in SwitchBot">
+    Lo studente apre l'app SwitchBot, va su **Profilo → Preferenze → Informazioni app** e tocca il logo SwitchBot 5 volte consecutive per abilitare le **Developer Options**. Poi va su **Profilo → Developer Options** e attiva la modalità sviluppatore.
+  </Step>
+  <Step title="Copia il Token e il Client Secret">
+    In **Developer Options**, copia il **Token** (stringa lunga) e il **Client Secret**. Questi due valori sono necessari per autenticare le chiamate API alla serratura.
+  </Step>
+  <Step title="Individua il Device ID della serratura">
+    Nell'app SwitchBot, vai su **Dispositivi**, seleziona la Smart Lock e annota il **Device ID** visibile nelle impostazioni del dispositivo (di solito una stringa alfanumerica maiuscola).
+  </Step>
+  <Step title="Verifica Hub Mini e Cloud Service">
+    Controlla che il LED dell'Hub Mini sia BLU fisso e che il Cloud Service sulla serratura sia attivo. Questi due controlli devono passare prima di procedere — altrimenti il test fallirà con errore 161.
+  </Step>
+  <Step title="Invia le credenziali in modo sicuro al team Mattone">
+    Lo studente invia **Token + Client Secret + Device ID** al team Mattone tramite il canale sicuro concordato. Mai via email ordinaria, chat non cifrata o documenti condivisi.
+  </Step>
+  <Step title="Salva le credenziali nel Vault">
+    Il team Mattone salva le credenziali cifrate nel Vault, associate alla proprietà dello studente. Nessun membro del team deve conservarle in locale o in strumenti non approvati.
+  </Step>
+  <Step title="Aggiungi il device in piattaforma">
+    Nella piattaforma Mattone, vai su **Devices → Aggiungi SwitchBot**. Inserisci il Token, il Client Secret e il Device ID, quindi salva la configurazione.
+  </Step>
+  <Step title="Test di apertura e lettura dei log">
+    Esegui un'apertura di test dalla piattaforma. **Leggi i log immediatamente dopo** — un errore 161 indica Hub Mini offline, non un problema di credenziali. Il log deve mostrare una risposta di successo senza codici di errore.
+  </Step>
 </Steps>
 
-## Come funziona (comandi)
-- Base: `https://api.switch-bot.com/v1.1`, firma HMAC-SHA256 (token, sign, nonce, t).
-- Sblocco: `POST /devices/{id}/commands` → `{commandType:"command", command:"unlock", parameter:"default"}`.
-- Stato: `GET /devices/{id}/status`.
+<Warning>
+  Usa **SEMPRE** l'account OWNER della Home SwitchBot — l'account member non ha i permessi necessari per il controllo remoto tramite API. Un token generato da un account member non produrrà un errore esplicito in fase di configurazione, ma il comando di apertura fallirà silenziosamente.
+</Warning>
 
+<Warning>
+  Se il LED dell'Hub Mini non è BLU, il comando non raggiunge la serratura — qualunque test effettuato restituirà errore 161 (device offline). Verifica il LED e la connessione WiFi 2.4GHz **prima** di eseguire qualsiasi test.
+</Warning>
+
+## Verifica
+
+Dopo il collegamento, controlla che tutto funzioni:
+
+- Il device appare come **online** nel pannello Devices della piattaforma
+- Il test di apertura **sblocca fisicamente la serratura**
+- I log mostrano una **risposta di successo** — nessun errore 161, nessun 401

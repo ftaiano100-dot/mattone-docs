@@ -1,18 +1,76 @@
 ---
-title: "Conduit — Workflow"
-description: "Sequenze deterministiche (workflowsV2)."
+title: "Conduit Workflow: automazioni deterministiche per gli ospiti"
+sidebarTitle: "Workflow"
+description: "Come funzionano i workflowsV2 di Conduit: struttura trigger-step-variabili, workflow tipici per late check-in/out, upsell e reminder, e come crearli."
 ---
 
+I workflow Conduit (workflowsV2) sono grafi di step deterministici: a differenza dell'agente AI, che ragiona e decide autonomamente, un workflow esegue sempre la stessa sequenza di azioni quando viene attivato dal suo trigger. Questo li rende lo strumento giusto per le automazioni ripetibili dove il comportamento deve essere prevedibile e verificabile: conferma del late check-out, upsell di servizi extra, reminder per il portale check-in non completato. I workflow possono invocare i custom tool già montati sul workspace e inviare notifiche su Slack.
 
-I **workflow** (workflowsV2) sono grafi di step deterministici: trigger → step → variabili → azioni. Utili per automazioni ripetibili (es. late check-in/out, conferma extra).
+## Struttura di un workflow
 
-## Cosa contengono
-- **Trigger** (es. AI_TRIGGER, evento prenotazione).
-- **Step** (invio messaggio, chiamata tool, condizioni, SEND_SLACK_MESSAGE…).
-- **Variabili** e grafo di transizioni.
+Ogni workflow è composto da quattro elementi fondamentali. Comprenderli è indispensabile per diagnosticare i problemi quando un workflow non si attiva o si comporta in modo inatteso.
+
+| Componente | Descrizione |
+|---|---|
+| **Trigger** | Ciò che avvia il workflow. Può essere un `AI_TRIGGER` (l'agente AI decide di avviare il workflow), un evento prenotazione (check-in/out imminente), o un messaggio specifico dell'ospite. |
+| **Step** | La singola azione all'interno del workflow: invio di un messaggio all'ospite, chiamata a un tool (es. `check-availability`, `stripe-payment-link`), valutazione di una condizione if/else, o `SEND_SLACK_MESSAGE` per notificare il team. |
+| **Variabili** | I dati che scorrono tra uno step e il successivo: `listing_id`, `guest_name`, `fee_amount`, `reservation_id`. Le variabili sono definite nella configurazione del workflow e popolate a runtime dal trigger o dai tool. |
+| **Transizioni** | Il grafo che connette gli step: ogni step può avere una transizione incondizionata (sempre) o condizionata (if/else). Le transizioni definiscono il percorso di esecuzione in base all'esito degli step precedenti. |
 
 ## Come si creano
-Via MCP (`create_workflow`) o dashboard. Sono **iniettabili agli studenti** (come il bridge KB) e gestibili dalla piattaforma.
 
-<Note>Approfondimento tecnico (schema workflowsV2): reference_conduit_workflows_authoring. Casi: late check-out [/casistiche/late-early-checkin].</Note>
+I workflow possono essere creati in due modi equivalenti:
 
+- **Via MCP** (`create_workflow`): il team usa il tool MCP per creare o aggiornare workflow programmaticamente. Questo è il metodo preferito durante l'onboarding perché è riproducibile e documentabile.
+- **Via dashboard Conduit**: interfaccia visuale per creare e modificare workflow step per step. Utile per modifiche puntuali o per ispezionare un workflow esistente.
+
+I workflow sono **iniettabili** agli studenti dalla piattaforma (come la KB bridge): il team può distribuire lo stesso workflow a più workspace studente senza riconfigurare da zero. I workflow attivi sono gestibili dalla piattaforma `mattone-platform`.
+
+## Workflow tipici
+
+Questi sono i workflow più frequentemente configurati durante l'onboarding. Usali come riferimento per la configurazione.
+
+<Accordion title="Late check-out">
+  **Trigger:** richiesta ospite di posticipare il check-out (AI_TRIGGER o keyword)
+
+  1. Chiama `check-availability` per verificare se lo slot post-checkout è libero
+  2. Se disponibile: consulta la KB del listino per recuperare la tariffa late check-out
+  3. Chiama `stripe-payment-link` con l'importo corretto e invia il link all'ospite
+  4. Alla conferma del pagamento: invia `SEND_SLACK_MESSAGE` al canale pulizie con il nuovo orario
+
+  Se lo slot non è disponibile, il workflow risponde all'ospite che il late check-out non è possibile per quella data.
+</Accordion>
+
+<Accordion title="Early check-in">
+  **Trigger:** richiesta ospite di anticipare il check-in (AI_TRIGGER o keyword)
+
+  1. Chiama `check-availability` per verificare se lo slot pre-checkin è libero
+  2. Se disponibile: recupera la tariffa early check-in dalla KB
+  3. Genera il link Stripe e invia all'ospite
+  4. Notifica il team pulizie tramite `SEND_SLACK_MESSAGE` con il nuovo orario di arrivo
+
+  Stesso pattern del late check-out, con trigger e parametri adattati.
+</Accordion>
+
+<Accordion title="Extra upsell">
+  **Trigger:** richiesta ospite di un servizio extra (parcheggio, kit bebè, late checkout, ecc.)
+
+  1. Identifica il servizio richiesto tramite AI_TRIGGER
+  2. Consulta la KB del listino dello studente (filtrata per `listing_id`) per trovare prezzo e disponibilità
+  3. Genera il link Stripe con l'importo corretto
+  4. Invia il link all'ospite con un messaggio di conferma
+</Accordion>
+
+<Accordion title="Reminder check-in non completato">
+  **Trigger:** pianificato — X ore prima del check-in della prenotazione
+
+  1. Chiama `check-portal-status` per verificare se il portale check-in è completato
+  2. Se non completato: invia un messaggio di reminder all'ospite con il link al portale
+  3. Se ancora non completato a Y ore dal check-in: invia un secondo reminder e notifica lo studente via Slack tramite `SEND_SLACK_MESSAGE`
+
+  Questo workflow riduce drasticamente i check-in bloccati per portale non completato.
+</Accordion>
+
+<Note>
+  Per lo schema tecnico completo dei workflowsV2 (definizione JSON, tipi di step, formato delle transizioni), consulta la skill `conduit-api-reference` nel workspace. Per i casi operativi dettagliati, vedi le [Casistiche](/casistiche/late-early-checkin).
+</Note>

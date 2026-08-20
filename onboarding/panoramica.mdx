@@ -1,23 +1,63 @@
 ---
-title: "Panoramica onboarding"
-description: "Il flusso completo, in ordine: cosa prima e cosa dopo."
+title: "Onboarding studente Mattone: la procedura completa"
+sidebarTitle: "Panoramica"
+description: "Guida completa ai sei step obbligatori per attivare un nuovo studente su Mattone: dall'anagrafica Notion fino alla verifica finale con smoke test."
 ---
 
+Prima di dichiarare uno studente attivo sulla piattaforma, devi completare sei step in sequenza rigorosa. Ogni step costruisce le fondamenta di quello successivo: Conduit non può leggere le prenotazioni senza il PMS collegato, il PMS non sa quali appartamenti gestire senza l'anagrafica Notion, e così via. Segui l'ordine qui sotto senza eccezioni.
 
-<Info>**La** procedura per ogni nuovo studente. In ordine. Ogni step ha la sua pagina.</Info>
+<Warning>
+  L'ordine non è casuale — saltare uno step rompe ciò che viene dopo.
+</Warning>
 
-L'ordine non è casuale: ogni pezzo si appoggia al precedente.
+## I sei step dell'onboarding
 
 <Steps>
-  <Step title="Anagrafica & Notion">Registro appartamenti completo. Base di KB, listino, contratti. → [Dettaglio](/onboarding/1-anagrafica-notion)</Step>
-  <Step title="PMS — KrossBooking">Colleghi il gestionale così Conduit legge prenotazioni/ospiti. → [Dettaglio](/onboarding/2-pms-kross)</Step>
-  <Step title="Conduit">Monti l'agente: KB per-appartamento, tool + skill, workflow, telefonia/WABA. → [Dettaglio](/onboarding/3-conduit)</Step>
-  <Step title="Smart check-in">Solo se ha smart-lock: apertura da link (Shelly o SwitchBot). → [Dettaglio](/onboarding/4-smart-checkin)</Step>
-  <Step title="Pagamenti — Stripe">Payment link per gli extra in chat. → [Dettaglio](/onboarding/5-pagamenti-stripe)</Step>
-  <Step title="Verifica finale">Checklist + smoke test + log. → [Dettaglio](/onboarding/6-verifica-finale)</Step>
+  <Step title="Anagrafica & Notion">
+    Crea e allinea il registro appartamenti su Notion. Questo database è la fonte canonica per KB, listino prezzi e contratti. Tutto il resto dipende da qui.
+
+    → [Vai allo Step 1](/onboarding/1-anagrafica-notion)
+  </Step>
+
+  <Step title="PMS — KrossBooking">
+    Collega il PMS KrossBooking allo studente. Solo dopo questa connessione Conduit può leggere prenotazioni, dati ospite e stato check-in in tempo reale.
+
+    → [Vai allo Step 2](/onboarding/2-pms-kross)
+  </Step>
+
+  <Step title="Conduit">
+    Configura l'agente AI: crea la KB per-listing a partire da Notion, monta i custom tool (Kross, Shelly, Stripe) ciascuno con la sua skill, definisci i workflow e gestisci il canale telefonico/WABA.
+
+    → [Vai allo Step 3](/onboarding/3-conduit)
+  </Step>
+
+  <Step title="Smart check-in">
+    **Solo se lo studente ha una smart lock.** Configura l'apertura porta da link (Shelly relay o SwitchBot Smart Lock) e testa un'apertura reale prima di procedere.
+
+    → [Vai allo Step 4](/onboarding/4-smart-checkin)
+  </Step>
+
+  <Step title="Pagamenti — Stripe">
+    Collega Stripe con una Restricted Key a permessi minimi in modo che Conduit possa generare link di pagamento per extra e upsell direttamente in chat con l'ospite.
+
+    → [Vai allo Step 5](/onboarding/5-pagamenti-stripe)
+  </Step>
+
+  <Step title="Verifica finale">
+    Prima di dichiarare lo studente attivo, esegui la checklist completa e lo smoke test. Ogni punto deve essere confermato leggendo i log reali, non solo guardando la UI.
+
+    → [Vai allo Step 6](/onboarding/6-verifica-finale)
+  </Step>
 </Steps>
 
 ## Regole trasversali
-- **Log sempre** e **tool sempre con skill**.
-- Se ti blocchi, vai in [Troubleshooting](/troubleshooting/metodo).
 
+Queste due regole si applicano a **tutti** gli step e a qualsiasi intervento futuro sullo studente.
+
+**Leggi sempre i log.** L'interfaccia può mostrare "verde" anche quando qualcosa non funziona. Il log è l'unica prova che un'operazione è andata a buon fine. Apri il pannello log dopo ogni azione significativa.
+
+**Ogni tool vuole la sua skill.** In Conduit, un custom tool senza la skill di prompting abbinata viene ignorato dall'agente. Non installare mai un tool senza configurare contestualmente la skill corrispondente.
+
+<Note>
+  Se rimani bloccato su uno qualsiasi degli step, consulta prima la pagina [Metodo di troubleshooting](/troubleshooting/metodo) — descrive il processo sistematico per diagnosticare qualsiasi problema sulla piattaforma prima di escalare.
+</Note>

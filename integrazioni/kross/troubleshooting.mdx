@@ -1,17 +1,22 @@
 ---
-title: "Kross — troubleshooting"
-description: "Auth fallita, 429 rate limit, foto mancanti."
+title: "Troubleshooting KrossBooking: errori e soluzioni"
+sidebarTitle: "Troubleshooting"
+description: "Tabella sintomo → causa → soluzione per diagnosticare e risolvere i problemi più comuni dell'integrazione KrossBooking su Mattone."
 ---
 
+Usa questa pagina per diagnosticare i problemi dell'integrazione KrossBooking: identifica il sintomo che stai osservando, verifica la causa più probabile e applica la soluzione indicata. Prima di assumere una causa, leggi sempre il log effettivo — il messaggio di errore visibile nell'interfaccia è spesso diverso dall'errore reale riportato dalla risposta API.
 
-## Sintomo → Causa → Soluzione
-| Sintomo | Causa probabile | Come si risolve |
+## Tabella di diagnosi
+
+| Sintomo | Causa probabile | Soluzione |
 |---|---|---|
-| Test connessione rosso | terna errata / password API scaduta | rigenera dal portale Kross, ri-salva |
-| Risposte "occupato" quando è libero | tool nativo flaky / manca skill | usa `check-availability` + skill prompting |
-| 429 troppe richieste | fan-out lookup | cache+coalesce (gateway); non ripetere fan-out |
+| **Auth fallita (401)** | Credenziali errate o scadute | Verifica `hotel_id` + `username` + `password` con lo studente; se scadute, ruotale nel portale Kross e aggiorna il Vault |
+| **Rate limit (429)** | Troppe richieste per struttura in un intervallo breve | Attendi il backoff automatico del gateway; se il problema è ricorrente, riduci la frequenza di polling o abilita il coalescing contattando il team tecnico |
+| **Disponibilità "sempre occupato"** | Endpoint sbagliato (`get-calendar`) o skill `check-availability` mancante in Conduit | Verifica che il flusso usi `GET /v5/calendar/get-availability`; controlla che la skill `check-availability` sia presente e attiva nella configurazione Conduit dello studente |
+| **Foto appartamento mancanti** | Endpoint foto non implementato o `listing_id` errato | Verifica che il `listing_id` in Notion coincida con quello presente in KrossBooking; se l'endpoint foto non è implementato per la struttura, segnalalo al team tecnico |
+| **Prenotazione non trovata** | `listing_id` non allineato tra KrossBooking e la Knowledge Base di Conduit | Apri la scheda studente in Notion, verifica il `listing_id` e assicurati che sia lo stesso usato nello scope della KB di Conduit |
+| **Dati prenotazione vuoti** | Filtri data ignorati server-side — la risposta è vuota perché i filtri non vengono applicati come atteso | Esegui la chiamata senza filtri e valida la risposta completa; vedi [Rate Limit & Trappole](/integrazioni/kross/rate-limit-trappole) per i dettagli |
 
-## Come verificare
-Leggi i log del gateway `mcp.mattone.co` e la risposta grezza Kross.
-
-<Note>Fonte: reference_krossbooking_api + fix 429 (mattone-mcp-gateway).</Note>
+<Note>
+  Per errori non presenti in questa tabella, apri un ticket nel canale tecnico allegando il **log completo** della chiamata — non solo il messaggio di errore visibile nell'interfaccia. Includi: timestamp, `hotel_id`, endpoint chiamato, status code ricevuto e body della risposta. Senza questi dati, la diagnosi richiede molto più tempo.
+</Note>

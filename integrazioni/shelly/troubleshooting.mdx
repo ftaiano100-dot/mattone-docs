@@ -1,13 +1,21 @@
 ---
-title: "Shelly — troubleshooting"
-description: "Relay offline, non apre."
+title: "Troubleshooting Shelly: relay offline e apertura fallita"
+sidebarTitle: "Troubleshooting"
+description: "Diagnosi e risoluzione dei problemi più comuni nell'integrazione Shelly: device offline, token scaduto, canale relay errato e apertura mancata."
 ---
 
+Usa questa guida per diagnosticare i problemi dell'integrazione Shelly — la maggior parte dei casi riguarda un device offline o un token Shelly Cloud scaduto o non valido. Prima di qualsiasi modifica alla configurazione, controlla sempre i log della piattaforma per identificare il codice di errore esatto.
 
-## Sintomo → Causa → Soluzione
-| Sintomo | Causa | Soluzione |
+## Tabella sintomi, cause e soluzioni
+
+| Sintomo | Causa probabile | Soluzione |
 |---|---|---|
-| Device offline | WiFi 2.4GHz caduto / relay non alimentato | verifica alimentazione + WiFi |
-| Non apre ma online | account/deviceId errato | controlla `SHELLY_DEVICES` vs Shelly Cloud |
+| Device offline nel pannello Mattone | WiFi intermittente o device senza corrente | Verifica la connessione WiFi dell'immobile; controlla che il device Shelly sia alimentato correttamente |
+| Token non valido (errore 401) | Token scaduto o rigenerato in Shelly Cloud | Chiedi allo studente di rigenerare il token in Shelly Cloud; aggiorna il token nel Vault |
+| Apertura non funziona ma device è online | Relay configurato sul canale sbagliato | Verifica quale canale (CH1 o CH2) controlla fisicamente la porta; aggiorna la configurazione in piattaforma |
+| Link di apertura non arriva all'ospite | Tool `get-access-link` mancante o skill assente in Conduit | Verifica che il tool `get-access-link` sia attivo e che la skill di check-in sia configurata nel workspace Conduit |
+| Apertura ritardata (oltre 3 secondi) | Cloud Shelly lento o rete locale congestionata | Verifica la latenza del cloud Shelly; testa l'apertura in orari diversi per escludere picchi di traffico |
 
-<Note>Fonte: skill smart-checkin-mcp + reference_shelly_devices.</Note>
+<Tip>
+  Per verificare lo stato del device senza aprire l'app Shelly Cloud o i log Vercel, usa il tool `check-device-status` da Conduit — restituisce lo stato del device in tempo reale con il codice risposta esatto, permettendoti di distinguere subito tra device offline e token non valido.
+</Tip>

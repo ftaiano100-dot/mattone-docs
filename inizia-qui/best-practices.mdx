@@ -1,31 +1,88 @@
 ---
-title: "Best practice operative"
-description: "Le regole d'oro per collegare e debuggare senza rompere nulla."
+title: "Best practice operative per le integrazioni Mattone"
+sidebarTitle: "Best Practice"
+description: "Le 7 regole d'oro che si applicano a ogni integrazione Mattone: seguirle previene l'80% dei problemi prima che si presentino."
 ---
 
-
-Valgono per **ogni** integrazione. Seguendole, l'80% dei problemi non nasce.
+Queste 7 regole si applicano a ogni integrazione, indipendentemente dal pezzo che stai configurando. Non sono linee guida vaghe: derivano da errori reali accaduti sul campo. Seguirle previene l'80% dei problemi prima che si presentino e riduce il tempo di debug quando qualcosa va storto.
 
 ## 1. Segui l'ordine, non improvvisare
-Ogni collegamento ha un **prima** e un **dopo**. L'ordine sbagliato rompe ciò che gira (es. montare un tool Conduit senza la sua skill → l'agente lo ignora). Apri la pagina Integrazioni e segui gli step numerati.
+
+Ogni connessione ha un "prima" e un "dopo": l'ordine dei passi non è arbitrario ma riflette dipendenze reali tra i componenti. Saltare un passo — anche uno che sembra minore — rompe silenziosamente ciò che viene dopo.
+
+Esempio classico: aggiungere un custom tool a Conduit senza configurare la skill corrispondente. L'agente ignora il tool o tenta un percorso nativo inaffidabile, e il problema non produce un errore visibile — il tool semplicemente non funziona.
+
+<Tip>
+  Prima di iniziare qualsiasi configurazione, apri la pagina **Integrazioni** corrispondente e leggi tutti i passi dall'inizio. Identifica le dipendenze prima di toccare qualsiasi impostazione.
+</Tip>
 
 ## 2. Verifica SEMPRE i log dell'esito reale
-<Warning>Non fidarti di ciò che l'app *mostra*. Fidati di ciò che i **log** dicono.</Warning>
-Caso reale (SwitchBot, 20/08): l'app diceva "scarico", i **Vercel runtime log** mostravano codice **161 (device offline)** — problema diverso (batteria OK). Senza i log avremmo cambiato le batterie a vuoto.
-- **Dove**: Vercel runtime logs, risposta grezza dell'API (spesso col codice errore), console browser.
 
-## 3. Ogni deploy/fix DEVE dire cosa non va e come si risolve
-Quando fallisce, l'utente deve vedere **una notifica chiara: problema + come si risolve** — mai un errore muto o fuorviante. E lo scenario va **documentato** qui col codice. Modello: [Troubleshooting SwitchBot](/troubleshooting/switchbot).
+Quello che mostra l'interfaccia di un'app è spesso una semplificazione — o peggio, un messaggio fuorviante. I log mostrano l'esito reale. Non fidarti di ciò che l'app ti dice: fidati di ciò che i log mostrano.
+
+<Warning>
+  **Caso reale — SwitchBot, 20 agosto:** l'app SwitchBot mostrava lo stato della batteria come "scarica". I Vercel runtime logs restituivano invece il codice `161`, che corrisponde a **device offline** (Hub Mini non raggiungibile). La diagnosi basata sull'app avrebbe portato a sostituire le batterie; quella basata sui log ha portato a ripristinare la connessione WiFi dell'Hub Mini. Due fix completamente diversi — uno corretto, l'altro inutile.
+</Warning>
+
+Controlla sempre: Vercel runtime logs, risposta grezza dell'API (spesso include il codice di errore), console del browser.
+
+## 3. Ogni deploy/fix deve mostrare problema + soluzione
+
+Un errore silenzioso o un messaggio generico come "qualcosa è andato storto" non è accettabile. Ogni scenario di errore deve:
+
+- Mostrare all'utente (studente o operatore) **cosa è andato storto** in modo comprensibile
+- Indicare **come risolverlo** o chi contattare
+- Essere documentato nella pagina Troubleshooting corrispondente con il codice di errore e la soluzione
+
+<Note>
+  Se stai correggendo un bug e la soluzione non è ancora documentata, aggiungila alla pagina Troubleshooting prima di chiudere il ticket. Il prossimo a incontrare lo stesso problema potrebbe essere un account manager non tecnico.
+</Note>
 
 ## 4. Ogni tool Conduit va SEMPRE con la sua skill
-Tool senza skill = l'agente lo **ignora** o ripiega sul path nativo (inaffidabile) → risposte sbagliate. La skill è **parte** della procedura, non un extra.
+
+Un custom tool senza skill è inutile. L'agente Conduit non sa quando usarlo, quindi o lo ignora completamente o cade su un percorso nativo che non è stato pensato per quel caso d'uso.
+
+La sequenza corretta è sempre:
+1. Crea il tool
+2. Crea la skill che specifica quando e come usarlo
+3. Verifica che l'agente risponda correttamente a un input di test
+
+<Warning>
+  Non dichiarare "fatto" dopo aver creato il tool. Lo smoke test dell'agente (passo 3) è parte integrante della configurazione, non un'opzione.
+</Warning>
 
 ## 5. Credenziali mai in chat né nei repo
-Zero segreti nei repo/docs → **Vault** cifrato (o env Vercel). Se un cliente manda una chiave in chat, va **ruotata**. Vedi [Credenziali](/riferimenti/credenziali).
+
+Le chiavi API, i token e le password dei clienti non vanno mai in una chat (WhatsApp, Slack, email) né committate in un repository. Vanno sempre e solo nel **Vault** (Supabase cifrato).
+
+Se uno studente ti invia una credenziale in chat, fai due cose immediatamente:
+1. Salvala nel Vault
+2. Chiedi allo studente di **ruotare la chiave** — quella inviata in chat va considerata compromessa
+
+<Warning>
+  Una chiave inviata in chat è una chiave esposta. La policy è zero eccezioni.
+</Warning>
+
+Per le istruzioni su come salvare e recuperare le credenziali consulta la pagina [Credenziali e Vault](/riferimenti/credenziali).
 
 ## 6. Prima di dire "fatto", smoke test
-Onboarding finito = **verificato**: apertura testata, KB provata, link pagamento generato. Vedi [Verifica finale](/onboarding/6-verifica-finale).
+
+L'onboarding non è completo finché non hai verificato personalmente che i tre elementi chiave funzionano:
+
+- ✅ **Apertura porta**: il comando di apertura eseguito da Conduit aziona fisicamente la serratura
+- ✅ **Knowledge Base**: l'agente risponde correttamente a una domanda sull'appartamento usando le informazioni della KB
+- ✅ **Link di pagamento**: Stripe genera correttamente un link di pagamento per lo studente
+
+<Tip>
+  Esegui lo smoke test sempre dalla prospettiva dell'ospite finale, non dall'interfaccia di amministrazione. Usa un numero WhatsApp reale per testare il flusso completo.
+</Tip>
+
+Per la checklist completa vedi la pagina [Verifica finale](/onboarding/6-verifica-finale).
 
 ## 7. Sai dove sta il codice
-Ogni integrazione ha un repo API di riferimento. Vedi [Indice repo API](/riferimenti/repo-api).
 
+Ogni integrazione ha un repository API di riferimento. Prima di improvvisare una soluzione o fare una supposizione su come funziona un'API, consulta il repo. Il codice è la fonte di verità — la documentazione esterna può essere obsoleta.
+
+<Note>
+  L'elenco completo dei repository con le relative integrazioni è in [Repo e API di riferimento](/riferimenti/repo-api). Aggiungilo ai segnalibri.
+</Note>

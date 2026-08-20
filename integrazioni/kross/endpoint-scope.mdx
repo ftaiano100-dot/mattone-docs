@@ -1,18 +1,55 @@
 ---
-title: "Kross — endpoint & scope"
-description: "Auth, endpoint per scopo, read/write."
+title: "KrossBooking API: autenticazione ed endpoint disponibili"
+sidebarTitle: "Endpoint & Scope"
+description: "Token di autenticazione, elenco degli endpoint KrossBooking usati da Mattone e scopo di ciascuna chiamata API verso il gateway."
 ---
 
-## Auth
-`POST /v5/auth/get-token` (4 campi). Contratto API comune (endpoint × scopo × read/write).
+L'API di KrossBooking utilizza un sistema di autenticazione basato su token bearer. Tutte le chiamate che Mattone effettua verso Kross passano attraverso il gateway multi-tenant `mcp.mattone.co`, che gestisce l'autenticazione, la rotazione dei token e il whitelisting dell'IP — in questo modo le strutture degli studenti non devono aprire accessi multipli o gestire token direttamente.
 
-## Prerequisiti
-_(da compilare)_
+## Autenticazione
 
-## Step (in ordine)
-_(da compilare — cosa prima, cosa dopo)_
+Per ottenere un token valido, il gateway effettua una chiamata `POST` all'endpoint di autenticazione con le credenziali dello studente. Il token restituito è di tipo bearer ed è valido per la durata della sessione.
 
-## Come verificare (log)
-_(dove leggere l'esito reale)_
+**Endpoint:** `POST /v5/auth/get-token`
 
-<Note>**In costruzione.** Fonte da portare: `api-kross-mattone/kross-api/scope.md` + reference_krossbooking_api.</Note>
+I campi richiesti nel body della richiesta sono:
+
+<ParamField body="hotel_id" type="string" required>
+  Identificativo numerico della struttura nel sistema KrossBooking. Recuperato dal portale Kross nella sezione API.
+</ParamField>
+
+<ParamField body="username" type="string" required>
+  Nome utente API associato alla struttura. Distinto dal login web standard del portale.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  Password API associata all'utente. Cifrata nel Vault Mattone — non viene mai esposta in chiaro nelle chiamate di sistema.
+</ParamField>
+
+<ParamField body="token_type" type="string" required>
+  Tipo di token richiesto. Valore atteso: `"bearer"`.
+</ParamField>
+
+La risposta include il token bearer da usare nell'header `Authorization: Bearer <token>` per tutte le chiamate successive della sessione.
+
+## Endpoint per scopo
+
+Questa tabella elenca tutti gli endpoint KrossBooking attualmente usati dalla piattaforma Mattone, con il relativo scopo operativo.
+
+| Scopo | Endpoint | Tipo |
+|---|---|---|
+| Autenticazione | `POST /v5/auth/get-token` | Write |
+| Disponibilità | `GET /v5/calendar/get-availability` | Read |
+| Stato prenotazione | `GET /v5/reservations/{id}` | Read |
+| Ospiti in casa | `GET /v5/reservations/in-house` | Read |
+| Portali check-in | `GET /v5/checkin/portals` | Read |
+| Stato portale | `GET /v5/checkin/portals/{id}` | Read |
+| Istruzioni accesso | `GET /v5/properties/{id}/access` | Read |
+
+<Warning>
+  Il path `/apiv5` restituisce la pagina HTML della documentazione KrossBooking, **non dati API**. Usare sempre il path corretto `/v5/...` per tutte le chiamate. Questo è uno degli errori più comuni in fase di configurazione manuale o debug.
+</Warning>
+
+<Note>
+  I filtri data su alcuni endpoint Kross possono essere ignorati server-side: la risposta potrebbe contenere tutte le prenotazioni indipendentemente dal range richiesto. Verifica sempre la risposta effettiva contando i record restituiti e controllando le date prima di passare i dati a Conduit o ad altri sistemi a valle.
+</Note>

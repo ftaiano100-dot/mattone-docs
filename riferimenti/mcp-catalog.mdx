@@ -1,8 +1,48 @@
 ---
-title: "Catalogo MCP / custom tool"
-description: "Tutti gli MCP e i custom tool Conduit, per stato."
+title: "Catalogo MCP e custom tool Conduit per stato"
+sidebarTitle: "MCP Catalog"
+description: "Elenco completo dei tool MCP e custom tool Conduit con stato attivo/inattivo — verifica la disponibilità prima di ogni onboarding studente."
 ---
 
-Elenco dei custom tool Cosmica (fonte di verità = `catalog.json`) e degli MCP, con stato attivo/da testare/da costruire.
+Questo catalogo elenca tutti i custom tool Conduit provisioned dal team Mattone e il loro stato attuale. La fonte di verità è il file `catalog.json` nel repo `api-kross-mattone/conduit-custom-tool/`. Consulta questa pagina prima di ogni onboarding per verificare quali tool sono disponibili per lo studente che stai attivando — un tool non attivo non può essere assegnato.
 
-<Note>**In costruzione.** Fonte da portare: `mattone-integrations-docs/mcp-catalog/index.md` + `catalog.json`.</Note>
+## Tool Kross
+
+Questi tool interrogano il PMS KrossBooking per dati di prenotazione, check-in e disponibilità.
+
+| Tool | Descrizione | Stato |
+|---|---|---|
+| `check-availability` | Verifica disponibilità appartamento per date | Attivo |
+| `check-portal-status` | Stato check-in online dell'ospite | Attivo |
+| `get-reservation-status` | Dettaglio prenotazione corrente | Attivo |
+| `get-checkin-instructions` | Istruzioni accesso per listing | Attivo |
+| `get-in-house-guests` | Ospiti attualmente in casa | Attivo |
+| `get-incomplete-portals` | Portali check-in non completati | Attivo |
+
+## Tool Smart Lock
+
+Questi tool controllano i dispositivi fisici di accesso (Shelly, SwitchBot) e generano link per gli ospiti.
+
+| Tool | Descrizione | Stato |
+|---|---|---|
+| `open-door` | Apertura porta/citofono remota | Attivo |
+| `check-device-status` | Stato device (online/offline/batteria) | Attivo |
+| `get-access-link` | Genera link di apertura per l'ospite | Attivo |
+
+## Tool Stripe
+
+Questi tool gestiscono la generazione di link di pagamento per extra e upsell.
+
+| Tool | Descrizione | Stato |
+|---|---|---|
+| `stripe-payment-link` | Genera link pagamento per extra/upsell | Attivo |
+
+## Regola fondamentale
+
+<Warning>
+  Ogni tool va **sempre** abbinato alla sua skill di prompting corrispondente. Senza la skill, l'agente Conduit ignora il tool anche se è attivo — il tool da solo non basta. Verifica sempre la coppia tool + skill prima di completare un onboarding.
+</Warning>
+
+<Note>
+  La fonte di verità è `catalog.json` nel repo `api-kross-mattone/conduit-custom-tool/`. In caso di discrepanza tra questa pagina e il file nel repo, il repo prevale sempre. Segnala la discrepanza al team tecnico così aggiorniamo la documentazione.
+</Note>

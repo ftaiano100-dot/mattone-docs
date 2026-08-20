@@ -1,19 +1,47 @@
 ---
-title: "6 · Verifica finale"
-description: "Checklist + smoke test + log prima di dire \"fatto\"."
+title: "Step 6 · Verifica finale e smoke test dell'onboarding"
+sidebarTitle: "6 · Verifica Finale"
+description: "Checklist e smoke test per dichiarare l'onboarding completato: ogni punto va verificato con evidenza reale dai log, non solo dall'interfaccia."
 ---
 
-**Obiettivo:** non dichiarare finito finché non è **verificato**.
+Non dichiarare l'onboarding completato finché ogni punto di questa checklist non è stato verificato con evidenza reale dai log. L'interfaccia può mostrare tutto verde mentre qualcosa non funziona correttamente — solo i log dimostrano che ogni componente ha eseguito con successo. Prenditi il tempo necessario per questo step: un onboarding dichiarato "fatto" troppo presto genera problemi agli ospiti reali.
 
-## Checklist
-- [ ] Kross verde (test connessione ok).
-- [ ] KB Conduit per-listing (testa una domanda ospite — nessun leak).
-- [ ] Ogni tool ha la sua skill.
-- [ ] Smart-lock: **apertura reale testata**, log letto.
-- [ ] Stripe: link di test generato.
-- [ ] Telefonia/WABA: messaggio di prova ricevuto.
+<Warning>
+  Non dichiarare "fatto" se non hai visto i log. L'apparenza inganna.
+</Warning>
+
+## Checklist di verifica
+
+Verifica ogni punto nell'ordine indicato. Segna una voce come completata solo dopo aver aperto i log e confermato l'esito positivo.
+
+- [ ] **Kross verde** — il test di connessione via `mcp.mattone.co` restituisce verde e Conduit riesce a recuperare almeno una prenotazione reale per lo studente
+- [ ] **KB Conduit per-listing** — testa una domanda da ospite su un appartamento specifico (es. *"Come arrivo all'appartamento?"*) e verifica che la risposta usi solo le informazioni di quell'appartamento; zero leak da altri appartamenti
+- [ ] **Ogni tool ha la sua skill** — apri la configurazione Conduit dello studente e verifica che ogni tool montato (Kross, Shelly/SwitchBot, Stripe) abbia la skill corrispondente abbinata
+- [ ] **Smart-lock: apertura reale testata, log letto** — *(solo se applicabile)* un'apertura reale è stata eseguita durante l'onboarding e il log mostra `success` con `listing_id` corretto e timestamp atteso
+- [ ] **Stripe: link di test generato** — Conduit ha generato almeno un link di pagamento di test che aperto nel browser mostra la pagina Stripe corretta
+- [ ] **Telefonia/WABA: messaggio di prova ricevuto** — un messaggio di test inviato al numero/WABA dello studente ha ricevuto risposta da Conduit; il log mostra la conversazione
 
 ## Regola
-Ogni verifica = **guarda i log** dell'esito reale.
 
-<Note>**In costruzione.** Fonte: `provisioning-verification-checklist.md` + `delivery-checklist-apikey-e-mcp.md`.</Note>
+Per ogni punto della checklist, la procedura è sempre la stessa: esegui l'azione, poi **apri i log e leggili**. Non fidarti solo dell'esito visivo nell'interfaccia. I log mostrano:
+
+- L'ID esatto della risorsa coinvolta (appartamento, prenotazione, device)
+- Il timestamp dell'evento
+- L'esito dettagliato (`success` / `error` + codice)
+- Eventuali warning che non bloccano l'esecuzione ma indicano problemi latenti
+
+Se un log mostra warning, annotali e valuta se richiedono azione prima di procedere.
+
+<Tip>
+  Se uno dei punti della checklist fallisce, vai direttamente alla pagina di troubleshooting dell'integrazione corrispondente prima di tentare un fix manuale o di escalare. Ogni integrazione ha la sua guida diagnostica dedicata: [Kross](/integrazioni/kross/troubleshooting), [Conduit](/integrazioni/conduit/panoramica), [Shelly](/integrazioni/shelly/panoramica), [SwitchBot](/integrazioni/switchbot/panoramica). Per un approccio sistematico valido per qualsiasi problema, consulta [Metodo di troubleshooting](/troubleshooting/metodo).
+</Tip>
+
+## Quando l'onboarding è completato
+
+L'onboarding è ufficialmente completato quando:
+
+1. Tutti i punti della checklist qui sopra sono spuntati
+2. Hai i log come evidenza per ognuno
+3. Hai comunicato allo studente che il sistema è attivo e gli hai fornito il contatto per il supporto operativo
+
+Documenta la data di completamento e salva un riferimento ai log di verifica nel profilo dello studente sulla piattaforma.
