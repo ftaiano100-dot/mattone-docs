@@ -9,69 +9,130 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "pages": [
+    "tabs": [
       {
-        "group": "Inizia qui",
-        "pages": [
-          "index",
-          "inizia-qui/a-chi-serve",
-          "inizia-qui/glossario",
-          "inizia-qui/best-practices"
+        "tab": "Guida",
+        "groups": [
+          {
+            "group": "Inizia qui",
+            "pages": [
+              "index",
+              "inizia-qui/a-chi-serve",
+              "inizia-qui/glossario",
+              "inizia-qui/best-practices",
+              "troubleshooting/metodo"
+            ]
+          },
+          {
+            "group": "Onboarding studente",
+            "pages": [
+              "onboarding/panoramica",
+              "onboarding/1-anagrafica-notion",
+              "onboarding/2-pms-kross",
+              "onboarding/3-conduit",
+              "onboarding/4-smart-checkin",
+              "onboarding/5-pagamenti-stripe",
+              "onboarding/6-verifica-finale"
+            ]
+          },
+          {
+            "group": "Casistiche (playbook)",
+            "pages": [
+              "casistiche/late-early-checkin",
+              "casistiche/extra-upsell",
+              "casistiche/escalation-telefono",
+              "casistiche/checkin-non-completato"
+            ]
+          },
+          {
+            "group": "Riferimenti",
+            "pages": [
+              "riferimenti/repo-api",
+              "riferimenti/mcp-catalog",
+              "riferimenti/credenziali",
+              "riferimenti/skill-index",
+              "riferimenti/manutenzione-docs"
+            ]
+          }
         ]
       },
       {
-        "group": "Onboarding studente (guidato)",
-        "pages": [
-          "onboarding/panoramica",
-          "onboarding/1-anagrafica-notion",
-          "onboarding/2-pms-kross",
-          "onboarding/3-conduit",
-          "onboarding/4-smart-checkin",
-          "onboarding/5-pagamenti-stripe",
-          "onboarding/6-verifica-finale"
-        ]
-      },
-      {
-        "group": "Integrazioni",
-        "pages": [
-          "integrazioni/krossbooking",
-          "integrazioni/conduit",
-          "integrazioni/notion",
-          "integrazioni/shelly",
-          "integrazioni/switchbot",
-          "integrazioni/waba",
-          "integrazioni/ghl",
-          "integrazioni/pricelabs"
-        ]
-      },
-      {
-        "group": "Troubleshooting",
-        "pages": [
-          "troubleshooting/metodo",
-          "troubleshooting/switchbot",
-          "troubleshooting/shelly",
-          "troubleshooting/conduit",
-          "troubleshooting/kross",
-          "troubleshooting/notion",
-          "troubleshooting/waba"
-        ]
-      },
-      {
-        "group": "Casistiche (playbook)",
-        "pages": [
-          "casistiche/late-early-checkin",
-          "casistiche/extra-upsell",
-          "casistiche/escalation-telefono",
-          "casistiche/checkin-non-completato"
-        ]
-      },
-      {
-        "group": "Riferimenti",
-        "pages": [
-          "riferimenti/repo-api",
-          "riferimenti/mcp-catalog",
-          "riferimenti/credenziali",
-          "riferimenti/skill-index"
+        "tab": "Integrazioni",
+        "groups": [
+          {
+            "group": "KrossBooking",
+            "pages": [
+              "integrazioni/kross/panoramica",
+              "integrazioni/kross/collegamento",
+              "integrazioni/kross/endpoint-scope",
+              "integrazioni/kross/rate-limit-trappole",
+              "integrazioni/kross/troubleshooting"
+            ]
+          },
+          {
+            "group": "Conduit",
+            "pages": [
+              "integrazioni/conduit/panoramica",
+              "integrazioni/conduit/kb",
+              "integrazioni/conduit/custom-tools",
+              "integrazioni/conduit/workflow",
+              "integrazioni/conduit/guardrail",
+              "integrazioni/conduit/telefonia-waba",
+              "integrazioni/conduit/troubleshooting"
+            ]
+          },
+          {
+            "group": "Notion",
+            "pages": [
+              "integrazioni/notion/panoramica",
+              "integrazioni/notion/collegamento",
+              "integrazioni/notion/db-apartments",
+              "integrazioni/notion/bridge-conduit",
+              "integrazioni/notion/troubleshooting"
+            ]
+          },
+          {
+            "group": "GHL",
+            "pages": [
+              "integrazioni/ghl/panoramica",
+              "integrazioni/ghl/pit-location",
+              "integrazioni/ghl/lead-valore",
+              "integrazioni/ghl/rebilling",
+              "integrazioni/ghl/troubleshooting"
+            ]
+          },
+          {
+            "group": "Smart lock — Shelly",
+            "pages": [
+              "integrazioni/shelly/panoramica",
+              "integrazioni/shelly/collegamento",
+              "integrazioni/shelly/troubleshooting"
+            ]
+          },
+          {
+            "group": "Smart lock — SwitchBot",
+            "pages": [
+              "integrazioni/switchbot/panoramica",
+              "integrazioni/switchbot/collegamento",
+              "integrazioni/switchbot/troubleshooting"
+            ]
+          },
+          {
+            "group": "WhatsApp (WABA)",
+            "pages": [
+              "integrazioni/waba/panoramica",
+              "integrazioni/waba/collegamento",
+              "integrazioni/waba/troubleshooting"
+            ]
+          },
+          {
+            "group": "PriceLabs",
+            "pages": [
+              "integrazioni/pricelabs/panoramica",
+              "integrazioni/pricelabs/collegamento",
+              "integrazioni/pricelabs/revenue-management"
+            ]
+          }
         ]
       }
     ],
@@ -97,6 +158,11 @@
     }
   },
   "contextual": {
-    "options": ["copy", "view", "claude", "chatgpt"]
+    "options": [
+      "copy",
+      "view",
+      "claude",
+      "chatgpt"
+    ]
   }
 }

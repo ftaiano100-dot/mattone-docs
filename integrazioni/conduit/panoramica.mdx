@@ -1,0 +1,20 @@
+---
+title: "Conduit — panoramica"
+description: "L'agente AI ospiti: come è fatto e cosa lo compone."
+---
+
+
+**Conduit** è l'assistente AI che risponde agli ospiti. Ogni studente ha il suo **workspace** (KB + agente + tool).
+
+## I pezzi che lo compongono
+<CardGroup cols={2}>
+  <Card title="Knowledge Base (KB)" href="/integrazioni/conduit/kb" icon="book">Cosa sa l'AI. Per-appartamento, mai globale.</Card>
+  <Card title="Custom tools" href="/integrazioni/conduit/custom-tools" icon="wrench">Le azioni (apri porta, link pagamento…).</Card>
+  <Card title="Workflow" href="/integrazioni/conduit/workflow" icon="diagram-project">Sequenze deterministiche (late check-in/out…).</Card>
+  <Card title="Guardrail" href="/integrazioni/conduit/guardrail" icon="shield">Le regole "non fare mai X".</Card>
+  <Card title="Telefonia & WABA" href="/integrazioni/conduit/telefonia-waba" icon="phone">Numero + WhatsApp ufficiale.</Card>
+  <Card title="Troubleshooting" href="/integrazioni/conduit/troubleshooting" icon="bug">Leak KB, reservationIds vuoto, save bug.</Card>
+</CardGroup>
+
+<Warning>Regola d'oro: **ogni custom tool va SEMPRE con la sua skill di prompting**, altrimenti l'agente lo ignora.</Warning>
+

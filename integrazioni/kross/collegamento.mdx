@@ -1,0 +1,16 @@
+---
+title: "Kross — collegamento"
+description: "Terna API per-cliente e test connessione."
+---
+
+
+## Cosa serve
+Dallo studente, dal **portale Kross → API**: **hotel_id + username + password**.
+
+## Step (in ordine)
+<Steps>
+  <Step title="Raccogli la terna">hotel_id, username, password dal portale Kross dello studente.</Step>
+  <Step title="Salva in piattaforma">Admin → *Collega Kross* → inserisci la terna → salva (cifrata nel Vault).</Step>
+  <Step title="Testa">Il sistema chiama il gateway `mcp.mattone.co` → deve tornare **verde**. Se rosso → [Troubleshooting](/integrazioni/kross/troubleshooting).</Step>
+</Steps>
+

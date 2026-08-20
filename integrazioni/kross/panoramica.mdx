@@ -1,0 +1,20 @@
+---
+title: "KrossBooking — panoramica"
+description: "Il PMS degli studenti: cosa fa e come ci colleghiamo."
+---
+
+
+**KrossBooking** è il gestionale prenotazioni della maggior parte degli studenti. Da qui Conduit legge prenotazioni, ospiti, stato check-in.
+
+## Modello di collegamento
+- **Studenti** = modello **partner** (gateway `mcp.mattone.co`): la terna per-cliente (hotel_id + username + password) sta cifrata nel Vault; il gateway chiama Kross via proxy (1 IP whitelistato).
+- **Cosmica** = chiave **own**, connettore nativo diretto.
+
+## Sotto-argomenti
+<CardGroup cols={2}>
+  <Card title="Collegamento" href="/integrazioni/kross/collegamento" icon="link">Terna API, step, test verde.</Card>
+  <Card title="Endpoint & scope" href="/integrazioni/kross/endpoint-scope" icon="code">Auth, read/write, cosa possiamo fare.</Card>
+  <Card title="Rate limit & trappole" href="/integrazioni/kross/rate-limit-trappole" icon="triangle-exclamation">Limiti + errori tipici dell'API.</Card>
+  <Card title="Troubleshooting" href="/integrazioni/kross/troubleshooting" icon="wrench">Auth fallita, 429, foto mancanti.</Card>
+</CardGroup>
+

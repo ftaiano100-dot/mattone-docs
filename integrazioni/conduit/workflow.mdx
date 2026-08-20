@@ -1,0 +1,18 @@
+---
+title: "Conduit — Workflow"
+description: "Sequenze deterministiche (workflowsV2)."
+---
+
+
+I **workflow** (workflowsV2) sono grafi di step deterministici: trigger → step → variabili → azioni. Utili per automazioni ripetibili (es. late check-in/out, conferma extra).
+
+## Cosa contengono
+- **Trigger** (es. AI_TRIGGER, evento prenotazione).
+- **Step** (invio messaggio, chiamata tool, condizioni, SEND_SLACK_MESSAGE…).
+- **Variabili** e grafo di transizioni.
+
+## Come si creano
+Via MCP (`create_workflow`) o dashboard. Sono **iniettabili agli studenti** (come il bridge KB) e gestibili dalla piattaforma.
+
+<Note>Approfondimento tecnico (schema workflowsV2): reference_conduit_workflows_authoring. Casi: late check-out [/casistiche/late-early-checkin].</Note>
+

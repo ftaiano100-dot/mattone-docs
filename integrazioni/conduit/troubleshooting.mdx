@@ -1,0 +1,15 @@
+---
+title: "Conduit — troubleshooting"
+description: "Leak KB, reservationIds vuoto, save bug, dispo."
+---
+
+
+## Sintomo → Causa → Soluzione
+| Sintomo | Causa probabile | Come si risolve |
+|---|---|---|
+| L'AI dà l'info dell'appartamento sbagliato | KB globale (no scope) | riscoping su directory per-listing |
+| Risponde su prenotazione sbagliata | `reservationIds` vuoto (OTA senza listing scope) | fix scope Conduit eng + KB per-listing |
+| "Occupato" quando è libero | tool nativo / manca skill / parsing dispo | `check-availability` + skill; fix parsing |
+| Salvataggio KB fallisce | save bug UPDATE | ticket Conduit (Raniel) |
+
+<Note>Fonti: reference_conduit_reservation_scope_bug · reference_conduit_kb_availability_fix · reference_conduit_save_bug.</Note>

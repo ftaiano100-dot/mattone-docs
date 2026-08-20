@@ -1,0 +1,23 @@
+---
+title: "Conduit — Knowledge Base"
+description: "Come si scrive la KB senza leak tra appartamenti."
+---
+
+
+La KB sono i documenti che l'AI cita (WiFi, indirizzo, regole, lockbox…).
+
+## Regola non negoziabile: PER-LISTING, mai globale
+Un nodo KB senza `entity_ids` viene recuperato su **ogni** conversazione di **ogni** appartamento → l'AI dà l'info dell'appartamento sbagliato (leak). 
+
+### Come si scoping-a bene
+- Lo **scope funziona solo sulla DIRECTORY**, non sull'articolo (`entity_ids` a livello articolo viene **ignorato** silenziosamente).
+- → crea una **cartella per-appartamento** con `entity_ids:[listingId]` e scrivi gli articoli **dentro** (ereditano lo scope).
+
+## Tipi di nodo
+`standard` (default, retrieval soft) · `rule` (hard, per policy/security) · `structured` (listino/campi).
+
+## Bridge dal Notion
+Il registro appartamenti Notion alimenta la KB via bridge (mattone-platform) → una fonte sola, per-listing.
+
+<Note>Approfondimento: skill `conduit-editing-playbook` (checklist pre-push, anti-pattern). Fonte: reference_conduit_kb_management_rules + project_notion_conduit_kb_bridge.</Note>
+

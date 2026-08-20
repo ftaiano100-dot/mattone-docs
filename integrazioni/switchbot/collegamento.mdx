@@ -1,0 +1,19 @@
+---
+title: "SwitchBot — collegamento"
+description: "Token, Device ID, registro, test reale."
+---
+
+
+## Step di collegamento (in ordine)
+<Steps>
+  <Step title="Genera Token + Secret">App SwitchBot → Profilo → Preferenze → tap 10× sulla versione → Developer Options → **Generate**. ⚠️ dall'account **proprietario** dell'Hub (causa #1 dei problemi).</Step>
+  <Step title="Prendi il Device ID">App → serratura → ⚙️ → Device Info.</Step>
+  <Step title="Registra il device">Entry nel registro (slug, deviceId, deviceType, propertyName) + env `SWITCHBOT_TOKEN`/`SWITCHBOT_SECRET`.</Step>
+  <Step title="Testa e leggi i log">Apri dal link. Se fallisce, leggi `rawStatus` → [Troubleshooting](/integrazioni/switchbot/troubleshooting).</Step>
+</Steps>
+
+## Come funziona (comandi)
+- Base: `https://api.switch-bot.com/v1.1`, firma HMAC-SHA256 (token, sign, nonce, t).
+- Sblocco: `POST /devices/{id}/commands` → `{commandType:"command", command:"unlock", parameter:"default"}`.
+- Stato: `GET /devices/{id}/status`.
+

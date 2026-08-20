@@ -1,0 +1,17 @@
+---
+title: "Kross — troubleshooting"
+description: "Auth fallita, 429 rate limit, foto mancanti."
+---
+
+
+## Sintomo → Causa → Soluzione
+| Sintomo | Causa probabile | Come si risolve |
+|---|---|---|
+| Test connessione rosso | terna errata / password API scaduta | rigenera dal portale Kross, ri-salva |
+| Risposte "occupato" quando è libero | tool nativo flaky / manca skill | usa `check-availability` + skill prompting |
+| 429 troppe richieste | fan-out lookup | cache+coalesce (gateway); non ripetere fan-out |
+
+## Come verificare
+Leggi i log del gateway `mcp.mattone.co` e la risposta grezza Kross.
+
+<Note>Fonte: reference_krossbooking_api + fix 429 (mattone-mcp-gateway).</Note>

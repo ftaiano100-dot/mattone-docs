@@ -1,0 +1,34 @@
+---
+title: "Manutenzione — come aggiornare questi docs"
+description: "Come aggiungere/aggiornare contenuti senza rompere l'ordine."
+---
+
+
+Questi docs sono l'**unica fonte** (single source). Quando impari qualcosa di nuovo — da un incidente, da Conduit (Raniel), da Cosmica (Simone), da un cliente — **va messo qui**, nel posto giusto, non in un file nuovo a caso.
+
+## La struttura (non cambiarla a caso)
+- **Guida** = trasversale (inizia qui, onboarding, casistiche, riferimenti).
+- **Integrazioni** = un **gruppo per integrazione** (macro), con **sotto-pagine** per argomento (KB, custom tools, workflow, troubleshooting…).
+- Ogni integrazione ha SEMPRE: `panoramica` (con le card ai sotto-argomenti) + `troubleshooting` (Sintomo→Causa→Soluzione + codici).
+
+## Dove metto una cosa nuova (albero decisionale)
+1. È una **lezione/errore risolto**? → nella pagina **troubleshooting** dell'integrazione giusta (aggiungi una riga alla tabella + il codice/scenario).
+2. È **come si collega/come funziona** un pezzo? → nella sotto-pagina dell'integrazione (es. Conduit → KB / custom-tools / workflow).
+3. È una **procedura ricorrente** (late check-out, extra…)? → in **Casistiche**.
+4. È una **regola operativa** valida per tutto? → in **Best practice**.
+5. È una **nuova integrazione**? → nuovo gruppo in `docs.json` + `panoramica` + sotto-pagine (copia il pattern di una esistente).
+
+<Warning>Non creare pagine parallele sullo stesso tema (confondono). Aggiorna quella che c'è.</Warning>
+
+## Come si pubblica
+Edita l'`.mdx` → commit → `git push origin main` → **Mintlify auto-deploya**. Se aggiungi/rinomini pagine, aggiorna `docs.json` (l'ordine nella nav = l'ordine che vede il team).
+
+## Regole di stile
+- Linguaggio **plain**, anche per i non-dev. Frasi corte.
+- Ogni troubleshooting = **cosa non va + come si risolve** (mai solo l'errore).
+- Cita la **fonte** (repo/file) quando porti contenuto da altri repo, così è tracciabile.
+- I dettagli tecnici profondi (schemi API, codice) → linka il **repo API**, non incollare segreti.
+
+## Stato del porting (da dove viene il contenuto)
+Molte sotto-pagine sono ancora **stub** con la fonte indicata (`api-kross-mattone/…`, memoria, skill). Riempendole, **non perdere nulla**: porta le lezioni Raniel (KB per-listing, save bug, dispo), Simone (ops Cosmica), il **bridge Notion↔Conduit** della piattaforma, il catalogo tool. Poi si depreca `mattone-integrations-docs`.
+

@@ -1,0 +1,33 @@
+---
+title: "SwitchBot — troubleshooting (161)"
+description: "Non apre dal link: codici, owner vs member."
+---
+
+
+<Warning>Standby: lo status può dire `onlineStatus:"offline"` e `battery:0` **anche se la serratura è viva**. Un comando la sveglia. Il portale **prova sempre il comando**.</Warning>
+
+## Leggi il CODICE (`rawStatus`)
+| Codice | Significato | Cosa fare |
+|---|---|---|
+| `100` | ok | aperto ✓ |
+| `161` | device offline | hub vivo ma non raggiunge la lock → vedi sotto |
+| `171` | hub offline | ricollega Hub a corrente + WiFi 2.4GHz, luce blu |
+| `190` | ri-sincronizzare | apri una volta dall'app, poi riprova |
+| `160` | comando non supportato | verifica sia una Lock |
+| `151/152` | device error/not found | controlla il `deviceId` |
+| `401` | token non valido | rigenera Token+Secret |
+
+## Il caso 161 — cause in ordine (batteria esclusa)
+<Steps>
+  <Step title="OWNER o MEMBER? (#1)">L'API comanda solo i device che l'account **POSSIEDE**, non quelli **condivisi**. Token di un account membro → apre dall'app ma API torna 161. **Fix:** Token dell'account **owner** (o farsi promuovere Admin).</Step>
+  <Step title="Range Hub↔Lock (#2)">Serratura entro ~5 m dall'Hub; muri/metallo/TV azzerano. **Fix:** avvicina l'Hub. (Escluso se apre da remoto.)</Step>
+  <Step title="Cloud Service off (#3)">Riattiva "Cloud Service" sulla lock nell'app.</Step>
+</Steps>
+
+### Perché l'app apre ma il link no
+App = Bluetooth diretto (se vicino) **o** cloud→Hub→lock (da remoto). Il link usa solo il cloud con le **nostre** credenziali → "da app apre" non smentisce il 161.
+
+**Verifiche che chiudono il caso:** (1) *"La Home dell'Hub è tua o condivisa?"* condivisa → #1. (2) *Test simultaneo:* cliente apre da remoto mentre provi l'API; apre lui + tu 161 → #1; falliscono entrambi → #2.
+
+<Note>Fonti: [SwitchBot API](https://github.com/OpenWonderLabs/SwitchBotAPI) · docs viva `solisera-checkin/README.md`.</Note>
+

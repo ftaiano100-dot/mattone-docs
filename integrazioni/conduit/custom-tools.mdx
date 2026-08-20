@@ -1,0 +1,19 @@
+---
+title: "Conduit — Custom tools"
+description: "Le azioni dell'AI + la regola tool↔skill."
+---
+
+
+Un **custom tool** è un'azione che l'AI può eseguire (aprire porta, generare link Stripe, controllare disponibilità).
+
+## Regola d'oro: tool + skill SEMPRE insieme
+Aggiungere un tool **senza** la skill che spiega all'agente *quando/come* usarlo = l'agente lo **ignora** o ripiega sul path nativo (inaffidabile). La skill di prompting è **parte** della procedura di inserimento.
+
+## Catalogo tool (Cosmica → studente)
+Kross: `check-availability`, `check-portal-status`, `get-reservation-status`, `get-checkin-instructions`, `get-in-house-guests`, `get-incomplete-portals` · Smart-lock: `open-door`, `check-device-status`, `get-access-link` · Stripe: `stripe-payment-link`. Ognuno con la sua skill.
+
+## Chi li monta
+⚠️ I custom tool li monta **il team** (provisioning), non lo studente. Fonte di verità = `catalog.json`.
+
+<Note>Fonte: `api-kross-mattone/conduit-custom-tool/` (catalog.json + README) + PROVISIONING.md. NB: i custom tool si registrano via dashboard/provisioning, non tutti via MCP.</Note>
+
