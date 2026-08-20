@@ -8,9 +8,13 @@ L'API di KrossBooking applica limiti di frequenza per struttura e presenta diver
 
 ## Rate limit
 
-I limiti di frequenza di KrossBooking sono applicati **per struttura** (cioè per `hotel_id`), non per account o per IP. Se il numero di richieste supera la soglia, Kross restituisce **HTTP 429 (Too Many Requests)**.
+I limiti di frequenza di KrossBooking sono applicati **per struttura** (cioè per `hotel_id`), non per account o per IP: **10 richieste/min · 300/h · 5.000/giorno** (negoziabili). Se superi la soglia, Kross restituisce **HTTP 429 (Too Many Requests)** — che è anche `error_code 16`, indistinguibile da una "lista vuota" se non controlli lo status.
 
 Il gateway `mcp.mattone.co` gestisce il backoff automatico in caso di 429, attendendo il tempo necessario prima di riprovare. Tuttavia, se i 429 si verificano in modo ricorrente, significa che la frequenza di polling configurata per quella struttura è troppo alta. In quel caso, riduci l'intervallo di polling nell'Admin della piattaforma o contatta il team tecnico per applicare il coalescing delle richieste parallele.
+
+<Warning>
+  🔴 **Perché il 429 è così pericoloso**: se un check fa troppe chiamate, sotto burst scatta il 429 → il custom tool va in errore → l'agente Conduit **ripiega sul calendario nativo (inaffidabile)** → risponde "occupato" su date libere. È stata la vera root cause dei "non funziona" di Simone/studenti (test Botanique, 08/2026). Regola: minimizza le chiamate (1 dove basta 1), retry con backoff, **mai** far rispondere l'agente dal calendario nativo.
+</Warning>
 
 ## Trappole note
 
@@ -42,6 +46,18 @@ Il gateway `mcp.mattone.co` gestisce il backoff automatico in caso di 429, atten
   Se una struttura genera molte richieste in parallelo — ad esempio durante picchi di traffico o quando più flussi Conduit si attivano contemporaneamente — il gateway può accumulare 429 anche con una frequenza di polling apparentemente ragionevole.
 
   **Come gestirlo:** il gateway supporta il coalescing delle richieste parallele verso lo stesso `hotel_id`: invece di inviare N richieste identiche, ne invia una sola e distribuisce la risposta a tutti i richiedenti. Questa funzionalità non è attiva di default — contatta il team tecnico per abilitarla per la struttura interessata.
+</Accordion>
+
+<Accordion title="Parametri sconosciuti ignorati in silenzio">
+  Kross **ignora** i parametri che non riconosce, senza errore. Es.: passare `status:"confirmed"` a `reservations/get-list` **non filtra** — torna tutto. Il parametro corretto è `cod_reservation_status:"CONF"`.
+
+  **Come gestirlo:** usa i nomi di parametro esatti documentati e verifica il conteggio dei record. Non fidarti di un filtro solo perché la chiamata risponde 200.
+</Accordion>
+
+<Accordion title="Formato disponibilità ostico">
+  `calendar/get-availability` non torna un calendario giorno-per-giorno libero/occupato, ma tanti **intervalli sovrapposti** ("soggiorno da date_from a date_to") con un contatore `available` (0/total). Va **espanso** in giorni singoli (bloccato se `available===0`).
+
+  **Come gestirlo:** è esattamente la logica che incapsula il custom tool `check-availability` — il nativo Conduit legge male questo formato. Endpoint corretto = `calendar/get-availability` (`calendar/get-calendar` **non esiste**).
 </Accordion>
 
 <Tip>

@@ -8,6 +8,34 @@ Il "brain" del team è **Claude Code + i repo**. Qui trovi prompt pronti da **co
 
 <Info>Incolla il prompt in una sessione Claude Code aperta nel repo giusto (es. `api-kross-mattone` o `mattone-platform`), sostituisci le parti tra parentesi quadre `[...]`, e lascia che chieda i dati mancanti.</Info>
 
+## 0 · Usare questi docs come fonte (setup)
+Il modo più potente è puntare Claude Code **su questo repo di docs** e farsi guidare.
+
+<Steps>
+  <Step title="Apri il repo dei docs">Clona/apri `mattone-docs` e avvia Claude Code dentro la cartella: così ha tutte le pagine come contesto.
+  ```bash
+  git clone <url-repo>/mattone-docs && cd mattone-docs
+  claude
+  ```
+  </Step>
+  <Step title="(Opzionale) Lancia il sito in locale">Per leggere/lavorare sui docs nel browser:
+  ```bash
+  npm i -g mint     # la CLI Mintlify
+  mint dev          # apre l'anteprima locale (di solito http://localhost:3000)
+  ```
+  </Step>
+  <Step title="Chiedi a Claude di guidarti usando i docs">Usa il prompt qui sotto (uso generico), o uno dei tre specifici.</Step>
+</Steps>
+
+```text
+Usa i docs in questo repo mattone-docs come FONTE per guidarmi su [ARGOMENTO,
+es. "collegare Kross a uno studente" / "il bridge Notion->Conduit" / "il metodo
+di troubleshooting"]. Leggi le pagine pertinenti (cita il percorso da cui prendi
+ogni regola), dammi i passi nell'ordine corretto con il "cosa prima / cosa dopo",
+e se la mia domanda dipende da una condizione (profilo studente, PMS, presenza
+smart-lock) elenca le varianti. Non inventare: se una cosa non è nei docs, dillo.
+```
+
 ## 1 · Avviare un nuovo onboarding studente
 Usalo quando arriva un nuovo studente da collegare. Claude guida l'onboarding passo-passo nell'ordine corretto e verifica a ogni step.
 

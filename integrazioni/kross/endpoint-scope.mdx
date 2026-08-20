@@ -30,7 +30,11 @@ I campi richiesti nel body della richiesta sono:
   Tipo di token richiesto. Valore atteso: `"bearer"`.
 </ParamField>
 
-La risposta include il token bearer da usare nell'header `Authorization: Bearer <token>` per tutte le chiamate successive della sessione.
+La risposta include il token bearer (in `data.auth_token`, TTL 7 giorni) da usare nell'header `Authorization: Bearer <token>` per tutte le chiamate successive.
+
+<Info>
+  In più alle credenziali dello studente, l'auth richiede una **`api_key`** (4° campo): per gli studenti **partner** è la chiave generica condivisa Mattone (nel Vault); per i clienti **own** (Cosmica) è la loro chiave propria. La `api_key` vera è **32 caratteri esadecimali** (dal pannello Kross → Impostazioni → API); l'`username` API è in formato **`apiNNNNN`**, non l'email. Serve inoltre lo header **User-Agent** browser (`Mozilla/5.0`): senza, Cloudflare blocca con errore **1010**.
+</Info>
 
 ## Endpoint per scopo
 
@@ -57,3 +61,14 @@ Questa tabella elenca tutti gli endpoint KrossBooking attualmente usati dalla pi
 <Note>
   I filtri data su alcuni endpoint Kross possono essere ignorati server-side: la risposta potrebbe contenere tutte le prenotazioni indipendentemente dal range richiesto. Verifica sempre la risposta effettiva contando i record restituiti e controllando le date prima di passare i dati a Conduit o ad altri sistemi a valle.
 </Note>
+
+## Scope WRITE (solo operatività ospite)
+- **In scope**: `reservations/save` (modifica/estensione date), `reservations/add-payment`. Registrazione ospite: `check-in-guest`, `save-guest-pictures`.
+- **Da aggiungere** (chiesto a Kross, non ancora concesso): **`add-charge`** — serve per gli upsell/servizi extra (pulizia extra, servizi in prenotazione). Va inquadrato come "gestione servizi ospite in prenotazione", **mai** come AI-messaging. Se non è nel link di condivisione dello studente, il tool non può addebitare.
+
+<Warning>Fuori perimetro (dichiarato "pulito" a Kross): `channel/save-cm` (tariffe/restrizioni OTA) → le governa **PriceLabs**; gestione utenti/permessi; `messaging/*`. Kross **non accetta** partner che commercializzano AI per la messaggistica: la messaggistica la fa Conduit lato canale, mai via Kross.</Warning>
+
+## Limiti tecnici
+- Token: **50 sessioni concorrenti per `hotel_id`** (TTL 7 giorni) → la chiave generica non aggrega, ogni struttura ha il suo conteggio.
+- Rate limit: **10/min · 300/h · 5.000/giorno per struttura** (negoziabili). Dettagli in [Rate limit & trappole](/integrazioni/kross/rate-limit-trappole).
+- Endpoint reali su base `POST /v5/...` (es. `reservations/get-list`, `calendar/get-availability`): `calendar/get-calendar` e `reservations/change-channel` **non esistono**; il token è in `data.auth_token`.
