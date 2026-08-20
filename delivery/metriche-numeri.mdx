@@ -1,0 +1,54 @@
+---
+title: "Tirare giù numeri & metriche"
+description: "Quali dati/report e come ottenerli, per studente e per flotta."
+---
+
+
+Per gestire a volumi servono numeri: quanti appartamenti, quanto l'AI risolve da sola, quanto rende un studente. Ecco cosa tirare giù e da dove.
+
+## Metriche per studente
+| Metrica | Fonte | Come |
+|---|---|---|
+| N° appartamenti | anagrafica canonica (registro) | counter derivato per-studente |
+| Stato connessioni | `pms_integrations` / `/connessioni` | quali connettori verdi |
+| Automation rate | Conduit `get_automation_rate` | % risolto dall'AI |
+| Workflow ok/falliti | `list_workflow_execution_events` | affidabilità automazioni |
+| Nodi KB (totali/scoped) | KB Conduit | copertura knowledge |
+
+## Metriche operative (Operations)
+- **Pulizie**: conteggio + saldo fatture cleaner (feature centrale).
+- **Revenue**: pulizie (pulizie × prezzo) + soggiorni (PM = stay × fee%, SUB = stay − canone − utenze).
+- **EBITDA**: ricavi Cosmica − cleaner − lavanderia − extra − costi dipendenti (− VAT dove si applica).
+- ⚠️ Attenzione a non contare i **costi ricorrenti nei mesi futuri** (falsa EBITDA) e a non gonfiare il revenue.
+
+## Metriche marketing (GHL)
+- **CPL** = spesa ÷ lead · **CPA** = spesa ÷ deal · **ROAS** = valore ÷ spesa · **CAC** = spesa ÷ nuovi clienti.
+- Valore opportunità = fatturato lordo o % del potenziale immobile. Vedi [GHL — Lead & valore](/integrazioni/ghl/lead-valore).
+
+## Metriche pricing (PriceLabs)
+- **RevPAR** (KPI stella = ADR × Occ), **Occupazione** (+ vs mercato), **ADR**, **Pickup**. Solo listing synced.
+
+## Report di flotta
+- Quanti studenti a ciascuno stato (non iniziato / in corso / collegato / verificato / non ora).
+- Quanti agenti "sani" vs "rotti" (fleet status): tool/skill mancanti, connettori staccati.
+
+<Tip>
+**▷ Prompt Claude Code — Tira giù i numeri**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Tirami giù le metriche per [studente NOME / tutta la flotta] seguendo
+mattone-docs /delivery/metriche-numeri. Per studente: n° appartamenti (registro),
+stato connessioni (pms_integrations), automation rate (get_automation_rate),
+workflow ok/falliti, copertura KB. Per Operations: pulizie+saldo, revenue,
+EBITDA (attento a non contare costi futuri o revenue gonfiato). Per GHL:
+CPL/CPA/ROAS/CAC. Dammi una tabella con i numeri e la fonte di ognuno; segnala
+i dati mancanti invece di inventarli.
+```
+
+<CardGroup cols={2}>
+  <Card title="Operations" icon="arrow-up-right-from-square" href="/integrazioni/operations/panoramica">Pulizie, revenue, EBITDA</Card>
+  <Card title="GHL — Lead & valore" icon="arrow-up-right-from-square" href="/integrazioni/ghl/lead-valore">CPL/CPA/ROAS/CAC</Card>
+</CardGroup>
+
+<Note>Fonti: memoria `project_cosmica_dubai_operations`, `reference_operations_webinar_demo`, `reference_ghl_integration`, `project_pricelabs_mcp_students`, `reference_conduit_fleet_status`.</Note>

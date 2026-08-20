@@ -64,3 +64,24 @@ I device supportati sono due, con requisiti e procedure di configurazione differ
 ---
 
 Step completato? Procedi con → [Step 5 · Stripe](/onboarding/5-pagamenti-stripe)
+
+<Tip>
+**▷ Prompt Claude Code — Smart check-in**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Guidami nello step 4 (Smart check-in) per lo studente [NOME], seguendo
+mattone-docs /onboarding/4-smart-checkin. Chiedimi quale device ha
+(Shelly o SwitchBot) e i dati necessari (deviceId, account/credenziali) —
+le credenziali vanno nel Vault, non in chiaro. Aiutami ad aggiungere la riga
+al registro (slug, deviceId, label, type, account), fai commit+push e poi
+verifica: list_properties mostra il nuovo slug, il guest portal /access/<slug>
+carica, e SOPRATTUTTO fammi fare un'apertura REALE leggendo i log (rawStatus).
+Se non apre, isola: online? account/deviceId giusto? codice errore (es. 161
+offline)?
+```
+
+<CardGroup cols={2}>
+  <Card title="Shelly — collegamento" icon="arrow-up-right-from-square" href="/integrazioni/shelly/collegamento">1 entry nel registro + push</Card>
+  <Card title="SwitchBot — collegamento" icon="arrow-up-right-from-square" href="/integrazioni/switchbot/collegamento">Token owner + Device ID</Card>
+</CardGroup>

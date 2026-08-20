@@ -51,3 +51,23 @@ Usa questa guida per diagnosticare i problemi dell'integrazione Notion. I casi p
 <Tip>
   Per un check rapido dello stato del bridge senza dover fare test su Conduit, vai su **Piattaforma Mattone → Connessioni → Notion**: trovi la data e l'ora dell'ultima sincronizzazione riuscita, l'eventuale messaggio di errore e il pulsante per forzare un sync manuale.
 </Tip>
+
+<Tip>
+**▷ Prompt Claude Code — Debug Notion / bridge**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema
+Notion/bridge: [DESCRIVI IL SINTOMO, es. "molte righe scartate all'import" /
+"campi mancanti in KB" / "appartamento saltato dal bridge"]. Lancia prima il
+bridge in DRY-RUN (POST /api/conduit/sync-knowledge senza commit) e leggi il
+piano: quanti nodi, quali gap, quali appartamenti non risolti e perché. Isola:
+nomi Notion non allineati ai listing PMS (match esatto) o DB non allineato al
+template? Correggi la colonna Name / il template, poi ri-esegui il dry-run
+prima del commit.
+```
+
+<CardGroup cols={2}>
+  <Card title="Bridge → Conduit KB" icon="arrow-up-right-from-square" href="/integrazioni/notion/bridge-conduit">Come funziona il bridge</Card>
+  <Card title="DB Apartments" icon="arrow-up-right-from-square" href="/integrazioni/notion/db-apartments">Allineamento nomi al PMS</Card>
+</CardGroup>

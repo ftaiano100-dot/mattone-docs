@@ -47,3 +47,22 @@ Il collegamento è completato e funzionante quando:
 - La API key in **Connessioni → PriceLabs** mostra stato **verde**.
 - In PriceLabs sono visibili almeno un listing dello studente.
 - La sincronizzazione prezzi con KrossBooking è **attiva** (colonna Sync PMS verde in PriceLabs).
+
+<Tip>
+**▷ Prompt Claude Code — Collega PriceLabs**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a collegare PriceLabs per lo studente [NOME] seguendo mattone-docs
+/integrazioni/pricelabs/collegamento. Chiedimi il Client ID (lo prende da
+PriceLabs -> Account Settings -> AI Connector (MCP)); non serve client_secret
+(OAuth PKCE). Dopo il connect, verifica che get_listings torni i suoi listing
+(listing_id, pms_name) e considera solo quelli synced. Ricordami che i
+connettori si legano all'avvio sessione (un reconnect a caldo non entra nella
+sessione in corso).
+```
+
+<CardGroup cols={2}>
+  <Card title="Connessioni (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Card PriceLabs → incolla il Client ID</Card>
+  <Card title="PriceLabs → AI Connector (MCP)" icon="key">Account Settings: da qui il Client ID</Card>
+</CardGroup>

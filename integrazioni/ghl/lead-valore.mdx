@@ -31,6 +31,20 @@ Un ROAS superiore a 1 significa che per ogni euro speso in pubblicità ne rientr
 
 Indica quanto costa, in media, acquisire un cliente pagante. Questo dato viene usato durante le sessioni di review con lo studente per ottimizzare l'allocazione del budget pubblicitario.
 
+**CPL (Costo Per Lead)** e **CPA (Costo Per Acquisizione)**
+`CPL = Spesa pubblicitaria totale / Numero lead` · `CPA = Spesa pubblicitaria totale / Numero deal chiusi`
+
+Il CPL dice quanto costa un contatto; il CPA quanto costa un deal chiuso. Insieme a ROAS e CAC completano il quadro dell'efficienza di spesa.
+
+<Info>Esempio: 100 lead, spesa €1.460 → **CPL €14,60**. Se 5 deal → **CPA €292**. Se il valore opportunità totale è €10.000 → **ROAS 6,8×**.</Info>
+
+## Come si valorizza un lead (due modelli)
+Il **valore opportunità** che alimenta ROAS/CAC può essere:
+1. **Fatturato lordo** dell'opportunità (quando è noto/chiuso).
+2. **% del potenziale dell'immobile** (stima) finché il fatturato non è ancora chiuso.
+
+La **spesa** pubblicitaria la inserisce il CSM (GHL non la conosce): senza spesa inserita, CPL/CPA/ROAS/CAC restano vuoti.
+
 <Note>
   I dati GHL si aggiornano **ogni ora** tramite polling dell'API. Se un valore nella dashboard sembra errato o non aggiornato, attendi un ciclo completo di aggiornamento (massimo 60 minuti) prima di escalare. Se dopo un'ora il dato è ancora errato, verifica prima che l'Opportunity value sia compilato correttamente nel CRM GHL dello studente — un valore vuoto o zero produce ROAS e CAC non significativi.
 </Note>

@@ -19,3 +19,21 @@ Usa questa guida per diagnosticare i problemi dell'integrazione Shelly — la ma
 <Tip>
   Per verificare lo stato del device senza aprire l'app Shelly Cloud o i log Vercel, usa il tool `check-device-status` da Conduit — restituisce lo stato del device in tempo reale con il codice risposta esatto, permettendoti di distinguere subito tra device offline e token non valido.
 </Tip>
+
+<Tip>
+**▷ Prompt Claude Code — Debug Shelly**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema
+Shelly: [DESCRIVI IL SINTOMO, es. "device offline" / "online ma non apre" per
+lo slug [SLUG]]. Leggi lo stato reale (POST /device/status) prima di concludere.
+Isola: alimentazione/WiFi 2.4GHz caduto, oppure account/deviceId errato in
+SHELLY_DEVICES rispetto a Shelly Cloud, oppure account sbagliato (cosmica vs
+verdi). Fammi provare un'apertura reale e leggi l'esito; poi proponi il fix.
+```
+
+<CardGroup cols={2}>
+  <Card title="Shelly Cloud" icon="arrow-up-right-from-square" href="https://control.shelly.cloud">Verifica device/account</Card>
+  <Card title="Collegamento Shelly" icon="arrow-up-right-from-square" href="/integrazioni/shelly/collegamento">Registro SHELLY_DEVICES</Card>
+</CardGroup>

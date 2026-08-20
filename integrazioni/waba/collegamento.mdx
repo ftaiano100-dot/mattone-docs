@@ -52,3 +52,22 @@ Dopo l'attivazione, controlla che tutto sia corretto:
 <Note>
   Dopo l'attivazione, il numero appare nelle impostazioni Conduit del workspace e le skill di escalation e reminder si attivano automaticamente — non è necessaria alcuna configurazione aggiuntiva lato Mattone per i flussi standard.
 </Note>
+
+<Tip>
+**▷ Prompt Claude Code — Prepara il collegamento WABA**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a preparare il collegamento WABA per lo studente [NOME] seguendo
+mattone-docs /integrazioni/waba/collegamento. Ricordami che il collegamento
+Meta lo fa Francesco (serve accesso al Business Manager). Fammi la checklist
+dei prerequisiti (numero fisso già acquistato, dominio sito verificabile,
+accesso Meta) e prepara i testi dei template WhatsApp da far approvare. Dopo
+la registrazione, verifica lo stato "Registered" e ricordami che se non è
+collegato inbound/outbound falliscono in silenzio (una spunta sola).
+```
+
+<CardGroup cols={2}>
+  <Card title="Telefonia & WABA (setup)" icon="arrow-up-right-from-square" href="/integrazioni/conduit/telefonia-waba">Numero + voice agent + escalation</Card>
+  <Card title="Meta Business" icon="arrow-up-right-from-square" href="https://business.facebook.com">Registrazione numero WhatsApp Business</Card>
+</CardGroup>

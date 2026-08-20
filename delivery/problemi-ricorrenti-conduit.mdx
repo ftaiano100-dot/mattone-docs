@@ -1,0 +1,55 @@
+---
+title: "Problemi ricorrenti da Conduit"
+description: "Catalogo problema → fix + le best practice che automatizziamo."
+---
+
+
+Gli stessi problemi tornano su ogni studente. Qui il catalogo problema→fix e le best practice che stiamo **automatizzando** nel provisioning, così non si risolvono mille volte a mano.
+
+## Catalogo problema → fix
+| Problema | Causa | Fix |
+|---|---|---|
+| "Occupato" quando è libero (chat) | manca la skill che forza `check-availability` → usa il nativo | monta tool + skill; verifica col trace |
+| "Occupato" quando è libero (voce) | istruzioni del voice puntano al nativo | direttiva `check-availability` in cima alle istruzioni del voice |
+| "No reservation found" al telefono | voice su Multilingual → STT storpia i nomi | lingua **specifica** su tutti i voice agent |
+| Info dell'appartamento sbagliato | KB globale (no scope) | riscoping su directory per-listing |
+| Struttura ok ma dà altra casa | `reservationIds: []` su OTA | fixato 12/08: `include_reservations: true`; se ricompare → esempio a Conduit |
+| Errore intermittente sotto carico | 429 rate-limit Kross → ripiega sul nativo | minimizza chiamate + retry/backoff |
+| KB non si salva | save bug UPDATE intermittente | ritenta; il bridge fa create/skip; ticket Raniel |
+| WhatsApp non arriva | numero non registrato/collegato | completa la registrazione WABA |
+| Agente escala invece di vendere l'extra | guardrail vieta ogni importo / manca il listino | eccezione-listino in-place + listino per-listing |
+| Agente non genera il link Stripe | skill `payment-link-generator` non montata | monta la skill (regola d'oro) |
+| Workflow con FAILED alti | provider/numero WhatsApp vecchio, template | aggiorna provider/sender, riattiva, monitora |
+
+## Best practice che AUTOMATIZZIAMO (nel provisioning)
+Ciò che è stato provato su Cosmica diventa **standard per tutti**:
+- **KB per-listing dal Notion** (bridge) → niente leak, una fonte sola.
+- **Tool + skill dal catalogo** (`catalog.json`) → un solo catalogo propagato a tutti.
+- **Direttiva disponibilità** (chat + voce) → niente ripiego sul nativo.
+- **Late/early check-in autonomo** (workflow) → verifica slot → link Stripe → notifica cleaner → conferma. È il caso-test per automatizzare le altre casistiche che oggi generano escalation.
+- **Eccezione-listino nei guardrail** (in-place) → vendita upsell sicura.
+- **Listino master in piattaforma** → push KB per-listing + Operations + insight.
+
+## Perché conta (Conduit deve battere il PMS)
+Se Conduit **escala** dove l'AI nativa del PMS "risponde subito", sembra peggiore del gratis. La differenza è **chiudere il loop** (verifica → incassa → avvisa cleaning → conferma), non solo "rispondere". Dove l'AI nativa del PMS è ancora attiva sulla stessa inbox → **spegnila** (conflitto).
+
+<Tip>
+**▷ Prompt Claude Code — Diagnostica un problema ricorrente**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Ho questo problema su Conduit per [studente/workspace]: [DESCRIVI]. Confrontalo
+col catalogo di mattone-docs /delivery/problemi-ricorrenti-conduit, dimmi la
+causa probabile e il fix. Applica il metodo /troubleshooting/metodo leggendo i
+log reali (trace simulate_conversation / list_calls / execution events) prima di
+concludere. Se è una best practice già automatizzabile (KB per-listing,
+tool+skill, direttiva voce, late/early autonomo, eccezione-listino), dimmi come
+propagarla dal catalogo invece di risolverla a mano.
+```
+
+<CardGroup cols={2}>
+  <Card title="Conduit troubleshooting" icon="arrow-up-right-from-square" href="/integrazioni/conduit/troubleshooting">Tabella sintomo→causa→fix</Card>
+  <Card title="Pacchetto Conduit completo" icon="arrow-up-right-from-square" href="/integrazioni/conduit/pacchetto-completo">Lo standard end-to-end</Card>
+</CardGroup>
+
+<Note>Fonti: `api-kross-mattone/TROUBLESHOOTING.md`, `conduit-reasoning/*`, memoria `reference_conduit_late_checkout_automation`, `reference_conduit_stripe_payments`, `reference_conduit_kb_management_rules`, `reference_conduit_fleet_status`.</Note>

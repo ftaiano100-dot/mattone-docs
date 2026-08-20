@@ -1,0 +1,82 @@
+---
+title: "Prompt per Claude Code"
+description: "Prompt pronti da copiare-incollare in Claude Code per onboarding, troubleshooting e dubbi di processo."
+---
+
+
+Il "brain" del team è **Claude Code + i repo**. Qui trovi prompt pronti da **copiare-incollare** per i tre usi più frequenti. Sono in italiano, plain, e dicono a Claude di **seguire questi docs** e di **leggere i log reali** prima di concludere.
+
+<Info>Incolla il prompt in una sessione Claude Code aperta nel repo giusto (es. `api-kross-mattone` o `mattone-platform`), sostituisci le parti tra parentesi quadre `[...]`, e lascia che chieda i dati mancanti.</Info>
+
+## 1 · Avviare un nuovo onboarding studente
+Usalo quando arriva un nuovo studente da collegare. Claude guida l'onboarding passo-passo nell'ordine corretto e verifica a ogni step.
+
+```
+Fai da guida per l'onboarding di un nuovo studente Mattone, seguendo la
+procedura in mattone-docs /onboarding/panoramica. Procedi UN passo alla volta,
+in quest'ordine: 1) Anagrafica & Notion, 2) PMS KrossBooking, 3) Conduit
+(KB per-listing + custom tool con la loro skill + workflow + telefonia/WABA),
+4) Smart check-in (solo se ha smart-lock), 5) Pagamenti Stripe (solo se vende
+extra), 6) Verifica finale.
+
+Regole:
+- Prima di ogni passo, CHIEDIMI i dati che ti servono e che non hai (es. terna
+  Kross, workspace/agent Conduit, device smart-lock, chiave Stripe). Non
+  inventare valori e non chiedermi segreti in chiaro: dimmi solo dove vanno
+  (Vault) senza stamparli.
+- Non passare allo step successivo finché quello attuale non è verificato con
+  un test reale (es. auth Kross verde, trace di simulate_conversation che usa
+  la skill+tool giusti, apertura porta reale, link Stripe di test).
+- Rispetta la regola d'oro: ogni custom tool va montato SEMPRE con la sua
+  prompting skill, e la KB è per-listing (mai globale).
+- A ogni step dimmi: cosa hai fatto, come l'hai verificato (quale log/output),
+  e cosa manca. Alla fine, esegui la checklist di /onboarding/6-verifica-finale.
+
+Partiamo: lo studente è [NOME], PMS [Kross/altro], ha smart-lock? [sì/no],
+vende extra? [sì/no]. Fammi la prima domanda.
+```
+
+## 2 · Gestire un troubleshoot
+Usalo quando un'integrazione non funziona. Claude applica il metodo dei docs e legge i log reali prima di dare un verdetto.
+
+```
+Applica il metodo di troubleshooting di mattone-docs /troubleshooting/metodo a
+questo problema: [DESCRIVI IL SINTOMO, es. "l'agente Conduit dice 'occupato'
+per Casa Gatto dal 20 al 22/09 ma è libera"].
+
+Segui le 5 mosse, in ordine, e mostrami cosa trovi a ciascuna:
+1) RIPRODUCI il problema con un caso concreto (property + date + canale).
+2) LEGGI I LOG reali (Vercel runtime logs, risposta grezza dell'API col codice
+   errore, trace di simulate_conversation, list_calls per la voce). NON
+   concludere nulla prima di aver letto un log vero: il log batte l'impressione.
+3) ISOLA: è auth o dispositivo? nostro codice o servizio esterno? Usa i codici
+   (401 credenziali, 161 device offline, 429 rate limit, error_code 11/16 Kross).
+4) VERIFICA L'IPOTESI prima del fix (testa la causa, non imporla).
+5) NOTIFICA + DOCUMENTA: proponi il fix che spiega COSA non va E come si
+   risolve, e aggiorna la pagina Troubleshooting giusta (con il codice).
+
+Consulta la pagina Troubleshooting dell'integrazione coinvolta in mattone-docs
+(Kross, Conduit, Notion, GHL, Shelly, SwitchBot, WABA) per i sintomi già noti.
+Non dire "risolto" senza una prova riprodotta.
+```
+
+## 3 · Chiarire un dubbio su ordine/processo
+Usalo quando non sei sicuro dell'ordine ("collego prima X o prima Y?"). Claude risponde citando i docs, col "cosa prima / cosa dopo" per non rompere ciò che gira.
+
+```
+Ho un dubbio di processo: [ES. "collego prima Kross o prima Conduit?" /
+"monto il tool Stripe prima o dopo la chiave nel Vault?"].
+
+Rispondi citando l'ordine corretto dai mattone-docs (/onboarding/panoramica e la
+pagina dell'integrazione coinvolta). Spiega COSA va prima e COSA dopo, e
+soprattutto PERCHÉ quell'ordine — cioè cosa si romperebbe invertendolo (es.
+iniettare i custom tool senza la api_key valida nel Vault rompe l'agente che
+già gira; una KB globale invece che per-listing causa leak tra appartamenti).
+Se la risposta dipende da una condizione (ha smart-lock? vende extra? PMS
+diverso da Kross?), dimmi le varianti. Cita le pagine docs da cui prendi la
+regola.
+```
+
+<Tip>Questi prompt funzionano meglio se la sessione Claude Code ha accesso ai repo (`api-kross-mattone`, `mattone-platform`) e agli MCP (Conduit, Supabase) — così può leggere davvero i log invece di ragionare a memoria.</Tip>
+
+<Note>Fonti: /onboarding/panoramica, /troubleshooting/metodo e le pagine Troubleshooting per integrazione. Il "brain" team = Claude Code + repo (`api-kross-mattone/README.md`, `mattone-integrations-docs/INDEX.md`).</Note>

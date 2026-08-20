@@ -76,3 +76,23 @@ Se il portale fallisce sistematicamente per uno specifico appartamento ma funzio
 <Accordion title="Come forzare manualmente il check dell'incomplete portals">
   Se sospetti che il tool `get-incomplete-portals` non stia girando, puoi forzare un controllo manuale dalla dashboard Mattone: vai nella sezione "Prenotazioni in arrivo", filtra per "Check-in incompleto" e verifica l'elenco. Se ci sono prenotazioni con check-in mancante che non hanno ricevuto reminder, è probabile che il tool o il workflow di scheduling siano fermi.
 </Accordion>
+
+<Tip>
+**▷ Prompt Claude Code — Gestisci check-in non completato**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a gestire/verificare il caso "ospite non completa il check-in online"
+per [studente/workspace] seguendo mattone-docs /casistiche/checkin-non-completato.
+Controlla: tool check-portal-status montato con skill check-in-access-manager;
+skill guest-portal-link-information presente (parte legale TULPS) e
+personalizzata col portale/email dello studente. Verifica il GATING: chiedendo
+"come entro?" senza portal completato, l'agente NON deve dare i codici, deve
+chiedere di completarlo. Usa get-incomplete-portals per chi arriva e non ha
+completato.
+```
+
+<CardGroup cols={2}>
+  <Card title="Custom tools" icon="arrow-up-right-from-square" href="/integrazioni/conduit/custom-tools">check-portal-status + skill</Card>
+  <Card title="Smart check-in" icon="arrow-up-right-from-square" href="/onboarding/4-smart-checkin">Apertura gated sul portal</Card>
+</CardGroup>

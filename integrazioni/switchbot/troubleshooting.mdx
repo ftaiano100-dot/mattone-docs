@@ -32,3 +32,23 @@ Il problema più frequente con SwitchBot è il codice errore 161 (device offline
 <Tip>
   Per diagnosticare rapidamente senza accedere ai log Vercel, usa il tool `check-device-status` da Conduit — restituisce il codice risposta esatto della serratura in tempo reale, permettendoti di distinguere subito tra Hub offline (161), token non valido (401) e Cloud Service disabilitato.
 </Tip>
+
+<Tip>
+**▷ Prompt Claude Code — Debug SwitchBot (161)**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema
+SwitchBot: [DESCRIVI IL SINTOMO, es. "non apre dal link, rawStatus 161" per
+[SLUG]]. LEGGI rawStatus prima di concludere e mappa il codice (161 offline,
+171 hub offline, 190 re-sync, 401 token). Per il 161 isola in ordine: (1) il
+Token è dell'account OWNER o di un MEMBER? (2) range Hub-lock, (3) Cloud Service
+off. Usa il test simultaneo: il cliente apre da remoto mentre provi l'API —
+apre lui + tu 161 => problema owner/member. Proponi il fix e aggiorna la
+tabella se lo scenario è nuovo.
+```
+
+<CardGroup cols={2}>
+  <Card title="SwitchBot API (docs)" icon="arrow-up-right-from-square" href="https://github.com/OpenWonderLabs/SwitchBotAPI">Codici e comandi</Card>
+  <Card title="Metodo troubleshooting" icon="arrow-up-right-from-square" href="/troubleshooting/metodo">Le 5 mosse</Card>
+</CardGroup>

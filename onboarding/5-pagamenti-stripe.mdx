@@ -76,3 +76,23 @@ Nient'altro deve essere abilitato. Se lo studente non sa come creare una Restric
 ---
 
 Step completato? Procedi con → [Step 6 · Verifica finale](/onboarding/6-verifica-finale)
+
+<Tip>
+**▷ Prompt Claude Code — Pagamenti Stripe**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Guidami nello step 5 (Pagamenti Stripe) per lo studente [NOME], seguendo
+mattone-docs /onboarding/5-pagamenti-stripe. Prima chiarisci se vende extra a
+listino (se no, NON montare Stripe). Rispetta l'ordine tassativo: 1) chiave
+sk_live nel Vault come stripe_key_<token> (mai in chat), 2) listino compilato,
+3) tool stripe montato, 4) skill payment-link-generator montata. Ricordami che
+allunghi/prenotazioni si pagano col nativo PMS, mai Stripe autonomo. Poi fai i
+test T1 (gateway crea un link da 1.00), T2 (l'agente genera il link a "sì"
+dell'ospite; se prezzo non a listino -> escala), T3 (causale corretta).
+```
+
+<CardGroup cols={2}>
+  <Card title="Stripe → API keys" icon="arrow-up-right-from-square" href="https://dashboard.stripe.com/apikeys">Lo studente prende la Secret Key (sk_live)</Card>
+  <Card title="Extra / Upsell (casistica)" icon="arrow-up-right-from-square" href="/casistiche/extra-upsell">Come l'agente vende dal listino</Card>
+</CardGroup>

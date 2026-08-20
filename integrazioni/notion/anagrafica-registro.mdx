@@ -1,0 +1,42 @@
+---
+title: "Notion — Anagrafica canonica & upgrade"
+description: "Registro appartamenti + bridge + template audit (upgrade non ancora tutti online)."
+---
+
+
+Oltre al collegamento base, sul lato Notion abbiamo costruito degli **upgrade** che rendono l'onboarding scalabile. Alcuni sono già in beta, altri non ancora esposti in piattaforma: qui il quadro completo per non perderli.
+
+## L'anagrafica canonica (registro appartamenti)
+Non è un helper della KB: è l'**anagrafica appartamenti del gruppo**, entità di prima classe. Una riga per appartamento che lega:
+`notion_page_id ↔ conduit_listing_id ↔ krossbooking_room_type_id ↔ pricelabs_listing_id` + indirizzo + nome.
+
+- **Consumatori** (leggono, non copiano): scoping KB, tool **Operations** (si seeda da qui), counter appartamenti, PriceLabs.
+- **Popolamento**: auto-suggestion per nome/indirizzo (Conduit `list_listings` × Notion "Strutture") → lo **studente conferma/disambigua** in una UI.
+- **Non distruttivo**: riempie solo i campi mancanti, **mai** overwrite/delete; in caso di ambiguità → **STOP + conferma**.
+
+<Info>I nomi in genere **coincidono** tra Notion, Conduit (`internalName`) e KrossBooking (convenzione interna): il join si fa per nome, l'indirizzo è fallback. Multi-unità stesso indirizzo hanno nomi distinti.</Info>
+
+## Il bridge Notion → Conduit KB
+Trasforma il Notion in nodi KB atomici e per-listing (automatizza ciò che Simone faceva a mano). Dettaglio completo: [Bridge → Conduit KB](/integrazioni/notion/bridge-conduit).
+
+Punti chiave:
+- La knowledge vera sta nelle **toggle/callout/heading** dentro le pagine appartamento, non nelle properties.
+- Segmentazione multi-blocco (toggle + callout + heading): un manuale può essere fatto in modi diversi (Milano = toggle, Dubai = heading H2).
+- **Allowlist esplicita** guest-facing; esclude owner, issue, acquisti, costi, credenziali.
+- Idempotente: **create-or-skip**, mai UPDATE (save bug), abort-before-write.
+- I **callout vuoti** (macchina caffè, AC…) vengono contati come **gap** nel dry-run → è il gancio per l'audit.
+
+## Template audit (drift studente vs canonico)
+Il template canonico v1 è versionato nel codice (16 database, 177 properties). L'**audit** confronta il Notion dello studente col canonico e segnala il **drift** — in particolare la **completezza del contenuto delle toggle** per ogni appartamento (non solo la presenza dello schema). Toggle vuote = segnale che l'agente non funzionerà.
+
+## Stato (cosa è online e cosa no)
+| Pezzo | Stato |
+|---|---|
+| Notion OAuth pubblico + template v1 | ✅ live |
+| Bridge KB (dry-run + commit) | 🟡 beta privata (solo Cosmica), gate lato server |
+| Registro/anagrafica (`/anagrafica`) | 🟡 consegnato (PR #12), rotta diretta, badge beta; smoke-test con token reale da fare |
+| Audit engine drift (Fase 2) + `/admin/notion` | 🔴 non iniziato (in mano a Niccolò) |
+
+<Warning>Non lanciare in prod studenti finché il **save bug** Conduit non è risolto: le CREATE funzionano, gli UPDATE flappano. Il bridge è già best-effort con create/skip.</Warning>
+
+<Note>Fonti: memoria `project_notion_conduit_kb_bridge` (PR #11/#12), `project_notion_mattone_integration`. Codice: `mattone-platform/src/lib/notion/*`, `src/lib/conduit/*`, `src/lib/registry/*`.</Note>

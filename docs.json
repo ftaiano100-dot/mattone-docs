@@ -56,8 +56,19 @@
             ]
           },
           {
+            "group": "Delivery a volumi",
+            "pages": [
+              "delivery/flusso-completo",
+              "delivery/monitorare-studenti",
+              "delivery/supportare-studenti",
+              "delivery/metriche-numeri",
+              "delivery/problemi-ricorrenti-conduit"
+            ]
+          },
+          {
             "group": "Riferimenti",
             "pages": [
+              "riferimenti/prompt-claude-code",
               "riferimenti/repo-api",
               "riferimenti/mcp-catalog",
               "riferimenti/credenziali",
@@ -82,13 +93,16 @@
               "integrazioni/ghl/pit-location",
               "integrazioni/ghl/lead-valore",
               "integrazioni/ghl/rebilling",
-              "integrazioni/ghl/troubleshooting"
+              "integrazioni/ghl/troubleshooting",
+              "integrazioni/operations/panoramica",
+              "integrazioni/operations/collegamento"
             ]
           },
           {
             "group": "Conduit AI",
             "pages": [
               "integrazioni/conduit/panoramica",
+              "integrazioni/conduit/pacchetto-completo",
               "integrazioni/conduit/kb",
               "integrazioni/conduit/custom-tools",
               "integrazioni/conduit/workflow",
@@ -104,6 +118,7 @@
               "integrazioni/notion/collegamento",
               "integrazioni/notion/db-apartments",
               "integrazioni/notion/bridge-conduit",
+              "integrazioni/notion/anagrafica-registro",
               "integrazioni/notion/troubleshooting",
               "integrazioni/pricelabs/panoramica",
               "integrazioni/pricelabs/collegamento",

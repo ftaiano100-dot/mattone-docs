@@ -61,3 +61,23 @@ Questo step è **completo** quando:
 ---
 
 Step completato? Procedi con → [Step 2 · KrossBooking](/onboarding/2-pms-kross)
+
+<Tip>
+**▷ Prompt Claude Code — Anagrafica & Notion**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Guidami nello step 1 dell'onboarding (Anagrafica & Notion) per lo studente
+[NOME], seguendo mattone-docs /onboarding/1-anagrafica-notion. Verifica che il
+Notion sia collegato alla Mattone Platform (non solo alla Conduit); controlla
+che il DB "Strutture"/"Apartments" sia allineato al template (una pagina per
+appartamento) e che la colonna Name abbia i nomi ESATTI dei listing PMS.
+Segnalami campi mancanti (WiFi, keybox, indirizzo, CIN/CIR) e cosa è Internal
+vs guest-facing. Chiedimi i dati che non hai, non inventarli. Alla fine dimmi
+quali righe rischiano di essere scartate dallo split-by-listing e perché.
+```
+
+<CardGroup cols={2}>
+  <Card title="Connessioni (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Collega/verifica il Notion dello studente</Card>
+  <Card title="Notion dello studente" icon="arrow-up-right-from-square">Apri il workspace e il DB "Strutture"/"Apartments"</Card>
+</CardGroup>

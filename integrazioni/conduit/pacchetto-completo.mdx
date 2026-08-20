@@ -1,0 +1,52 @@
+---
+title: "Conduit — pacchetto completo (end-to-end)"
+description: "KB + custom tool + workflow + guardrail + telefonia insieme."
+---
+
+
+Le singole pagine spiegano ogni pezzo. Questa mostra il **pacchetto completo** che rende un agente Conduit "come Cosmica": tutti i pezzi montati nell'ordine giusto, ognuno con la sua verifica.
+
+## I pezzi, nell'ordine
+<Steps>
+  <Step title="KB per-listing (dal Notion, via bridge)">Ogni appartamento nella sua cartella scoped. Mai globale. Verifica: apri una prenotazione reale → l'AI usa solo i dati di quel listing.</Step>
+  <Step title="Custom tool + skill">I tool Kross/Shelly/Stripe, ognuno con la sua prompting skill attaccata. Verifica: trace di `simulate_conversation` mostra `load_skill → tool → risposta`.</Step>
+  <Step title="Guardrail">Editati in-place (mai duplicati). Eccezione-listino per la vendita upsell. Verifica: conteggio guardrail invariato, comportamento sicuro (escala senza listino).</Step>
+  <Step title="Workflow">Automazioni deterministiche (late/early check, notifica cleaner). Verifica: `list_workflow_execution_events` + `get_automation_rate`.</Step>
+  <Step title="Telefonia + WABA">1 voice agent, lingua specifica, escalation a umano, numero WhatsApp Registered. Verifica: chiamata + messaggio reali.</Step>
+</Steps>
+
+## Regole d'oro trasversali
+- **Tool SEMPRE con skill** (senza, l'agente ripiega sul nativo).
+- **KB per-listing** (scope sulla directory, non sull'articolo).
+- **Prima la credenziale valida nel Vault, poi il tool** (una key fasulla rompe l'agente).
+- **Guardrail: modifica l'esistente, non aggiungere** (la PATCH sostituisce l'intero array).
+- **Nativo + custom insieme**: il custom potenzia il nativo, non lo sostituisce.
+
+## Come si differenzia dall'AI nativa del PMS
+Conduit deve **battere** l'AI nativa del PMS, non pareggiarla. La differenza non è "rispondere" (lo fa anche Hostaway) ma **chiudere il loop**: verifica disponibilità → incassa (Stripe) → avvisa il cleaning → conferma. Se sulla stessa inbox è attiva anche l'AI nativa del PMS → **spegnila** (due AI in conflitto).
+
+## Provisioning a volumi
+Tutto il pacchetto è **iniettabile per ogni studente** dal catalogo (`catalog.json`) + i workflow via `create_workflow` + la KB via bridge. Un solo catalogo, una sola procedura, propagata a tutti al prossimo run.
+
+<Tip>Approfondimenti: [KB](/integrazioni/conduit/kb) · [Custom tools](/integrazioni/conduit/custom-tools) · [Workflow](/integrazioni/conduit/workflow) · [Guardrail](/integrazioni/conduit/guardrail) · [Telefonia & WABA](/integrazioni/conduit/telefonia-waba) · [Troubleshooting](/integrazioni/conduit/troubleshooting).</Tip>
+
+<Tip>
+**▷ Prompt Claude Code — Monta il pacchetto Conduit completo**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Monta il pacchetto Conduit completo per lo studente [NOME] seguendo mattone-docs
+/integrazioni/conduit/pacchetto-completo. Procedi nell'ordine: KB per-listing
+(bridge, mai globale) -> custom tool + skill dal catalog.json -> guardrail
+(eccezione-listino, in-place) -> workflow (late/early + notifica cleaner) ->
+telefonia/WABA. Per OGNI pezzo dammi la verifica con la prova (trace, conteggio
+guardrail, execution events, chiamata reale). Ricorda: prima la credenziale
+valida nel Vault, poi il tool. Alla fine dimmi cosa resta "non ora".
+```
+
+<CardGroup cols={2}>
+  <Card title="Onboarding · Conduit" icon="arrow-up-right-from-square" href="/onboarding/3-conduit">Lo step nel flusso</Card>
+  <Card title="Provisioning verification" icon="arrow-up-right-from-square" href="/onboarding/6-verifica-finale">Checklist finale</Card>
+</CardGroup>
+
+<Note>Fonti: `PROVISIONING.md`, `conduit-custom-tool/catalog.json`, `conduit-reasoning/*`, `team-runbook/provisioning-verification-checklist.md`, memoria `reference_conduit_late_checkout_automation` + `reference_conduit_stripe_payments`.</Note>

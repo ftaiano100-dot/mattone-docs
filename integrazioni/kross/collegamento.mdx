@@ -50,3 +50,22 @@ Una connessione riuscita si riconosce da questi segnali:
 - Non sono presenti errori `401` nei log di sistema relativi a quel `hotel_id`
 
 Se tutti e tre i segnali sono presenti, l'integrazione è operativa e puoi procedere con gli step successivi dell'onboarding.
+
+<Tip>
+**▷ Prompt Claude Code — Collega Kross per uno studente**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Collega KrossBooking per lo studente [NOME] seguendo mattone-docs
+/integrazioni/kross/collegamento. Verifica prima che abbia accettato lo sharing
+link partner (chiedi a Mattia). Chiedimi la terna (hotel_id, username apiNNNNN,
+password API) — va cifrata nel Vault, non stamparla. Attenzione alla trappola
+autocompilazione: la vera api_key è 32 hex. Poi valida con auth reale via
+gateway mcp.mattone.co e dimmi se torna verde con un auth_token; se no, isola
+il codice errore (es. error_code 11 combinazione errata).
+```
+
+<CardGroup cols={2}>
+  <Card title="Collega Kross (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Inserisci la terna (cifrata nel Vault)</Card>
+  <Card title="Portale KrossBooking → API" icon="key">Sezione API → credenziali del cliente</Card>
+</CardGroup>

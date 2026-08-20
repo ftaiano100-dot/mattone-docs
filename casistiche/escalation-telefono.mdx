@@ -71,3 +71,23 @@ Quando ricevi una chiamata di trasferimento o una notifica di escalation, segui 
 <Tip>
 Tieni sempre aggiornato il numero di telefono dello studente in dashboard. In caso di cambio numero, l'escalation telefonica smette di funzionare silenziosamente — non c'è un alert automatico. Includi la verifica del numero nel checklist mensile di manutenzione del profilo studente.
 </Tip>
+
+<Tip>
+**▷ Prompt Claude Code — Configura l'escalation**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a configurare/verificare l'escalation a umano per [studente/workspace]
+seguendo mattone-docs /casistiche/escalation-telefono. Controlla: Enable call
+escalation ON, type corretto (static con fallback_phone_number se c'è un solo
+umano, dynamic se più numeri per categoria), warm transfer ON, when-to-escalate
+scritte (frustrazione/urgenza/richiesta operatore/fuori scope). VERIFICA che il
+target sia un cellulare UMANO vero, mai un altro numero AI (loop). Fammi fare
+il test "voglio parlare con un operatore" e leggi list_calls per confermare che
+squilla alla persona giusta.
+```
+
+<CardGroup cols={2}>
+  <Card title="Conduit — Telefonia & WABA" icon="arrow-up-right-from-square" href="/integrazioni/conduit/telefonia-waba">Numero, voice, escalation</Card>
+  <Card title="Metodo troubleshooting" icon="arrow-up-right-from-square" href="/troubleshooting/metodo">Se la chiamata non arriva</Card>
+</CardGroup>

@@ -52,3 +52,23 @@ Dopo il collegamento, controlla che tutto funzioni correttamente:
 <Tip>
   Verifica che il relay Shelly attivi il circuito corretto — alcuni edifici hanno più relay sullo stesso citofono o più porte controllabili. Esegui sempre il primo test con una persona fisicamente presente all'immobile per confermare quale porta si apre.
 </Tip>
+
+<Tip>
+**▷ Prompt Claude Code — Aggiungi un device Shelly**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aggiungi un device Shelly per la proprietà [NOME/SLUG] seguendo mattone-docs
+/integrazioni/shelly/collegamento. Chiedimi deviceId (12 hex), type
+(citofono/porta) e account (cosmica/verdi o nuovo). Verifica prima i
+prerequisiti (env dell'account su Vercel, proprietà nel PMS). Aggiungi UNA riga
+a SHELLY_DEVICES in src/lib/shelly.ts, fai commit+push, poi verifica:
+list_properties mostra lo slug, il guest portal /access/<slug> carica, e
+fammi fare un'apertura REALE leggendo i log. Le Auth Key stanno nel Vault, non
+metterle nel repo.
+```
+
+<CardGroup cols={2}>
+  <Card title="Shelly Cloud" icon="arrow-up-right-from-square" href="https://control.shelly.cloud">Device → Settings → Device Information (deviceId)</Card>
+  <Card title="Troubleshooting Shelly" icon="arrow-up-right-from-square" href="/integrazioni/shelly/troubleshooting">Relay offline / non apre</Card>
+</CardGroup>

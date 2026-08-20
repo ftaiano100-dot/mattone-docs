@@ -63,3 +63,23 @@ Prima di escalare un problema a un tecnico, esegui questa checklist:
 <Tip>
 Se lo slot è oggettivamente libero (nessun check-in o check-out nelle ore adiacenti in KrossBooking) ma Conduit risponde che non è disponibile, il problema è quasi sempre nella skill `check-availability`: potrebbe essere disabilitata oppure usare un `listing_id` diverso da quello della prenotazione. Aprila, controlla il parametro `listing_id` e verifica che la skill sia nello stato "attivo".
 </Tip>
+
+<Tip>
+**▷ Prompt Claude Code — Late/Early check-in autonomo**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a impostare/verificare il flusso late-check-out ed early-check-in
+autonomo per [Cosmica IT / Cosmica DXB / studente NOME] seguendo mattone-docs
+/casistiche/late-early-checkin. Controlla i 4 pezzi: 1) Listino con voci FISSE
+(importo + orario limite) scoped per-listing; 2) guardrail eccezione-listino
+modificato IN-PLACE (conteggio guardrail invariato); 3) tool availability giusto
+per PMS (Kross=check-availability custom, Hostaway=nativo); 4) workflow con
+lo step di notifica WhatsApp al CLEANER (spesso manca, c'è solo Slack FYI).
+Testa: slot libero -> link+notifica; slot occupato -> escala.
+```
+
+<CardGroup cols={2}>
+  <Card title="Conduit — Workflow" icon="arrow-up-right-from-square" href="/integrazioni/conduit/workflow">Schema e step del flusso</Card>
+  <Card title="Guardrail (eccezione-listino)" icon="arrow-up-right-from-square" href="/integrazioni/conduit/guardrail">Come autorizzare la vendita</Card>
+</CardGroup>

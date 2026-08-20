@@ -1,0 +1,52 @@
+---
+title: "Operations — collegamento gestionale"
+description: "Collegare il PMS a Operations e seedare l'anagrafica."
+---
+
+
+Operations diventa utile quando **tira i dati dal gestionale** (pulizie da check-out, revenue soggiorni) invece di inserirli a mano. Il collegamento segue lo stesso principio di Kross: credenziali server-side, mapping listing→appartamento, verifica dal vivo.
+
+## Prerequisiti
+- Anagrafica appartamenti presente in Operations (o riconciliata dal registro).
+- Credenziali API del PMS dello studente (Hostaway account+key, o terna Kross).
+
+## Step (in ordine)
+<Steps>
+  <Step title="Anagrafica pronta">Gli appartamenti esistono in Operations (nome, costo/prezzo pulizia, tipo PM/SUB, fee%). Seed dal registro canonico, non re-inserire.</Step>
+  <Step title="Credenziali PMS server-side">Env del PMS (es. `HOSTAWAY_ACCOUNT_ID` + `HOSTAWAY_API_KEY`, o terna Kross nel Vault). Mai lato client: l'app usa la service-role solo server-side.</Step>
+  <Step title="Mappa listing → appartamento">Nel tab del PMS: collega ogni listing all'appartamento (link/crea/scollega). Il match si fa per nome interno (che coincide tra Notion/Conduit/PMS).</Step>
+  <Step title="Importa pulizie & revenue">Anteprima pulizie da check-out → confermi (salta le esistenti). Sync revenue soggiorni (somma base rate per arrivo nel mese). Early/late check-in si tirano dai `financeField` della prenotazione.</Step>
+</Steps>
+
+## Trappole note (Hostaway)
+- Filtro check-out: i parametri corretti sono `departureStartDate` / `departureEndDate` (gli altri vengono ignorati e tornano tutto).
+- Le **fee** (early/late, cleaning) stanno nei `financeField`, visibili solo su `/reservations/{id}?includeResources=1`, **non** nella lista.
+- Alcuni appartamenti non sono su Hostaway (sono su Kross): per il loro revenue serve l'altro PMS.
+
+## Come verificare
+- Import pulizie: confronto "nostre vs PMS" nel tab (✓ = nostra, H = da PMS); l'import è cancellation-safe (rimuove le cancellate, non tocca le manuali).
+- Revenue soggiorni: il totale sync deve avvicinarsi al gross atteso (base rate, non gross totale).
+
+<Warning>La chiave service-role dà **accesso pieno al DB**: tienila solo server-side su Vercel, mai nel client.</Warning>
+
+<Note>Fonti: memoria `project_cosmica_dubai_operations` (Hostaway sync, financeField, mapping), `reference_operations_webinar_demo`. Anagrafica: [Notion — Anagrafica canonica](/integrazioni/notion/anagrafica-registro).</Note>
+
+<Tip>
+**▷ Prompt Claude Code — Collega il gestionale a Operations**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a collegare il gestionale a Operations per [studente/Cosmica] seguendo
+mattone-docs /integrazioni/operations/collegamento. Verifica prima che
+l'anagrafica sia seedata dal registro (nessun duplicato). Chiedimi le
+credenziali PMS (Hostaway account+key o terna Kross) — server-side, mai client.
+Aiutami a mappare listing->appartamento per nome interno, poi importa pulizie
+da check-out (cancellation-safe) e sync revenue soggiorni. Ricordami le trappole
+Hostaway (departureStartDate/EndDate, financeField solo su includeResources=1).
+Confronta nostre-vs-PMS prima di confermare.
+```
+
+<CardGroup cols={2}>
+  <Card title="Operations (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co">Entra e apri il launcher Operations</Card>
+  <Card title="Anagrafica canonica" icon="arrow-up-right-from-square" href="/integrazioni/notion/anagrafica-registro">Seed appartamenti (no duplicati)</Card>
+</CardGroup>

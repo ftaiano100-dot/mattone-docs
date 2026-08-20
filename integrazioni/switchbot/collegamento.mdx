@@ -58,3 +58,22 @@ Dopo il collegamento, controlla che tutto funzioni:
 - Il device appare come **online** nel pannello Devices della piattaforma
 - Il test di apertura **sblocca fisicamente la serratura**
 - I log mostrano una **risposta di successo** — nessun errore 161, nessun 401
+
+<Tip>
+**▷ Prompt Claude Code — Collega una serratura SwitchBot**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a collegare una serratura SwitchBot per la proprietà [NOME/SLUG]
+seguendo mattone-docs /integrazioni/switchbot/collegamento. IMPORTANTE: Token e
+Secret devono venire dall'account OWNER dell'Hub (causa #1 dei 161). Chiedimi
+Device ID, deviceType e propertyName; le credenziali vanno nel Vault. Registra
+il device, poi fammi fare un'apertura REALE dal link e leggi rawStatus: se
+torna 161, isola owner-vs-member / range Hub / Cloud Service off prima di
+concludere.
+```
+
+<CardGroup cols={2}>
+  <Card title="SwitchBot API (docs)" icon="arrow-up-right-from-square" href="https://github.com/OpenWonderLabs/SwitchBotAPI">Token/Secret + comandi</Card>
+  <Card title="Troubleshooting 161" icon="arrow-up-right-from-square" href="/integrazioni/switchbot/troubleshooting">Owner vs member, codici</Card>
+</CardGroup>

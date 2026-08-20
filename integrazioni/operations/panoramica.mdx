@@ -1,0 +1,27 @@
+---
+title: "Operations — panoramica"
+description: "Il tool operativo: pulizie, revenue, EBITDA per appartamento."
+---
+
+
+**Operations** è il tool operativo di Mattone (`ops.mattone.co`, si entra da `app.mattone.co`): gestisce **pulizie**, **revenue**, **fatture cleaner** ed **EBITDA** per appartamento e per mese. È la parte "gestione del business" accanto a Conduit (AI ospiti) e GHL (marketing).
+
+## Cosa fa
+- **Griglia pulizie**: una cella per giorno/appartamento (stato: da saldare / pagata / free / owner). Da qui revenue pulizie = pulizie × prezzo.
+- **Fatture cleaner** e **lavanderia**: con saldo (feature centrale insieme alla griglia pulizie).
+- **Revenue soggiorni**: margine PM (stay × fee%) e SUB (stay − canone − utenze).
+- **Revenue/Spese extra**: early/late check-in, ristrutturazioni, servizi, transfer (lordo/netto).
+- **EBITDA azienda**: ricavi Cosmica − cleaner − lavanderia − extra − costi dipendenti (− VAT dove si applica).
+
+## Come si popola
+- **Anagrafica appartamenti**: nome, costo/prezzo pulizia, tipo PM/SUB, fee%, canone/utenze.
+- **Dati dal gestionale**: pulizie da check-out e revenue soggiorni si tirano dal PMS (Hostaway/Kross). Vedi [Collegamento gestionale](/integrazioni/operations/collegamento).
+- **Seed dall'anagrafica canonica**: Operations si **riconcilia** dal registro appartamenti (match per nome interno), **non** re-inserisce a mano — merge additivo, mai duplicati. Vedi [Notion — Anagrafica canonica](/integrazioni/notion/anagrafica-registro).
+
+## Varianti
+- **Mattone Operations** (Italia, workspace "Cosmica Italia"): niente PIN sui costi/EBITDA.
+- **Cosmica Dubai Operations** (tool ridotto): tabelle isolate, **VAT 5%**, **PIN finance** che nasconde costi/EBITDA a chi ha solo la password team.
+
+<Warning>Non confondere il workspace **demo** ("Cosmica Italia", dati finti per i webinar) con quello **reale** ("Cosmica Group", dati di produzione).</Warning>
+
+<Note>Fonti: memoria `reference_operations_webinar_demo`, `project_cosmica_dubai_operations`. Repo: `mattone-operations`, `cosmica-dubai-operations`.</Note>

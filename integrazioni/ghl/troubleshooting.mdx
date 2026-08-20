@@ -19,3 +19,22 @@ Usa questa pagina per diagnosticare i problemi dell'integrazione GHL. I problemi
 <Tip>
   Per verificare rapidamente se il PIT di uno studente è ancora valido senza aspettare un errore in produzione, vai in **GHL → Settings → Private Integrations** e controlla che l'integrazione denominata "Mattone Platform" sia presente e attiva. Se lo stato mostra "Active", il token è operativo. Se la voce è assente, il token è stato eliminato e va rigenerato prima del prossimo ciclo di aggiornamento dati.
 </Tip>
+
+<Tip>
+**▷ Prompt Claude Code — Debug GHL**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema GHL:
+[DESCRIVI IL SINTOMO, es. "KPI marketing vuoti" / "valore lead a zero"]. Leggi
+i dati reali prima di concludere: verifica che il PIT della location sia valido
+(header Authorization Bearer + Version 2021-07-28) e che le opportunità abbiano
+un valore. Isola: PIT mancante/scaduto? spesa non inserita dal CSM? valore
+opportunità assente in GHL? Proponi il fix (rigenera PIT / inserisci spesa /
+valorizza le opportunità) e dimmi come verificarlo.
+```
+
+<CardGroup cols={2}>
+  <Card title="PIT & location" icon="arrow-up-right-from-square" href="/integrazioni/ghl/pit-location">Rigenera il token</Card>
+  <Card title="Lead & valore" icon="arrow-up-right-from-square" href="/integrazioni/ghl/lead-valore">Cosa legge la piattaforma</Card>
+</CardGroup>

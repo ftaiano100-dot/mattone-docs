@@ -44,3 +44,24 @@ Usa questa pagina come prima tappa quando qualcosa non funziona nell'agente Cond
 <Tip>
   Prima di aprire un ticket, controlla sempre se il problema è nella tabella sopra e se il workaround risolve il caso. Il supporto Conduit ha tempi di risposta variabili — risolvere in autonomia quando possibile evita blocchi operativi durante l'onboarding.
 </Tip>
+
+<Tip>
+**▷ Prompt Claude Code — Debug Conduit**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema
+Conduit: [DESCRIVI IL SINTOMO, es. "l'AI dà il WiFi di un'altra casa" /
+"dice occupato su date libere" / "al telefono non trova la prenotazione" /
+"non salva la KB"]. LEGGI la prova reale prima di concludere: per la chat il
+TRACE di simulate_conversation (quale skill/tool ha usato); per la voce
+list_calls (source retell); per lo scope get_contact_detail(include_reservations
+:true) vs list_contact_reservations. Isola: KB scope? skill non attaccata?
+lingua voice Multilingual? save bug? Proponi il fix e, se è lato Conduit,
+prepara l'esempio riproducibile da mandare a Raniel/Yash.
+```
+
+<CardGroup cols={2}>
+  <Card title="Metodo troubleshooting" icon="arrow-up-right-from-square" href="/troubleshooting/metodo">Le 5 mosse</Card>
+  <Card title="Custom tools (regola tool↔skill)" icon="arrow-up-right-from-square" href="/integrazioni/conduit/custom-tools">Perché ripiega sul nativo</Card>
+</CardGroup>

@@ -63,3 +63,24 @@ Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogn
 ---
 
 Step completato? Procedi con → [Step 4 · Smart check-in](/onboarding/4-smart-checkin)
+
+<Tip>
+**▷ Prompt Claude Code — Monta l'agente Conduit**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Guidami nello step 3 (Conduit) per lo studente [NOME], seguendo mattone-docs
+/onboarding/3-conduit. Rispetta l'ordine: prima KB per-listing dal Notion
+(bridge, mai globale), poi custom tool — OGNUNO con la sua prompting skill —
+poi workflow, poi telefonia/WABA. Verifica che la api_key Kross vera sia già
+nel Vault PRIMA di iniettare i tool. Poi controlla via MCP che le 4 skill core
+siano ATTACCATE al Guest Agent (skill_ids != 0) e che i nomi tool siano
+canonici. Testa con simulate_conversation e mostrami il trace: deve usare
+load_skill -> tool giusto -> risposta corretta, non il nativo. Chiedimi
+workspace_id/agent_id se non li hai.
+```
+
+<CardGroup cols={2}>
+  <Card title="Provisioning (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Sezione AI / provisioning studente</Card>
+  <Card title="Dashboard Conduit" icon="robot">Workspace dell'agente (KB, tool, skill, voice)</Card>
+</CardGroup>

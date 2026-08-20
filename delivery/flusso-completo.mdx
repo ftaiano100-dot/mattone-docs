@@ -1,0 +1,45 @@
+---
+title: "Flusso completo studente Mattone"
+description: "Dall'iscrizione al Conduit live: vista d'insieme per il team delivery."
+---
+
+
+Vista d'insieme di **tutto** ciò che fa uno studente Mattone, dall'iscrizione all'agente live. Serve al team delivery per lavorare a volumi senza perdere pezzi.
+
+## Le tre fasi
+<Steps>
+  <Step title="Fase 0 — Preliminari (comuni a tutti)">Contratti, amministrazione, **account piattaforma** (`app.mattone.co`, profilo con `tools_access`), allineamento su cosa userà lo studente. Prima di ogni integrazione.</Step>
+  <Step title="Percorso per tipo di studente">Non tutti fanno la stessa sequenza (vedi tabella sotto). Il ramo dipende da chi è lo studente.</Step>
+  <Step title="Live + verifica">Ogni pezzo verificato dal vivo (log/azione reale), non "sembra ok". Poi monitoraggio continuo.</Step>
+</Steps>
+
+## Percorsi per profilo
+| Profilo | Da dove parte | Cosa fa dopo |
+|---|---|---|
+| **Marketing-first** | GHL / Marketing (lead, ROAS) | Kross/Conduit solo quando gestisce affitti |
+| **Operations-first** | Notion → Kross → Conduit | marketing dopo o mai; Operations per pulizie/EBITDA |
+| **Full** | tutto in sequenza | Notion → Kross → Conduit → smart-lock → Stripe → verifica |
+| **Revenue** | PriceLabs | pricing dinamico; resto secondo il caso |
+
+## Le integrazioni in gioco (mappa)
+- **Notion** → anagrafica appartamenti (base di KB, listino, contratti).
+- **KrossBooking** (o altro PMS) → prenotazioni/ospiti.
+- **Conduit** → agente AI ospiti (KB + tool + workflow + telefonia).
+- **Smart-lock** (Shelly/SwitchBot) → apertura da link.
+- **Stripe** → extra a listino.
+- **Operations** → pulizie, revenue, EBITDA.
+- **GHL** → lead/marketing, ROAS/CAC.
+- **PriceLabs** → pricing dinamico.
+
+## Stati & handoff (lavorare in due, a turni)
+Pensa a una **matrice passi × stato** per studente, non a una lista lineare:
+- Stati: **non iniziato · non ora/non applicabile · in corso · collegato · verificato**.
+- **"Non ora"** non cancella lo step: resta nel checklist, segnato, ripescabile.
+- **Fasi distinte**: "Kross caricato in piattaforma" ≠ "Kross collegato a Conduit"; i custom tool possono precedere il resto.
+- **Dove si legge oggi**: `pms_integrations` (Supabase) + `/connessioni` + Vault.
+
+<Warning>**GAP**: manca un tracker unico degli stati/handoff per il team. Oggi si ricostruisce a mano. Da gestire lato piattaforma.</Warning>
+
+<Tip>Dettaglio passo-passo: [Onboarding](/onboarding/panoramica). Cosa guardare dopo il go-live: [Monitorare gli studenti](/delivery/monitorare-studenti).</Tip>
+
+<Note>Fonti: `team-runbook/*`, `PROVISIONING.md`, `mattone-integrations-docs/*`, memoria `reference_operations_webinar_demo`, `project_notion_mattone_integration`.</Note>

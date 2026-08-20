@@ -68,3 +68,23 @@ La KB del listino **deve essere scopata per `listing_id`**: una KB globale (non 
 <Tip>
 Se uno studente gestisce più appartamenti con prezzi diversi, crea un documento listino separato per ciascun `listing_id` invece di un unico documento generico. Questo garantisce che Conduit mostri sempre il prezzo corretto per l'appartamento in cui si trova l'ospite.
 </Tip>
+
+<Tip>
+**▷ Prompt Claude Code — Configura extra/upsell**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a configurare la vendita di extra/upsell per [studente/Cosmica]
+seguendo mattone-docs /casistiche/extra-upsell. Compila il Listino nella KB del
+listing col template (voce, categoria A/B, prezzo, valuta, slot-dependent,
+condizioni). Verifica: voci categoria A -> check-availability montato; guardrail
+eccezione-listino aggiornato in-place; skill payment-link-generator montata.
+Poi testa 3 casi: (a) extra a listino -> link con causale corretta; (b)
+early/late con slot occupato -> escala; (c) voce non a listino -> escala, non
+inventa.
+```
+
+<CardGroup cols={2}>
+  <Card title="Onboarding · Pagamenti Stripe" icon="arrow-up-right-from-square" href="/onboarding/5-pagamenti-stripe">Attivazione tool + test</Card>
+  <Card title="Guardrail (eccezione-listino)" icon="arrow-up-right-from-square" href="/integrazioni/conduit/guardrail">Autorizzare la quotazione</Card>
+</CardGroup>

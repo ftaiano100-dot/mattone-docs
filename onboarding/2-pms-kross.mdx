@@ -63,3 +63,23 @@ Questo step è **completo** quando:
 ---
 
 Step completato? Procedi con → [Step 3 · Conduit](/onboarding/3-conduit)
+
+<Tip>
+**▷ Prompt Claude Code — Collega Kross**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Guidami nello step 2 (PMS KrossBooking) per lo studente [NOME], seguendo
+mattone-docs /onboarding/2-pms-kross. Chiedimi la terna (hotel_id, username
+apiNNNNN, password API) — NON stamparla, dimmi solo che va cifrata nel Vault.
+Ricordami la trappola autocompilazione (la vera api_key è 32 hex, non la
+password di login Mattone) e valida SEMPRE con auth reale via gateway
+mcp.mattone.co prima di dire "connected". Poi fai un test dal vivo
+(get-in-house-guests / get-reservation-status) e dimmi se tornano ospiti reali.
+Se rosso, portami su /integrazioni/kross/troubleshooting.
+```
+
+<CardGroup cols={2}>
+  <Card title="Collega Kross (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Inserisci la terna (cifrata nel Vault)</Card>
+  <Card title="Portale KrossBooking → API" icon="key">Da qui lo studente prende hotel_id / username / password</Card>
+</CardGroup>

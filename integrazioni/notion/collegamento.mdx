@@ -52,3 +52,21 @@ Il collegamento è completato correttamente quando si verificano tutte queste co
 <Note>
   Se lo studente revoca l'accesso Notion in un secondo momento (da Notion → Impostazioni → Connessioni), il bridge smette di sincronizzare la KB. Controlla sempre lo stato della connessione prima di una sessione di onboarding o di supporto.
 </Note>
+
+<Tip>
+**▷ Prompt Claude Code — Collega Notion**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a collegare il Notion dello studente [NOME] alla Mattone Platform
+seguendo mattone-docs /integrazioni/notion/collegamento. Ricordami che deve
+essere collegato ALLA PIATTAFORMA (non solo alla Conduit), altrimenti non
+possiamo leggere/normalizzare i dati. Dopo il connect OAuth, verifica che
+riusciamo a leggere il DB "Strutture"/"Apartments" e dimmi se il token è
+attivo. Segnalami se il collegamento risulta staccato (già successo su Cosmica).
+```
+
+<CardGroup cols={2}>
+  <Card title="Connessioni (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Card Notion → Collega (OAuth)</Card>
+  <Card title="DB Apartments" icon="arrow-up-right-from-square" href="/integrazioni/notion/db-apartments">Struttura e allineamento al template</Card>
+</CardGroup>

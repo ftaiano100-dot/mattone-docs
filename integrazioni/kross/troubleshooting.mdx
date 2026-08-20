@@ -20,3 +20,23 @@ Usa questa pagina per diagnosticare i problemi dell'integrazione KrossBooking: i
 <Note>
   Per errori non presenti in questa tabella, apri un ticket nel canale tecnico allegando il **log completo** della chiamata — non solo il messaggio di errore visibile nell'interfaccia. Includi: timestamp, `hotel_id`, endpoint chiamato, status code ricevuto e body della risposta. Senza questi dati, la diagnosi richiede molto più tempo.
 </Note>
+
+<Tip>
+**▷ Prompt Claude Code — Debug Kross**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema
+Kross: [DESCRIVI IL SINTOMO, es. "test connessione rosso" / "occupato su date
+libere per Casa X dal .. al .." / "errore sotto carico"]. LEGGI i log reali
+prima di concludere: log del gateway mcp.mattone.co + risposta grezza Kross col
+codice errore (11 combinazione, 16=429, 1010 Cloudflare). Isola: auth o parsing
+disponibilità o rate-limit? Verifica la verità di riferimento con
+run_custom_tool check-availability (property+date). Proponi il fix che spiega
+cosa non va E come si risolve, e aggiorna questa tabella se lo scenario è nuovo.
+```
+
+<CardGroup cols={2}>
+  <Card title="Metodo troubleshooting" icon="arrow-up-right-from-square" href="/troubleshooting/metodo">Le 5 mosse</Card>
+  <Card title="Rate limit & trappole" icon="arrow-up-right-from-square" href="/integrazioni/kross/rate-limit-trappole">429 e errori noti</Card>
+</CardGroup>

@@ -1,0 +1,58 @@
+---
+title: "Supportare gli studenti"
+description: "Playbook di supporto: come rispondere e risolvere a volumi."
+---
+
+
+Il supporto agli studenti deve essere veloce e ripetibile. Ecco il playbook per gestire le richieste senza reinventare ogni volta.
+
+## Principio: config prima del codice
+Il 90% dei "non funziona" è **configurazione** (tool spenti, skill non attaccate, nomi non canonici, lingua STT del voice, KB globale). Prima di toccare codice, verifica la config con la [checklist di provisioning](/onboarding/6-verifica-finale).
+
+## Flusso di supporto
+<Steps>
+  <Step title="Capisci il caso reale">Chiedi il caso concreto (appartamento, date, canale, screenshot). Senza un repro non si diagnostica.</Step>
+  <Step title="Applica il metodo">Riproduci → leggi i log reali → isola → verifica l'ipotesi → notifica+documenta. Vedi [Metodo](/troubleshooting/metodo).</Step>
+  <Step title="Risolvi o escala">Se è config, sistema; se è un bug lato Conduit (scope/save), prepara l'esempio riproducibile per Raniel/Yash.</Step>
+  <Step title="Documenta">Aggiungi lo scenario alla pagina Troubleshooting giusta (col codice), così il prossimo lo risolve in un minuto.</Step>
+</Steps>
+
+## Linguaggio verso lo studente (non-dev)
+- **Plain**: niente gergo/ID/endpoint allo studente. Il dettaglio tecnico va in nota separata per il tecnico.
+- **Passo-passo** per le procedure nuove.
+- Il fix deve dire **cosa non va E come si risolve**, non solo "risolto".
+
+## Casi tipici e dove mandarli
+| Richiesta studente | Dove |
+|---|---|
+| "L'AI dice occupato ma è libero" | [Conduit troubleshooting](/integrazioni/conduit/troubleshooting) |
+| "Non trova la prenotazione al telefono" | [Telefonia & WABA](/integrazioni/conduit/telefonia-waba) |
+| "Dà l'info dell'appartamento sbagliato" | [Conduit KB](/integrazioni/conduit/kb) |
+| "Non apre la porta dal link" | [Shelly](/integrazioni/shelly/troubleshooting) / [SwitchBot](/integrazioni/switchbot/troubleshooting) |
+| "I KPI marketing sono vuoti" | [GHL troubleshooting](/integrazioni/ghl/troubleshooting) |
+| "Voglio vendere gli extra" | [Extra / Upsell](/casistiche/extra-upsell) |
+
+## Comunicazioni interne
+- **Niccolò informato** sulle modifiche a integrazioni/Kross.
+- Se un connettore si stacca → **alert subito** (in cima), non a fine giro.
+
+<Tip>
+**▷ Prompt Claude Code — Gestisci una richiesta di supporto**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Aiutami a gestire questa richiesta di supporto di uno studente: [INCOLLA IL
+MESSAGGIO]. Seguendo mattone-docs /delivery/supportare-studenti: 1) dimmi che
+caso concreto mi serve per riprodurre; 2) applica il metodo (/troubleshooting/
+metodo) leggendo i log reali prima di concludere; 3) parti dalla config
+(checklist provisioning) prima del codice; 4) preparami DUE risposte: una in
+plain per lo studente (niente gergo) e una nota tecnica per me. Se è un bug
+lato Conduit, prepara l'esempio riproducibile per Raniel/Yash.
+```
+
+<CardGroup cols={2}>
+  <Card title="Metodo troubleshooting" icon="arrow-up-right-from-square" href="/troubleshooting/metodo">Le 5 mosse</Card>
+  <Card title="Problemi ricorrenti Conduit" icon="arrow-up-right-from-square" href="/delivery/problemi-ricorrenti-conduit">Catalogo problema→fix</Card>
+</CardGroup>
+
+<Note>Fonti: `api-kross-mattone/TROUBLESHOOTING.md`, `team-runbook/*`, memoria `feedback_plain_language_tasks`, `feedback_keep_niccolo_informed`, `feedback_connector_health_warnings`.</Note>

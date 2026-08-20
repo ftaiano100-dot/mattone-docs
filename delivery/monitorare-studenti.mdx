@@ -1,0 +1,51 @@
+---
+title: "Monitorare il lavoro degli studenti"
+description: "Cosa guardare, dove, con quali segnali di allarme."
+---
+
+
+Dopo il go-live, il lavoro non è finito: gli agenti vanno **monitorati**. Ecco cosa guardare e dove, per intercettare i problemi prima che lo faccia lo studente.
+
+## Cosa guardare, dove
+| Segnale | Dove si legge | Cosa dice |
+|---|---|---|
+| Stato connessioni | `pms_integrations` + `/connessioni` | chi è collegato/verificato/in "non ora" |
+| Automation rate agente | Conduit `get_automation_rate` | quanto risolve l'AI da sola vs escala |
+| Escalation | inbox/escalation Conduit | dove l'AI non ce la fa (temi ricorrenti) |
+| Esecuzioni workflow | `list_workflow_execution_events` | quali workflow falliscono e quanto |
+| Chiamate voce | `list_calls` (source retell) | se il voice trova le prenotazioni |
+| KB knowledge | nodi per-listing | dati critici presenti (WiFi, accesso) o mancanti |
+
+## Segnali di allarme
+- **Automation rate che cala** → qualcosa si è rotto (tool/skill/KB) o arrivano casi nuovi.
+- **Workflow con FAILED alti** (es. notifica cleaner, WhatsApp welcome): visto su Cosmica con >70% fallimenti → va investigato, non ignorato.
+- **Escalation ripetute sullo stesso tema** → manca una skill/KB/listino (candidato ad automazione, vedi [Problemi ricorrenti](/delivery/problemi-ricorrenti-conduit)).
+- **KPI knowledge a zero** in piattaforma → possibile lettura sbagliata (path KB), non necessariamente KB vuota.
+- **Connessione Notion staccata** → il bridge non ha più la fonte (già successo su Cosmica).
+
+## Ritmo consigliato
+- **Check periodico** per studente: connessioni verdi, automation rate, workflow falliti, escalation ricorrenti.
+- **Su alert**: se un connettore si stacca, va segnalato subito (in cima), non a fine giro.
+
+<Warning>Molti "non funziona" sono **config**, non codice (tool spenti, skill non attaccate, nomi sbagliati, lingua STT). Guarda prima la config.</Warning>
+
+<Tip>
+**▷ Prompt Claude Code — Monitora uno studente**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Fammi un check di monitoraggio dell'agente Conduit dello studente [NOME/
+workspace] seguendo mattone-docs /delivery/monitorare-studenti. Leggi: stato
+connessioni (pms_integrations), get_automation_rate, escalation recenti
+(temi ricorrenti), list_workflow_execution_events (workflow con FAILED alti),
+list_calls per la voce, e i KPI knowledge. Dammi un semaforo per area
+(verde/giallo/rosso) con la PROVA di ognuno e i 3 problemi più urgenti da
+sistemare. Segnala subito se un connettore si è staccato.
+```
+
+<CardGroup cols={2}>
+  <Card title="Supportare gli studenti" icon="arrow-up-right-from-square" href="/delivery/supportare-studenti">Playbook di supporto</Card>
+  <Card title="Problemi ricorrenti Conduit" icon="arrow-up-right-from-square" href="/delivery/problemi-ricorrenti-conduit">Catalogo problema→fix</Card>
+</CardGroup>
+
+<Note>Fonti: memoria `reference_conduit_late_checkout_automation` (workflow FAILED), `reference_conduit_fleet_status`, `team-runbook/provisioning-verification-checklist.md`, `project_notion_conduit_kb_bridge`.</Note>

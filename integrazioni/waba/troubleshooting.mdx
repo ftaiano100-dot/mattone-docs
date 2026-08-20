@@ -20,3 +20,23 @@ Usa questa guida per diagnosticare i problemi dell'integrazione WABA — la magg
 <Note>
   Per problemi relativi alla verifica Meta, alla policy WhatsApp o alla sospensione del WABA, contatta **Francesco** — la gestione Meta richiede accesso diretto al Business Manager account e non può essere risolta autonomamente dal team di onboarding senza quell'accesso.
 </Note>
+
+<Tip>
+**▷ Prompt Claude Code — Debug WABA**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema
+WABA: [DESCRIVI IL SINTOMO, es. "il numero non risponde" / "errore url sito
+in registrazione FB->Conduit"]. Verifica lo stato reale in Conduit -> Settings
+-> WhatsApp -> Numbers: è "Registered" (verde)? Ricorda che se non è collegato
+inbound/outbound falliscono in silenzio (una spunta sola). Isola: numero non
+registrato, url sito non accettato (prova www. senza https), OTP su numero
+fisso arriva via CHIAMATA non SMS. Il collegamento Meta lo fa Francesco:
+prepara la checklist di cosa gli serve.
+```
+
+<CardGroup cols={2}>
+  <Card title="Collegamento WABA" icon="arrow-up-right-from-square" href="/integrazioni/waba/collegamento">Step e verifica "Registered"</Card>
+  <Card title="Telefonia & WABA" icon="arrow-up-right-from-square" href="/integrazioni/conduit/telefonia-waba">Numero + voice + escalation</Card>
+</CardGroup>
