@@ -4,7 +4,11 @@ sidebarTitle: "PIT & Location"
 description: "Come generare il Private Integration Token GHL per una location studente, quali scope concedere e come salvarlo in modo sicuro su Mattone."
 ---
 
-Ogni location GHL richiede un Private Integration Token (PIT) per permettere a Mattone di leggere i dati di lead e spesa pubblicitaria. Il PIT è un token API con scope limitato, generato dall'amministratore della location, non è condiviso tra sub-account e non può essere usato per accedere ad altre location. Questa pagina spiega come generarlo, quali permessi assegnare e come consegnarlo al team Mattone in modo sicuro.
+Ogni location GHL richiede un Private Integration Token (PIT) per permettere a Mattone di leggere i dati di lead e spesa pubblicitaria. Il PIT è un token API con scope limitato, generato dall'amministratore della location, non è condiviso tra sub-account e non può essere usato per accedere ad altre location. Questa pagina spiega come generarlo, quali permessi assegnare e come collegarlo alla piattaforma in modo sicuro.
+
+<Warning>
+  **Regola operativa, chi fa l'onboarding (Account Manager).** Collegare il **PIT di GoHighLevel** dello studente è **responsabilità dell'Account Manager**, non dello studente. Dopo che è stato creato lo **Snapshot GHL**, lo studente **non fa nulla da solo**: la creazione del nuovo Sub-Account, l'import dello Snapshot e la creazione/collegamento del PIT li facciamo **noi (team Mattone)**. Lo studente non deve essere lasciato a generare o collegare il token per conto suo.
+</Warning>
 
 ## Cos'è il PIT
 
@@ -14,7 +18,7 @@ Il PIT (Private Integration Token) è una chiave API per-location disponibile ne
 
 <Steps>
   <Step title="Accedi a GHL come amministratore della location">
-    Lo studente (o tu, se hai accesso admin alla sua location) accede a GHL e si assicura di essere nel contesto della **location corretta**, non dell'account agenzia. Verifica il nome della location in alto a sinistra nell'interfaccia.
+    L'**Account Manager** che segue l'onboarding accede a GHL (dall'agenzia, con accesso admin al Sub-Account dello studente) e si assicura di essere nel contesto della **location corretta**, non dell'account agenzia. Verifica il nome della location in alto a sinistra nell'interfaccia. Questo passo lo fa il **team Mattone**, non lo studente.
   </Step>
   <Step title="Vai in Settings → Private Integrations">
     Nel menu laterale di GHL, vai in **Settings** e seleziona **Private Integrations**. Se la voce non è visibile, l'account potrebbe non avere i permessi necessari, contatta il supporto GHL o il team Mattone.
@@ -49,14 +53,14 @@ Il PIT (Private Integration Token) è una chiave API per-location disponibile ne
 GHL si collega nella **fase marketing** dell'onboarding (non serve per l'assistente/prenotazioni). Una volta collegato, la piattaforma legge **lead, pipeline, valori delle opportunità e spesa** → calcola **CPL / CPA / ROAS / CAC** e permette la gestione del **rebilling** dei sotto-account. Vedi [Lead & valore](/integrazioni/ghl/lead-valore) e [Rebilling](/integrazioni/ghl/rebilling).
 
 ## Prassi Mattone: nuovo Sub-Account + import dello Snapshot
-In GHL un cliente vive in un **Sub-Account** (la vecchia "Location"). Uno **Snapshot** è un template riutilizzabile che contiene i nostri **workflow, pipeline, funnel** e altri asset. La prassi corretta:
+In GHL un cliente vive in un **Sub-Account** (la vecchia "Location"). Uno **Snapshot** è un template riutilizzabile che contiene i nostri **workflow, pipeline, funnel** e altri asset. **Questi passi li esegue il team Mattone (l'Account Manager), non lo studente.** La prassi corretta:
 
 <Steps>
-  <Step title="Crea un nuovo Sub-Account per lo studente">Dall'agenzia, crea un **nuovo Sub-Account** (ex "Location") per lo studente.</Step>
-  <Step title="Importa il nostro Snapshot">**Importa lo Snapshot Mattone** (i nostri workflow, pipeline, funnel, ecc.) nel Sub-Account, invece di configurarlo da zero.</Step>
+  <Step title="Crea un nuovo Sub-Account per lo studente">Dall'agenzia, il **team Mattone** crea un **nuovo Sub-Account** (ex "Location") per lo studente.</Step>
+  <Step title="Importa il nostro Snapshot">Il **team** **importa lo Snapshot Mattone** (i nostri workflow, pipeline, funnel, ecc.) nel Sub-Account, invece di configurarlo da zero.</Step>
   <Step title="Double-check">Controlla che quanto importato sia corretto e coerente per quello studente (pipeline, automazioni, campi): lo Snapshot va **verificato**, non dato per buono.</Step>
-  <Step title="Crea il PIT nel suo Sub-Account">Settings → Private Integrations → crea il token con gli scope necessari (vedi sopra).</Step>
-  <Step title="Collega + (dal 3° mese) rebilling">Registra il PIT sulla piattaforma; imposta il [rebilling](/integrazioni/ghl/rebilling) del sotto-account quando previsto.</Step>
+  <Step title="Crea il PIT nel suo Sub-Account">Settings → Private Integrations → il **team** crea il token con gli scope necessari (vedi sopra). Dopo aver creato lo Snapshot, lo studente **non genera né collega il PIT da solo**: lo fa l'Account Manager.</Step>
+  <Step title="Collega + (dal 3° mese) rebilling">L'**Account Manager** registra il PIT sulla piattaforma; imposta il [rebilling](/integrazioni/ghl/rebilling) del sotto-account quando previsto.</Step>
 </Steps>
 
 ## Fonti ufficiali
