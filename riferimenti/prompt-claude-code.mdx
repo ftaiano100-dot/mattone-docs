@@ -19,6 +19,47 @@ Il "brain" del team è **Claude Code + i repo**. Qui trovi prompt pronti da **co
   </Card>
 </CardGroup>
 
+## ⭐ Riprendere un onboarding studente (prompt in evidenza)
+
+Se subentri su uno studente iniziato da qualcun altro (o da te giorni fa) e non sai **a che punto è**, questo è il prompt da incollare. Ricostruisce la matrice passi×stato dalle fonti reali e ti dice **da dove ripartire**. È lo stesso della sezione "4 · Riprendere / continuare un onboarding studente" qui sotto, messo in evidenza perché è quello che serve più spesso negli handoff.
+
+<Tip>
+**▷ Prompt Claude Code — Riprendi / capisci lo stato dell'onboarding**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Contesto: in questa sessione di Claude Code potrei NON avere il repo/codice
+caricato. Per prima cosa apri ENTRAMBI i repo — `~/Projects/api-kross-mattone`
+(provisioning, custom tool + skill, config agente) e `~/Projects/mattone-platform`
+(connessioni / pms_integrations / Vault / bridge Notion) — e LEGGI le pagine
+mattone-docs /onboarding/stato-e-continuazione e /onboarding/panoramica (matrice
+passi×stato + dipendenze di fase); per lo stato reale usa gli MCP (Supabase per
+pms_integrations e Vault, Conduit per l'agente). Poi procedi:
+
+Dimmi a che punto è l'onboarding dello studente [NOME] e da dove riprendere.
+Ricostruisci la MATRICE passi×stato (Anagrafica, Kross, Conduit, Smart check-in,
+Stripe, verifica) assegnando a ognuno uno dei cinque stati: non iniziato / non
+ora / in corso / collegato / verificato. Incrocia SEMPRE tre fonti reali:
+1) la vista /connessioni (stato per-connettore, vista studente),
+2) la tabella pms_integrations su Supabase (verità macchina + timestamp),
+3) il Vault (presenza delle credenziali cifrate per quel connettore — se manca,
+   il passo NON è davvero "collegato").
+Ricorda che "collegato" != "funziona": per ogni passo collegato leggi i log e
+verifica dal vivo (prenotazione letta, porta aperta, link Stripe generato).
+
+GATE Conduit: prima di attivare o provisionare QUALSIASI workspace agente,
+verifica che (a) il contratto "Servizio AI Ospiti" sia FIRMATO
+(contract_signed = true) E (b) la carta sia a file in piattaforma (metodo di
+pagamento aggiunto dallo studente). Se manca anche solo una delle due, NON
+attivare nulla: segnalalo come blocco.
+
+Alla fine dimmi, richiamando i repo e le pagine docs che hai usato: il PRIMO
+passo non ancora verificato (= da dove ripartire), cosa è in "non ora"
+(rimandato di proposito) e cosa manca ancora dallo studente (così posso
+avvisarlo — vedi il prompt "Avvisare lo studente di cosa gli manca"). Non
+inventare: se una fonte non è leggibile nella sessione, dillo.
+```
+
 ## Libreria per attività
 
 Sotto lo "0-3" generico trovi i **prompt pronti per le attività ricorrenti** del team. Copia quello che ti serve, sostituisci `[...]`, e lascia che Claude chieda i dati mancanti. Sono tutti **repo-aware** (dicono quale repo aprire + quale pagina docs leggere) e **self-contained**.
@@ -151,25 +192,7 @@ regola.
 ## 4 · Riprendere / continuare un onboarding studente
 Usalo quando subentri su uno studente iniziato da qualcun altro (o da te giorni fa) e devi capire **a che punto è** e **da dove ripartire**. Approfondimento: [Stato & continuazione](/onboarding/stato-e-continuazione).
 
-```text
-Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
-Per prima cosa apri il repo `~/Projects/mattone-platform` (connessioni /
-pms_integrations / Vault) e LEGGI le pagine mattone-docs
-/onboarding/stato-e-continuazione e /onboarding/panoramica (matrice passi×stato);
-per lo stato reale usa gli MCP (Supabase per pms_integrations, Conduit per
-l'agente). Poi procedi:
-
-Dimmi a che punto è l'onboarding dello studente [NOME] e da dove riprendere.
-Ricostruisci la MATRICE passi×stato (Anagrafica, Kross, Conduit, Smart check-in,
-Stripe, verifica) assegnando a ognuno uno dei cinque stati (non iniziato / non
-ora / in corso / collegato / verificato). Incrocia SEMPRE tre fonti:
-/connessioni, la tabella pms_integrations e la presenza delle credenziali nel
-Vault. Ricorda che "collegato" != "funziona": per ogni passo collegato leggi i
-log e verifica dal vivo (prenotazione reale, apertura porta, link Stripe). Alla
-fine dimmi: il primo passo non ancora verificato (= da dove ripartire), cosa è
-in "non ora" (rimandato di proposito), e cosa manca ancora dallo studente
-(così posso avvisarlo — vedi il prompt "Avvisare lo studente di cosa gli manca").
-```
+<Note>È il prompt in evidenza a inizio pagina — **[⭐ Riprendi / capisci lo stato dell'onboarding](#-riprendere-un-onboarding-studente-prompt-in-evidenza)**. Copia quello: apre entrambi i repo (`api-kross-mattone` + `mattone-platform`), ricostruisce la matrice passi×stato dalle tre fonti reali (`/connessioni` + `pms_integrations` + Vault) e ricorda il GATE Conduit prima di attivare qualsiasi workspace.</Note>
 
 ## 5 · Provisioning di un nuovo studente (Kross + tool + skill + KB)
 Usalo per **montare da zero** l'agente di uno studente: credenziali Kross nel Vault, custom tool con la loro skill, KB per-listing dal Notion. Rispetta l'ordine del [pacchetto completo Conduit](/integrazioni/conduit/pacchetto-completo).
