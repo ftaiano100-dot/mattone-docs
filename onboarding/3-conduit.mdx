@@ -13,12 +13,17 @@ Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogn
 ## Ordine corretto
 
 <Steps>
-  <Step title="KB per-listing dal Notion">
-    Usa il bridge Notion → Conduit per creare una cartella KB separata per ogni appartamento. Ogni cartella deve avere gli `entity_id` scopati sul `listing_id` corrispondente: questo garantisce che Conduit risponda all'ospite del Loft Navigli A solo con le informazioni del Loft Navigli A, senza contaminazione da altri appartamenti.
+  <Step title="Costruisci la KB con il bridge Notion → Conduit (OBBLIGATORIO)">
+    Questo è un passo **obbligatorio** del setup Conduit, **non** opzionale: **senza KB, l'agente non ha le informazioni degli appartamenti** (WiFi, indirizzo, accesso, regole, listino) e non può rispondere agli ospiti.
 
-    **Non creare mai una KB globale per lo studente** — anche se sembra più comodo, causa leak di dati tra appartamenti (es. istruzioni di accesso sbagliate, listino errato, regole della casa di un altro immobile).
+    **Ordine:**
+    1. Il **registro appartamenti su Notion** è collegato e completo (Step 1 dell'onboarding).
+    2. Il **bridge Notion → Conduit** genera la **KB per-appartamento** dentro il workspace Conduit: una cartella per ogni appartamento, con gli `entity_id` scopati sul `listing_id` corrispondente.
+    3. Da lì l'**agente risponde con i dati giusti** — quelli di quell'appartamento e basta.
 
-    → Guida dettagliata: [KB per-listing e bridge Notion](/integrazioni/conduit/kb)
+    Lo scope per-listing garantisce che Conduit risponda all'ospite del Loft Navigli A **solo** con le informazioni del Loft Navigli A. **Non creare mai una KB globale**: causa leak tra appartamenti (accessi sbagliati, listino errato, regole di un altro immobile).
+
+    → Come funziona il bridge: [Notion → Bridge Conduit](/integrazioni/notion/bridge-conduit) · Regole KB: [KB per-listing](/integrazioni/conduit/kb)
   </Step>
 
   <Step title="Custom tool con skill abbinate">

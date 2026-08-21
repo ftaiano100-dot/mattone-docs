@@ -48,15 +48,18 @@ Il PIT (Private Integration Token) è una chiave API per-location disponibile ne
 ## Quando si collega e a cosa serve
 GHL si collega nella **fase marketing** dell'onboarding (non serve per l'assistente/prenotazioni). Una volta collegato, la piattaforma legge **lead, pipeline, valori delle opportunità e spesa** → calcola **CPL / CPA / ROAS / CAC** e permette la gestione del **rebilling** dei sotto-account. Vedi [Lead & valore](/integrazioni/ghl/lead-valore) e [Rebilling](/integrazioni/ghl/rebilling).
 
-## Prassi Mattone: partire dal nostro snapshot GHL
-Di solito **non** si parte da una location vuota: **duplichiamo il NOSTRO workspace/snapshot GHL** (un template già pronto con pipeline, automazioni, campi) nel sotto-account dello studente. Poi, in quella location, si crea il **PIT** (i passi qui sopra) e lo si collega alla piattaforma.
+## Prassi Mattone: nuovo Sub-Account + import dello Snapshot
+In GHL un cliente vive in un **Sub-Account** (la vecchia "Location"). Uno **Snapshot** è un template riutilizzabile che contiene i nostri **workflow, pipeline, funnel** e altri asset. La prassi corretta:
 
 <Steps>
-  <Step title="Duplica lo snapshot Mattone">Crea il sotto-account dello studente dallo **snapshot template** Mattone (pipeline + automazioni già impostate), invece di configurarlo da zero.</Step>
-  <Step title="Crea il PIT nella sua location">Nel sotto-account appena creato → Settings → Private Integrations → crea il token con gli scope necessari (vedi sopra).</Step>
+  <Step title="Crea un nuovo Sub-Account per lo studente">Dall'agenzia, crea un **nuovo Sub-Account** (ex "Location") per lo studente.</Step>
+  <Step title="Importa il nostro Snapshot">**Importa lo Snapshot Mattone** (i nostri workflow, pipeline, funnel, ecc.) nel Sub-Account, invece di configurarlo da zero.</Step>
+  <Step title="Double-check">Controlla che quanto importato sia corretto e coerente per quello studente (pipeline, automazioni, campi): lo Snapshot va **verificato**, non dato per buono.</Step>
+  <Step title="Crea il PIT nel suo Sub-Account">Settings → Private Integrations → crea il token con gli scope necessari (vedi sopra).</Step>
   <Step title="Collega + (dal 3° mese) rebilling">Registra il PIT sulla piattaforma; imposta il [rebilling](/integrazioni/ghl/rebilling) del sotto-account quando previsto.</Step>
 </Steps>
 
 ## Fonti ufficiali
-- **GoHighLevel — Private Integrations Token** (doc ufficiale): https://marketplace.gohighlevel.com/docs/Authorization/PrivateIntegrationsToken/
-- **GHL API** (riferimento): https://highlevel.stoplight.io
+- **GoHighLevel — creare un Sub-Account usando uno Snapshot** (doc ufficiale): https://help.gohighlevel.com/support/solutions/articles/155000005762-create-a-new-sub-account-using-snapshot
+- **GoHighLevel — Snapshots (panoramica)**: https://help.gohighlevel.com/support/solutions/articles/48000982511-snapshots-overview · **importare uno Snapshot**: https://help.gohighlevel.com/support/solutions/articles/48000982581-how-to-import-snapshots
+- **Private Integrations Token**: https://marketplace.gohighlevel.com/docs/Authorization/PrivateIntegrationsToken/ · **GHL API**: https://highlevel.stoplight.io
