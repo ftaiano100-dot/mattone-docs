@@ -7,6 +7,14 @@ description: "Imposta l'agente AI Conduit: KB per-listing da Notion, custom tool
 Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogni studente ha il proprio workspace isolato composto da KB, agente e tool. La configurazione va eseguita in un ordine preciso: prima la base di conoscenza, poi i tool con le relative skill, poi i workflow, e infine il canale telefonico/WABA. Saltare o invertire questi passaggi causa comportamenti imprevisti nell'agente.
 
 <Warning>
+  **PRIMA DI TUTTO — accesso Admin Mattone (obbligatorio, facile da dimenticare).** Appena creato il workspace Conduit di uno studente, aggiungi **`francesco@mattone.co`** come **Admin** (dashboard Conduit → membri/team → invita come **Admin**). È l'unico modo per garantire che il team Mattone abbia sempre accesso a quel workspace.
+
+  ⚠️ **Non esiste un'API** per aggiungere membri: va fatto **a mano** nella dashboard. Se te ne dimentichi, il team **perde l'accesso** (dalla UI) a quel workspace. **Verifica** che l'Admin Mattone sia nella lista membri prima di considerare il workspace pronto.
+
+  *(È in corso una richiesta a Conduit per aggiungere `francesco@mattone.co` come Admin in automatico a ogni nuovo workspace, a livello di organizzazione; finché non è attiva, resta questo step manuale.)*
+</Warning>
+
+<Warning>
   KB globale = leak tra appartamenti. Ogni KB deve avere lo scope sulla directory per-listing — non creare mai una KB condivisa tra più appartamenti dello stesso studente.
 </Warning>
 

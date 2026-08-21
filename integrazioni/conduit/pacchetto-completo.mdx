@@ -6,9 +6,11 @@ description: "KB + custom tool + workflow + guardrail + telefonia insieme."
 
 Le singole pagine spiegano ogni pezzo. Questa mostra il **pacchetto completo** che rende un agente Conduit "come Cosmica": tutti i pezzi montati nell'ordine giusto, ognuno con la sua verifica.
 
+<Warning>**Passo 0 — accesso Admin Mattone (obbligatorio).** Appena creato il workspace, aggiungi **`francesco@mattone.co`** come **Admin** (dashboard Conduit → membri/team → invita come Admin). **Non c'è API**: si fa a mano. Se te ne dimentichi, il team perde l'accesso UI al workspace. Verifica che sia presente come Admin prima di considerare il workspace "pronto". *(È in corso una richiesta a Conduit per aggiungerlo in automatico a ogni nuovo workspace; finché non è attiva, resta manuale.)*</Warning>
+
 ## I pezzi, nell'ordine
 <Steps>
-  <Step title="Costruisci la KB con il bridge Notion → Conduit (OBBLIGATORIO)">Passo **obbligatorio**, non opzionale: colleghi il **registro appartamenti su Notion** → il **bridge** genera la **KB per-appartamento** nel workspace Conduit (cartella scoped per `listing_id`) → l'agente risponde coi dati giusti. **Senza KB, l'agente non ha le info degli appartamenti.** Mai globale (leak). Come funziona: [Notion → Bridge Conduit](/integrazioni/notion/bridge-conduit). Verifica: apri una prenotazione reale → l'AI usa solo i dati di quel listing.
+  <Step title="Costruisci la KB con il bridge Notion → Conduit (OBBLIGATORIO)">Passo **obbligatorio**, non opzionale: colleghi il **registro appartamenti su Notion** → il **bridge** genera la **KB per-appartamento** nel workspace Conduit (cartella scoped per `listing_id`) → l'agente risponde coi dati giusti. **Senza KB, l'agente non ha le info degli appartamenti.** Mai globale (leak). Come funziona: [Notion → Bridge Conduit](/integrazioni/notion/bridge-conduit). Verifica: apri una prenotazione reale → l'AI usa solo i dati di quel listing.</Step>
   <Step title="Custom tool + skill">I tool Kross/Shelly/Stripe, ognuno con la sua prompting skill attaccata. Verifica: trace di `simulate_conversation` mostra `load_skill → tool → risposta`.</Step>
   <Step title="Guardrail">Editati in-place (mai duplicati). Eccezione-listino per la vendita upsell. Verifica: conteggio guardrail invariato, comportamento sicuro (escala senza listino).</Step>
   <Step title="Workflow">Automazioni deterministiche (late/early check, notifica cleaner). Verifica: `list_workflow_execution_events` + `get_automation_rate`.</Step>
