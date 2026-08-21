@@ -7,9 +7,14 @@ description: "Imposta l'agente AI Conduit: KB per-listing da Notion, custom tool
 Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogni studente ha il proprio workspace isolato composto da KB, agente e tool. La configurazione va eseguita in un ordine preciso: prima la base di conoscenza, poi i tool con le relative skill, poi i workflow, e infine il canale telefonico/WABA. Saltare o invertire questi passaggi causa comportamenti imprevisti nell'agente.
 
 <Warning>
-  **PREREQUISITO CONTRATTUALE — contratto Conduit firmato PRIMA dell'attivazione.** Non attivare il workspace/agente Conduit di uno studente finché non è firmato l'**Addendum "Servizio AI Ospiti"** (Mattone.co LLC ↔ studente): è il contratto che regola il **canone €9/Listing/mese**, i **Costi a Consumo**, la **durata minima 12 mesi** e l'**autorizzazione all'addebito** (Stripe/bonifico). L'attivazione fa **decorrere il canone dalla Data di attivazione**: senza contratto firmato **non si attiva**. Verifica la firma e la **Data attivazione** (sezione "Dettagli Attivazione" del contratto) prima di procedere.
+  **GATE DI ATTIVAZIONE — due condizioni OBBLIGATORIE prima di attivare il workspace Conduit.** A chi fa l'onboarding: **non attivare il workspace/agente Conduit** di uno studente se non ha **entrambe**:
 
-  Lo stato **"contratto firmato"** va registrato **nella piattaforma** (app.mattone.co), non solo qui: quando confermi che è firmato, flaggalo (o carica il PDF firmato) nella scheda dello studente. La piattaforma è la fonte unica — lo **studente stesso vede il suo contratto** nella sua area, e l'attivazione del billing resta legata a quel flag.
+  1. **Contratto "Servizio AI Ospiti" FIRMATO** — l'**Addendum "Servizio AI Ospiti"** (Mattone.co LLC ↔ studente) che regola **canone €9/Listing/mese**, **Costi a Consumo**, **durata minima 12 mesi** e **autorizzazione all'addebito**. Verifica firma + **Data attivazione** (sezione "Dettagli Attivazione" del contratto).
+  2. **Carta a file nella piattaforma** — lo studente deve aver **aggiunto il metodo di pagamento** (carta) nell'area billing della piattaforma. Senza carta, l'addebito ricorrente non può partire.
+
+  **Se manca anche solo UNA delle due → NON attivare. Nessuna eccezione.** L'attivazione fa **decorrere il canone dalla Data di attivazione**.
+
+  **Dove si legge lo stato:** `contract_signed = true` **e** presenza della **carta** (metodo di pagamento) nella piattaforma / area billing dello studente. Lo stato **"contratto firmato"** va registrato **nella piattaforma** (app.mattone.co), non solo qui: quando confermi la firma, flaggalo (o carica il PDF firmato) nella scheda dello studente — la piattaforma è la fonte unica, lo **studente stesso vede il suo contratto** nella sua area e l'attivazione del billing resta legata a quel flag.
 </Warning>
 
 <Warning>
@@ -114,7 +119,12 @@ custom tool + catalog.json, provisioning) e `~/Projects/mattone-platform`
 per testare usa l'MCP Conduit (simulate_conversation). Poi procedi:
 
 Guidami nello step 3 (Conduit) per lo studente [NOME], seguendo mattone-docs
-/onboarding/3-conduit. Rispetta l'ordine: prima KB per-listing dal Notion
+/onboarding/3-conduit. GATE DI ATTIVAZIONE, da verificare PRIMA di attivare o
+provisionare qualsiasi cosa: (a) contratto "Servizio AI Ospiti" FIRMATO
+(contract_signed = true) E (b) carta a file nella piattaforma (metodo di
+pagamento aggiunto dallo studente, area billing). Se manca ANCHE SOLO UNA delle
+due, FERMATI e dimmelo: NON attivare il workspace, nessuna eccezione. Solo a
+gate superato, procedi. Rispetta l'ordine: prima KB per-listing dal Notion
 (bridge, mai globale), poi custom tool — OGNUNO con la sua prompting skill —
 poi workflow, poi telefonia/WABA. Verifica che la api_key Kross vera sia già
 nel Vault PRIMA di iniettare i tool. Poi controlla via MCP che le 4 skill core

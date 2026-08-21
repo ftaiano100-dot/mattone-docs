@@ -182,8 +182,13 @@ KB da Notion, connessioni/Vault), e LEGGI le pagine mattone-docs
 /onboarding/3-conduit e /integrazioni/conduit/pacchetto-completo; per creare e
 testare usa l'MCP Conduit (simulate_conversation). Poi procedi:
 
-Fai il provisioning dell'agente Conduit per lo studente [NOME], nell'ordine
-tassativo: 1) verifica che la terna Kross (hotel_id+username+password) sia già
+Fai il provisioning dell'agente Conduit per lo studente [NOME]. GATE DI
+ATTIVAZIONE da verificare PRIMA di tutto: (a) contratto "Servizio AI Ospiti"
+FIRMATO (contract_signed = true) E (b) carta a file nella piattaforma (metodo di
+pagamento aggiunto, area billing). Se manca anche solo una delle due, FERMATI e
+dimmelo: NON provisionare/attivare il workspace, nessuna eccezione. Solo a gate
+superato, procedi nell'ordine tassativo: 1) verifica che la terna Kross
+(hotel_id+username+password) sia già
 nel Vault come cred_secret_id (NON chiedermi le credenziali in chiaro, dimmi
 solo se ci sono); 2) genera la KB per-listing dal Notion tramite il bridge (una
 cartella per appartamento, entity_id scopati sul listing_id — MAI una KB
