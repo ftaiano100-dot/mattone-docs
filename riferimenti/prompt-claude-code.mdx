@@ -10,6 +10,8 @@ Il "brain" del team è **Claude Code + i repo**. Qui trovi prompt pronti da **co
 
 <Note>**Principio: i prompt assumono che il repo NON sia già caricato.** Ogni prompt qui e nei docs parte dando per scontato che nella tua sessione Claude Code non ci sia ancora il codice in contesto. Per questo ogni prompt inizia dicendo esplicitamente **quale repo aprire** (es. `~/Projects/mattone-platform`, il gateway `~/Projects/mattone-mcp-gateway`, `~/Projects/api-kross-mattone`, o `~/Projects/cosmica-booking` per il guest portal) e **quale pagina mattone-docs leggere** — così funziona anche se apri Claude Code da zero. Se il repo è già caricato, quelle prime righe sono solo una conferma innocua.</Note>
 
+<Info>**Perché si aprono due repo (non è un refuso).** I prompt su onboarding/stato/monitoraggio aprono **entrambi** i repo perché lo stato di uno studente vive in due posti diversi: **`api-kross-mattone`** è il repo con le **skill di onboarding**, i **custom tool + `catalog.json`** e il **provisioning Kross/Conduit** (cioè com'è configurato l'agente); **`mattone-platform`** è il repo delle **connessioni / `pms_integrations` / Vault / bridge Notion** (cioè cosa risulta collegato e con quali credenziali). Per capire davvero "a che punto è" uno studente servono tutti e due.</Info>
+
 <CardGroup cols={2}>
   <Card title="🎥 Video: come usare i prompt / riprendere un onboarding" icon="video">
     **(video da aggiungere)** — walkthrough del team: aprire Claude Code nel repo giusto, incollare un prompt della libreria, riprendere un onboarding dallo stato in `/connessioni`. *Sostituire questo placeholder con l'URL del video quando disponibile — non inserire link finché non è reale.*
@@ -58,6 +60,43 @@ passo non ancora verificato (= da dove ripartire), cosa è in "non ora"
 (rimandato di proposito) e cosa manca ancora dallo studente (così posso
 avvisarlo — vedi il prompt "Avvisare lo studente di cosa gli manca"). Non
 inventare: se una fonte non è leggibile nella sessione, dillo.
+```
+
+## ⭐ Monitorare l'avanzamento di uno studente (prompt in evidenza)
+
+Diverso dal "riprendi onboarding": qui **non** subentri per lavorarci, vuoi solo **fotografare l'avanzamento** — a che punto è ogni integrazione, cosa manca, qual è la prossima azione. È un check **in sola lettura** (non attiva né provisiona nulla). Approfondimento: [Monitorare gli studenti](/delivery/monitorare-studenti).
+
+<Tip>
+**▷ Prompt Claude Code — Monitora l'avanzamento di uno studente**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Contesto: in questa sessione di Claude Code potrei NON avere il repo/codice
+caricato. Per prima cosa apri ENTRAMBI i repo — `~/Projects/api-kross-mattone`
+(skill di onboarding, custom tool + catalog.json, provisioning Kross/Conduit) e
+`~/Projects/mattone-platform` (connessioni / pms_integrations / Vault / bridge
+Notion) — e LEGGI le pagine mattone-docs /delivery/monitorare-studenti e
+/onboarding/stato-e-continuazione; per lo stato reale usa gli MCP (Supabase per
+pms_integrations e Vault, e — se serve confermare l'agente — Conduit in SOLA
+LETTURA: get_automation_rate, list_*, simulate_conversation). Poi procedi:
+
+Monitora l'AVANZAMENTO dell'onboarding dello studente [NOME] e dimmi, per OGNI
+integrazione (Anagrafica/Notion, Kross, Conduit, Smart check-in, Stripe), a che
+punto è. Per ognuna incrocia tre fonti reali:
+1) la vista /connessioni (stato per-connettore, vista studente),
+2) la tabella pms_integrations su Supabase (verità macchina + timestamp),
+3) il Vault (presenza delle credenziali cifrate — se manca, NON è davvero
+   "collegato").
+Ricorda che "collegato" != "funziona": dove serve, conferma dal vivo ma in sola
+lettura (una prenotazione letta da Kross, le skill core ATTACCATE al Guest Agent
+via Conduit, un link Stripe di test).
+
+Restituisci una TABELLA integrazione × [stato attuale | cosa manca | prossima
+azione]. Poi in coda: la PROSSIMA azione singola più importante per far avanzare
+lo studente, e cosa serve eventualmente dallo studente stesso (così posso
+avvisarlo). NON attivare, provisionare o modificare nulla in questo giro: è un
+monitoraggio in lettura. Non inventare: se una fonte non è leggibile nella
+sessione, dillo.
 ```
 
 ## Libreria per attività
