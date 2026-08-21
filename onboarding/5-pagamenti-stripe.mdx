@@ -49,8 +49,15 @@ Nient'altro deve essere abilitato. Se lo studente non sa come creare una Restric
     Usa il canale dedicato alle credenziali previsto dal tuo processo operativo.
   </Step>
 
-  <Step title="Salva la chiave nel Vault">
-    Ricevuta la chiave, salvala immediatamente nel Vault della piattaforma Mattone, associata allo studente. Non tenerla in chiaro in nessun documento, foglio di lavoro o chat.
+  <Step title="Incolla la chiave nella piattaforma Mattone (Connessioni → Pagamenti)">
+    La chiave si inserisce **da dentro la piattaforma Mattone**, nella sezione dedicata alle connessioni — non va lasciata in chiaro da nessun'altra parte.
+
+    1. Vai su [**app.mattone.co**](https://app.mattone.co/connessioni) → **Connessioni**.
+    2. Apri la card **Pagamenti / Stripe** dello studente.
+    3. **Incolla la Restricted Key** (`rk_live_…`) nel campo chiave e salva.
+    4. La piattaforma **cifra la chiave nel Vault** (`stripe_key_<token>`) associandola allo studente: non viene mai memorizzata in chiaro.
+
+    Non tenere la chiave in chiaro in nessun documento, foglio di lavoro, repo o chat. L'unico posto dove vive è il Vault della piattaforma.
   </Step>
 
   <Step title="Monta il tool e la skill in Conduit">
@@ -73,6 +80,22 @@ Nient'altro deve essere abilitato. Se lo studente non sa come creare una Restric
   </Step>
 </Steps>
 
+<Info>
+  **Cosa dire allo studente — chiave Stripe**
+
+  La chiave si crea su Stripe e si **incolla nella piattaforma Mattone**: lo studente non deve mandarcela in chat né via email. Passa questi passi, plain:
+
+  1. Accedi a [**dashboard.stripe.com**](https://dashboard.stripe.com) → **Developers → API Keys**.
+  2. Clicca **Create restricted key** (chiave a **permessi minimi** — **NON** la Secret Key intera).
+  3. Dà un nome (es. *Mattone - Conduit*) e imposta i permessi: **Products = Write**, **Prices = Write**, **Payment Links = Write**, **tutto il resto = None**.
+  4. Clicca **Create key** e **copia subito** il valore (`rk_live_…`): Stripe lo mostra una sola volta.
+  5. Vai su [**app.mattone.co**](https://app.mattone.co/connessioni) → **Connessioni → Pagamenti / Stripe** e **incolla lì** la chiave. Fatto: la piattaforma la cifra nel Vault.
+
+  Da dire chiaro: *"Crea una chiave a permessi limitati (Restricted), mai la Secret piena. Incollala solo dentro la piattaforma, non mandarla in chat o via email. Se per sbaglio finisce in un messaggio, avvisaci: la revochiamo e ne creiamo una nuova."*
+
+  🎥 Video tutorial ufficiale (Cosmica Group) — *"Guida alla configurazione delle chiavi API Stripe su piattaforma Mattone"*: [kommodo.ai/recordings/IQC7ADofCfiURbkPqxyF](https://kommodo.ai/recordings/IQC7ADofCfiURbkPqxyF). Puoi girarlo direttamente allo studente.
+</Info>
+
 <Warning>
   Se la chiave viene condivisa accidentalmente in una chat pubblica o di gruppo, va ruotata immediatamente. Chiedi allo studente di disabilitare la chiave compromessa dal dashboard Stripe e di crearne una nuova con gli stessi permessi. Aggiorna il Vault con la nuova chiave e rimonta il tool in Conduit.
 </Warning>
@@ -94,15 +117,22 @@ Poi procedi:
 
 Guidami nello step 5 (Pagamenti Stripe) per lo studente [NOME], seguendo
 mattone-docs /onboarding/5-pagamenti-stripe. Prima chiarisci se vende extra a
-listino (se no, NON montare Stripe). Rispetta l'ordine tassativo: 1) chiave
-sk_live nel Vault come stripe_key_<token> (mai in chat), 2) listino compilato,
-3) tool stripe montato, 4) skill payment-link-generator montata. Ricordami che
-allunghi/prenotazioni si pagano col nativo PMS, mai Stripe autonomo. Poi fai i
-test T1 (gateway crea un link da 1.00), T2 (l'agente genera il link a "sì"
-dell'ospite; se prezzo non a listino -> escala), T3 (causale corretta).
+listino (se no, NON montare Stripe). Rispetta l'ordine tassativo: 1) Restricted
+Key rk_live (permessi minimi: Products/Prices/Payment Links = Write, resto None;
+MAI la Secret sk_live), incollata dallo studente in app.mattone.co ->
+Connessioni -> Pagamenti e cifrata nel Vault come stripe_key_<token> (mai in
+chat/email/repo), 2) listino compilato, 3) tool stripe montato, 4) skill
+payment-link-generator montata. Ricordami che allunghi/prenotazioni si pagano
+col nativo PMS, mai Stripe autonomo. Poi fai i test T1 (gateway crea un link da
+1.00), T2 (l'agente genera il link a "sì" dell'ospite; se prezzo non a listino
+-> escala), T3 (causale corretta). Se lo studente deve ancora creare la chiave,
+passami il box "Cosa dire allo studente" + il link al video tutorial
+(kommodo.ai/recordings/IQC7ADofCfiURbkPqxyF) da inoltrargli.
 ```
 
 <CardGroup cols={2}>
-  <Card title="Stripe → API keys" icon="arrow-up-right-from-square" href="https://dashboard.stripe.com/apikeys">Lo studente prende la Secret Key (sk_live)</Card>
+  <Card title="Stripe → API keys" icon="arrow-up-right-from-square" href="https://dashboard.stripe.com/apikeys">Lo studente crea la Restricted Key (rk_live)</Card>
+  <Card title="Video: chiavi Stripe su Mattone" icon="video" href="https://kommodo.ai/recordings/IQC7ADofCfiURbkPqxyF">Guida ufficiale Cosmica Group — da girare allo studente</Card>
+  <Card title="Connessioni → Pagamenti (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Dove lo studente incolla la Restricted Key</Card>
   <Card title="Extra / Upsell (casistica)" icon="arrow-up-right-from-square" href="/casistiche/extra-upsell">Come l'agente vende dal listino</Card>
 </CardGroup>

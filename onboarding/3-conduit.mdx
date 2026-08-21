@@ -63,11 +63,31 @@ Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogn
   </Step>
 
   <Step title="Telefonia + WABA">
-    Questo è un percorso separato che richiede intervento del supporto Conduit. Il tempo medio di attivazione è **circa 1 settimana** dalla richiesta. Pianificalo in anticipo.
+    Questo è un percorso separato che richiede intervento del supporto Conduit. Il tempo medio di attivazione è **circa 1 settimana** dalla richiesta. Pianificalo in anticipo: **apri il ticket Conduit presto**, appena completata la KB e i tool.
 
     La configurazione include:
-    - Numero telefonico dedicato con warm transfer al telefono dello studente
-    - Account WhatsApp Business API (WABA) collegato al workspace dello studente
+    - Numero telefonico **italiano** dedicato, **richiesto dal portale Conduit** (specificando il **prefisso della città**)
+    - Registrazione **WABA** (WhatsApp Business API) con **Meta** — la facciamo **con il supporto del team Mattone**
+    - Collegamento a un **Business Manager Facebook** (meglio nuovo)
+    - Warm transfer al telefono dello studente per le chiamate che l'agente non gestisce
+
+    Lo standard, già a doc: il numero **italiano** è quello guest-facing (WhatsApp, chiamate, annunci OTA); l'agente VoiceAI può girare su un numero di backend Conduit con **forwarding** dal numero italiano — è normale, l'ospite vede sempre il numero italiano.
+
+    <Info>
+      **Cosa dire allo studente — numero IT + WhatsApp ufficiale (WABA)**
+
+      Serve circa **1 settimana**, quindi partiamo subito. Passa allo studente questi passi, plain:
+
+      1. **Non comprare una SIM** e **non usare il numero WhatsApp fai-da-te che ti propone Facebook.**
+      2. Il numero lo **richiediamo dal portale Conduit**: dicci **in che città sei** (ci serve il **prefisso della città**) così chiediamo un **numero italiano dedicato** al tuo servizio.
+      3. Quel numero lo **registriamo per WhatsApp Business (WABA) con Meta**: questa parte la facciamo **noi insieme a te**, non da solo.
+      4. Poi lo **colleghiamo a un Business Manager Facebook** (meglio nuovo): se ti serve, ti guidiamo a crearlo.
+      5. Tienilo presente: lo **stesso numero italiano** varrà per **WhatsApp, chiamate e come riferimento sugli annunci OTA**.
+
+      Da dire chiaro: *"È il tuo numero ufficiale verso gli ospiti. Ci vuole circa una settimana per l'attivazione con Meta, per questo la avviamo subito."*
+
+      Prerequisiti da chiedere allo studente in anticipo: un **numero non già usato su WhatsApp** (personale o business), **accesso a Facebook Business Manager** come amministratore, e un **documento aziendale** (es. visura) per la verifica Meta.
+    </Info>
 
     Apri il ticket al supporto Conduit appena hai completato la KB e i tool — in questo modo quando il canale è pronto, il workspace è già configurato correttamente.
 
@@ -102,7 +122,10 @@ nel Vault PRIMA di iniettare i tool. Poi controlla via MCP che le 4 skill core
 siano ATTACCATE al Guest Agent (skill_ids != 0) e che i nomi tool siano
 canonici. Testa con simulate_conversation e mostrami il trace: deve usare
 load_skill -> tool giusto -> risposta corretta, non il nativo. Chiedimi
-workspace_id/agent_id se non li hai.
+workspace_id/agent_id se non li hai. Per la telefonia/WABA ricordami di aprire
+SUBITO il ticket Conduit (attivazione ~1 settimana) e passami il box "Cosa dire
+allo studente" (numero IT dal portale Conduit col prefisso città -> WABA con
+Meta col nostro supporto -> Business Manager Facebook) da inoltrare allo studente.
 ```
 
 <CardGroup cols={2}>
