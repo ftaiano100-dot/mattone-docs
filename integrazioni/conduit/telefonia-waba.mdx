@@ -6,6 +6,31 @@ description: "Attiva telefonia VoiceAI e WhatsApp Business su Conduit: tracce di
 
 Conduit può comunicare con gli ospiti via telefono (agente VoiceAI) e via WhatsApp Business (WABA) — questi sono i canali attraverso cui l'AI risponde, invia reminder e gestisce le escalation. Telefonia e WABA sono due tracce di configurazione separate, indipendenti dal resto del workspace (KB, tool, workflow) e richiedono circa una settimana di attivazione tramite il supporto Conduit. Pianifica questi passaggi nelle prime due settimane di onboarding: il workspace deve essere già pronto quando il canale viene attivato.
 
+## Il numero di telefono — come funziona (dubbi frequenti)
+
+Il numero è la parte che genera più domande in onboarding. In breve: **un solo numero fisso italiano dedicato, richiesto tramite il portale Conduit, che serve sia per WhatsApp sia per le chiamate.** Non serve comprare una SIM.
+
+<AccordionGroup>
+  <Accordion title="Serve un numero italiano nuovo? Solo per l'azienda?">
+    Sì: un **numero fisso italiano dedicato** allo studente/azienda, usato **sia per WhatsApp (WABA) sia per le chiamate** (VoiceAI). Non si usa il numero personale.
+  </Accordion>
+  <Accordion title="Devo comprarmi una SIM/eSIM (TIM, Fastweb…)?">
+    **No.** Il numero si **richiede dal portale Conduit**, specificando il **prefisso della città**. È un numero dedicato al servizio: non serve una SIM fisica né un abbonamento operatore.
+  </Accordion>
+  <Accordion title="Facebook mi propone un numero WhatsApp virtuale — uso quello?">
+    **No, non il fai-da-te di Facebook.** Il percorso corretto è: numero **dal portale Conduit** → **registrazione per WhatsApp Business API (WABA)** con Meta → **collegamento a un Business Manager Facebook** (meglio nuovo). La registrazione WABA la facciamo **con il supporto del team Mattone** (vedi "Chi gestisce il collegamento").
+  </Accordion>
+  <Accordion title="Lo stesso numero vale per WhatsApp, chiamate e annunci OTA?">
+    Sì: **un unico numero** copre WhatsApp e chiamate, e puoi usarlo come riferimento anche sugli annunci nelle OTA.
+  </Accordion>
+</AccordionGroup>
+
+**Il flusso in ordine:** richiedi il numero dal **portale Conduit** (prefisso città) → lo **registri per WABA** con Meta (ti supportiamo noi) → lo **colleghi a un Business Manager Facebook** nuovo. Da lì WhatsApp e chiamate passano dall'agente.
+
+<Note>
+  **Dettaglio tecnico (team).** L'agente VoiceAI di Conduit può girare su un **numero di backend Conduit (anche USA)** con **forwarding dal numero italiano**: è normale e **standard** (anche il setup Soliséra funziona così). Ciò che l'ospite vede e chiama — e ciò che va sugli annunci OTA — resta il **numero italiano**. Quindi un numero backend +1 nella configurazione dell'agente **non è un problema**.
+</Note>
+
 ## Tracce disponibili
 
 ### Telefonia (VoiceAI)
