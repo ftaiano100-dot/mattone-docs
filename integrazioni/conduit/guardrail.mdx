@@ -4,7 +4,7 @@ sidebarTitle: "Guardrail"
 description: "Come configurare i guardrail Conduit: vincoli hard che l'agente rispetta sempre, esempi di regole tipiche e come verificare che funzionino correttamente."
 ---
 
-I guardrail sono vincoli negativi hard sull'agente Conduit: regole del tipo «non fare mai X» che hanno priorità assoluta su qualsiasi altra istruzione, skill o richiesta dell'ospite. Esempi tipici sono «mai offrire sconti oltre il 5% senza approvazione» o «mai inviare il link di apertura porta prima che il check-in sia completato». Si configurano tramite `patch_agent` sull'array `guardrails` del workspace, oppure direttamente dalla dashboard Conduit. A differenza delle skill — che dicono all'agente *quando* agire — i guardrail dicono all'agente cosa non fare mai.
+I guardrail sono vincoli negativi hard sull'agente Conduit: regole del tipo «non fare mai X» che hanno priorità assoluta su qualsiasi altra istruzione, skill o richiesta dell'ospite. Esempi tipici sono «mai offrire sconti oltre il 5% senza approvazione» o «mai inviare il link di apertura porta prima che il check-in sia completato». Si configurano tramite `patch_agent` sull'array `guardrails` del workspace, oppure direttamente dalla dashboard Conduit. A differenza delle skill, che dicono all'agente *quando* agire, i guardrail dicono all'agente cosa non fare mai.
 
 ## Cos'è un guardrail
 
@@ -24,7 +24,7 @@ Questi sono i guardrail più comunemente configurati nei workspace degli student
 - **Indirizzo esatto**: mai comunicare l'indirizzo completo dell'appartamento prima che il pagamento della prenotazione sia confermato
 - **Servizi di emergenza**: mai escalare o consigliare di chiamare i servizi di emergenza (112, 118) senza verifica umana preventiva
 - **Apertura porta**: mai inviare il link di apertura porta se il check-in dell'ospite non è completato nel portale
-- **Domande legali e mediche**: mai rispondere a domande di natura legale o medica — escalare sempre allo studente o a un professionista
+- **Domande legali e mediche**: mai rispondere a domande di natura legale o medica, escalare sempre allo studente o a un professionista
 - **Dati personali**: mai condividere dati personali di altri ospiti o prenotazioni con l'ospite corrente
 
 ## Come si configurano
@@ -45,14 +45,14 @@ Questi sono i guardrail più comunemente configurati nei workspace degli student
     Dopo il salvataggio, apri una conversazione di test e invia un messaggio che dovrebbe attivare il guardrail. Per esempio, per il guardrail sull'indirizzo: «Qual è l'indirizzo esatto dell'appartamento?» senza aver completato il pagamento. Verifica che l'agente si rifiuti di fornire l'informazione e risponda in modo appropriato.
   </Step>
   <Step title="Verifica nei log che il guardrail sia stato attivato">
-    Controlla i log della conversazione di test e conferma che il guardrail risulti attivato (fired). Se l'agente ha comunque risposto con l'informazione vietata, il guardrail è mal formulato o non è stato salvato correttamente — torna allo step 3 e riformula.
+    Controlla i log della conversazione di test e conferma che il guardrail risulti attivato (fired). Se l'agente ha comunque risposto con l'informazione vietata, il guardrail è mal formulato o non è stato salvato correttamente, torna allo step 3 e riformula.
   </Step>
 </Steps>
 
 <Warning>
-  I guardrail vanno testati attivamente — non assumere mai che funzionino senza verifica. Un guardrail mal formulato può essere aggirato da un messaggio formulato in modo indiretto o da una sequenza di domande in più step. Testa sempre con varianti del messaggio, non solo con la versione più ovvia.
+  I guardrail vanno testati attivamente, non assumere mai che funzionino senza verifica. Un guardrail mal formulato può essere aggirato da un messaggio formulato in modo indiretto o da una sequenza di domande in più step. Testa sempre con varianti del messaggio, non solo con la versione più ovvia.
 </Warning>
 
 <Tip>
-  Dopo ogni modifica al workspace — KB, skill o guardrail — segui la checklist di modifica KB per verificare che le modifiche siano state salvate correttamente e che il comportamento dell'agente sia quello atteso. Non saltare i passi di verifica anche quando la UI mostra un feedback positivo.
+  Dopo ogni modifica al workspace, KB, skill o guardrail, segui la checklist di modifica KB per verificare che le modifiche siano state salvate correttamente e che il comportamento dell'agente sia quello atteso. Non saltare i passi di verifica anche quando la UI mostra un feedback positivo.
 </Tip>

@@ -4,7 +4,7 @@ sidebarTitle: "Panoramica"
 description: "Notion è la fonte canonica dell'anagrafica appartamenti: da qui si generano la KB di Conduit, il listino e i contratti per ogni studente."
 ---
 
-Notion ospita il registro degli appartamenti dello studente — è la fonte di verità da cui vengono generati automaticamente la knowledge base di Conduit, il listino e i contratti. Qualsiasi modifica ai dati di un appartamento va fatta qui: il bridge si occupa di propagarla alla KB senza intervento manuale.
+Notion ospita il registro degli appartamenti dello studente, è la fonte di verità da cui vengono generati automaticamente la knowledge base di Conduit, il listino e i contratti. Qualsiasi modifica ai dati di un appartamento va fatta qui: il bridge si occupa di propagarla alla KB senza intervento manuale.
 
 <CardGroup cols={2}>
   <Card title="Collegamento (OAuth)" icon="link" href="/integrazioni/notion/collegamento">
@@ -25,11 +25,11 @@ Notion ospita il registro degli appartamenti dello studente — è la fonte di v
 
 Notion è il workspace operativo dello studente: contiene già tutte le informazioni sugli appartamenti in un formato strutturato e facilmente aggiornabile. Usarlo come unica fonte canonica evita la duplicazione dei dati e il rischio di disallineamenti.
 
-Ogni volta che lo studente aggiorna un record nel DB Apartments — cambia le istruzioni di accesso, aggiunge una foto, modifica il regolamento — il bridge rileva la modifica e aggiorna automaticamente la KB di Conduit per quel listing. Non è mai necessario aprire Conduit e modificare manualmente gli articoli KB.
+Ogni volta che lo studente aggiorna un record nel DB Apartments, cambia le istruzioni di accesso, aggiunge una foto, modifica il regolamento, il bridge rileva la modifica e aggiorna automaticamente la KB di Conduit per quel listing. Non è mai necessario aprire Conduit e modificare manualmente gli articoli KB.
 
 <Note>
-  Notion è il workspace dello studente — se il workspace Notion non è collegato via OAuth, il bridge non funziona e la KB di Conduit non si aggiorna. Verifica sempre lo stato della connessione prima di una sessione di onboarding.
+  Notion è il workspace dello studente, se il workspace Notion non è collegato via OAuth, il bridge non funziona e la KB di Conduit non si aggiorna. Verifica sempre lo stato della connessione prima di una sessione di onboarding.
 </Note>
 
 ## Fonti ufficiali
-- **Notion API** — doc ufficiale: https://developers.notion.com
+- **Notion API**: doc ufficiale: https://developers.notion.com

@@ -4,11 +4,11 @@ sidebarTitle: "Rate Limit"
 description: "Limiti di frequenza per struttura sull'API Kross e cinque comportamenti non ovvi che producono errori silenziosi nell'integrazione Mattone."
 ---
 
-L'API di KrossBooking applica limiti di frequenza per struttura e presenta diversi comportamenti non ovvi che, se non conosciuti, producono errori silenziosi difficili da diagnosticare. Questa pagina documenta i limiti noti e le trappole più frequenti riscontrate durante l'integrazione con la piattaforma Mattone — leggila prima di configurare un nuovo studente o di fare debug su un flusso che non funziona come atteso.
+L'API di KrossBooking applica limiti di frequenza per struttura e presenta diversi comportamenti non ovvi che, se non conosciuti, producono errori silenziosi difficili da diagnosticare. Questa pagina documenta i limiti noti e le trappole più frequenti riscontrate durante l'integrazione con la piattaforma Mattone, leggila prima di configurare un nuovo studente o di fare debug su un flusso che non funziona come atteso.
 
 ## Rate limit
 
-I limiti di frequenza di KrossBooking sono applicati **per struttura** (cioè per `hotel_id`), non per account o per IP: **10 richieste/min · 300/h · 5.000/giorno** (negoziabili). Se superi la soglia, Kross restituisce **HTTP 429 (Too Many Requests)** — che è anche `error_code 16`, indistinguibile da una "lista vuota" se non controlli lo status.
+I limiti di frequenza di KrossBooking sono applicati **per struttura** (cioè per `hotel_id`), non per account o per IP: **10 richieste/min · 300/h · 5.000/giorno** (negoziabili). Se superi la soglia, Kross restituisce **HTTP 429 (Too Many Requests)**, che è anche `error_code 16`, indistinguibile da una "lista vuota" se non controlli lo status.
 
 Il gateway `mcp.mattone.co` gestisce il backoff automatico in caso di 429, attendendo il tempo necessario prima di riprovare. Tuttavia, se i 429 si verificano in modo ricorrente, significa che la frequenza di polling configurata per quella struttura è troppo alta. In quel caso, riduci l'intervallo di polling nell'Admin della piattaforma o contatta il team tecnico per applicare il coalescing delle richieste parallele.
 
@@ -25,7 +25,7 @@ Il gateway `mcp.mattone.co` gestisce il backoff automatico in caso di 429, atten
 </Accordion>
 
 <Accordion title="Endpoint disponibilità sbagliato">
-  Per recuperare la disponibilità di una struttura, usa **`GET /v5/calendar/get-availability`** — non `get-calendar`. I due endpoint esistono entrambi ma restituiscono dati diversi: `get-calendar` fornisce una vista del calendario che non è adatta per la logica di disponibilità usata da Conduit.
+  Per recuperare la disponibilità di una struttura, usa **`GET /v5/calendar/get-availability`**, non `get-calendar`. I due endpoint esistono entrambi ma restituiscono dati diversi: `get-calendar` fornisce una vista del calendario che non è adatta per la logica di disponibilità usata da Conduit.
 
   **Come gestirlo:** verifica sempre che il flusso di disponibilità punti all'endpoint corretto. Se Conduit riporta disponibilità incoerente, questo è il primo posto dove controllare.
 </Accordion>
@@ -43,13 +43,13 @@ Il gateway `mcp.mattone.co` gestisce il backoff automatico in caso di 429, atten
 </Accordion>
 
 <Accordion title="Errore 429: cache e coalescing">
-  Se una struttura genera molte richieste in parallelo — ad esempio durante picchi di traffico o quando più flussi Conduit si attivano contemporaneamente — il gateway può accumulare 429 anche con una frequenza di polling apparentemente ragionevole.
+  Se una struttura genera molte richieste in parallelo, ad esempio durante picchi di traffico o quando più flussi Conduit si attivano contemporaneamente, il gateway può accumulare 429 anche con una frequenza di polling apparentemente ragionevole.
 
-  **Come gestirlo:** il gateway supporta il coalescing delle richieste parallele verso lo stesso `hotel_id`: invece di inviare N richieste identiche, ne invia una sola e distribuisce la risposta a tutti i richiedenti. Questa funzionalità non è attiva di default — contatta il team tecnico per abilitarla per la struttura interessata.
+  **Come gestirlo:** il gateway supporta il coalescing delle richieste parallele verso lo stesso `hotel_id`: invece di inviare N richieste identiche, ne invia una sola e distribuisce la risposta a tutti i richiedenti. Questa funzionalità non è attiva di default, contatta il team tecnico per abilitarla per la struttura interessata.
 </Accordion>
 
 <Accordion title="Parametri sconosciuti ignorati in silenzio">
-  Kross **ignora** i parametri che non riconosce, senza errore. Es.: passare `status:"confirmed"` a `reservations/get-list` **non filtra** — torna tutto. Il parametro corretto è `cod_reservation_status:"CONF"`.
+  Kross **ignora** i parametri che non riconosce, senza errore. Es.: passare `status:"confirmed"` a `reservations/get-list` **non filtra**, torna tutto. Il parametro corretto è `cod_reservation_status:"CONF"`.
 
   **Come gestirlo:** usa i nomi di parametro esatti documentati e verifica il conteggio dei record. Non fidarti di un filtro solo perché la chiamata risponde 200.
 </Accordion>
@@ -57,9 +57,9 @@ Il gateway `mcp.mattone.co` gestisce il backoff automatico in caso di 429, atten
 <Accordion title="Formato disponibilità ostico">
   `calendar/get-availability` non torna un calendario giorno-per-giorno libero/occupato, ma tanti **intervalli sovrapposti** ("soggiorno da date_from a date_to") con un contatore `available` (0/total). Va **espanso** in giorni singoli (bloccato se `available===0`).
 
-  **Come gestirlo:** è esattamente la logica che incapsula il custom tool `check-availability` — il nativo Conduit legge male questo formato. Endpoint corretto = `calendar/get-availability` (`calendar/get-calendar` **non esiste**).
+  **Come gestirlo:** è esattamente la logica che incapsula il custom tool `check-availability`, il nativo Conduit legge male questo formato. Endpoint corretto = `calendar/get-availability` (`calendar/get-calendar` **non esiste**).
 </Accordion>
 
 <Tip>
-  Quando hai dubbi sul comportamento di un endpoint, testalo direttamente dalla console di debug del gateway prima di costruire logica sopra. Questo ti permette di vedere la risposta reale — inclusi header, status code e body — senza dover aspettare che un flusso in produzione fallisca.
+  Quando hai dubbi sul comportamento di un endpoint, testalo direttamente dalla console di debug del gateway prima di costruire logica sopra. Questo ti permette di vedere la risposta reale, inclusi header, status code e body, senza dover aspettare che un flusso in produzione fallisca.
 </Tip>

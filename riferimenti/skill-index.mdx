@@ -1,30 +1,60 @@
 ---
-title: "Indice delle skill Claude Code operative di Mattone"
+title: "Indice delle skill: Claude Code e Conduit"
 sidebarTitle: "Skill Index"
-description: "Elenco di tutte le skill Claude Code collegate agli agenti Conduit di Mattone: cosa copre ogni skill e con quali tool MCP va abbinata."
+description: "Le due famiglie di skill di Mattone: le skill Claude Code che usa il team e le skill Conduit (agent skill) abbinate ai custom tool dell'agente ospite. Cosa sono, dove si installano e come si distinguono."
 ---
 
-Queste skill Claude Code sono le istruzioni operative collegate agli agenti Conduit di Mattone. Ogni skill dice all'agente quando usare un determinato tool e come gestire una situazione specifica — senza la skill, il tool resta silenzioso anche se è attivo. Usa questo indice per capire quale skill attivare durante un onboarding o per fare debug su un agente che non risponde come previsto.
+Nel mondo Mattone la parola "skill" indica **due cose diverse**, che vivono in posti diversi e le usa chi diverso. Confonderle è la causa più comune di dubbi in onboarding e debug, quindi qui le teniamo separate.
 
-## Indice delle skill operative
+<Info>
+**Le due famiglie in una riga:**
+- **Skill Claude Code** &rarr; installate **in Claude Code** (plugin del team o cartella `.claude/skills/` di un repo). Le usa **il team** quando pilota Claude Code (onboarding, editing sicuro, debug). **Non** finiscono nell'agente ospite.
+- **Skill Conduit (agent skill)** &rarr; caricate nel **workspace Conduit** dello studente. Le usa **l'agente ospite** durante le conversazioni. Ognuna è **abbinata 1:1 a un custom tool**: senza la skill, il tool resta muto.
+</Info>
 
-| Skill | Cosa copre | Usata con |
+## Skill Claude Code (lato team)
+
+Sono le istruzioni operative che carichi **in Claude Code**. Servono a te (team delivery) per lavorare più in fretta e in sicurezza sugli agenti degli studenti. Si installano come plugin del team o nella cartella `.claude/skills/` del repo pertinente e si attivano da sole quando il contesto corrisponde.
+
+| Skill | Cosa copre | Quando la usi |
 |---|---|---|
-| `smart-checkin-mcp` | Shelly/SwitchBot + guest portal + onboarding smart lock | `open-door`, `check-device-status`, `get-access-link` |
-| `conduit-editing-playbook` | Scritture sicure su KB/skill/guardrail Conduit, checklist pre-push, anti-pattern | Tutte le operazioni Conduit |
-| `conduit-api-reference` | Schemi endpoint + MCP Conduit | Dev/debug Conduit |
-| `onboarding-studente-kross-conduit` | Procedura completa di onboarding Kross + Conduit per un nuovo studente | Onboarding nuovo studente |
-| `payment-link-generator` | Generazione link Stripe per extra e upsell durante il soggiorno | `stripe-payment-link` |
+| `onboarding-studente-kross-conduit` | Procedura completa di onboarding Kross + Conduit per un nuovo studente | All'avvio di un nuovo onboarding |
+| `conduit-editing-playbook` | Scritture sicure su KB/skill/guardrail Conduit, checklist pre-push, anti-pattern | Ogni modifica a un workspace Conduit |
+| `conduit-api-reference` | Schemi endpoint + MCP Conduit, pattern di integrazione | Dev/debug tecnico su Conduit |
+| `smart-checkin-mcp` | Guida operativa allo smart check-in: Shelly/SwitchBot, guest portal, MCP PMS | Onboarding e debug dello smart lock |
 
-## Regola fondamentale
+<Note>Queste skill **non** vanno caricate nel workspace Conduit dello studente: sono strumenti da scrivania per il team. Vivono nei repo Mattone (o come plugin) e le gestisce centralmente il team tecnico.</Note>
 
-Ogni custom tool deve avere la sua skill corrispondente — la coppia è indivisibile:
+## Skill Conduit (agent skill, lato agente ospite)
+
+Sono le istruzioni di **prompting** caricate nel **workspace Conduit** dello studente: dicono all'agente **quando** usare un tool, **quali parametri** passare e **come** interpretare la risposta. Ognuna è **abbinata a un custom tool** con lo stesso ambito. Senza la sua skill, il tool viene ignorato o produce un fallback nativo inaffidabile.
+
+La mappa completa **tool &harr; skill** (nomi canonici) è nella pagina [Custom Tools](/integrazioni/conduit/custom-tools). In sintesi, per famiglia:
+
+| Famiglia | Skill Conduit (agent skill) | Tool abbinato |
+|---|---|---|
+| Kross | `kross-availability-checker` | `check-availability` |
+| Kross | `kross-portal-status` | `check-portal-status` |
+| Kross | `kross-reservation-reader` | `get-reservation-status` |
+| Kross | `kross-checkin-instructions` | `get-checkin-instructions` |
+| Kross | `kross-in-house-reader` | `get-in-house-guests` |
+| Kross | `kross-incomplete-portals` | `get-incomplete-portals` |
+| Smart Lock | `smart-lock-opener` | `open-door` |
+| Smart Lock | `smart-lock-status` | `check-device-status` |
+| Smart Lock | `smart-lock-link-generator` | `get-access-link` |
+| Stripe | `payment-link-generator` | `stripe-payment-link` |
+
+<Note>Le agent skill si provisionano insieme ai tool durante l'onboarding e le gestisce il team Mattone: lo studente non le configura da solo. Monti solo le skill dei tool che quello studente usa davvero (chi non ha smart lock non riceve le skill Smart Lock).</Note>
+
+## Regola fondamentale (skill Conduit)
+
+Vale per le **agent skill**: ogni custom tool deve avere la sua skill abbinata, la coppia è indivisibile.
 
 - Una **skill senza tool** è inutile: l'agente riceve istruzioni per fare qualcosa, ma non ha il mezzo per farlo.
 - Un **tool senza skill** viene ignorato: il mezzo c'è, ma l'agente non sa quando né come usarlo.
 
-Prima di dichiarare un onboarding completato, verifica sempre che ogni tool assegnato allo studente abbia la sua skill abbinata e che entrambi siano attivi nel profilo Conduit.
+Prima di dichiarare un onboarding completato, verifica sempre che ogni tool assegnato allo studente abbia la sua skill abbinata e che entrambi siano **attivi** nel workspace Conduit. La procedura di verifica è in [Custom Tools](/integrazioni/conduit/custom-tools).
 
 <Note>
-  Per aggiungere o modificare una skill, contatta il team tecnico. Le skill sono gestite centralmente nel repo Mattone e non sono modificabili dallo studente — eventuali personalizzazioni devono passare dal team di delivery, che valuta l'impatto sugli altri studenti che usano la stessa skill.
+Per aggiungere o modificare una skill (di entrambe le famiglie), contatta il team tecnico. Le skill sono gestite centralmente nei repo Mattone e non sono modificabili dallo studente: eventuali personalizzazioni passano dal team di delivery, che valuta l'impatto sugli altri studenti che usano la stessa skill.
 </Note>

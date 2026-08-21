@@ -4,7 +4,7 @@ sidebarTitle: "Endpoint & Scope"
 description: "Autenticazione bearer e tutti gli endpoint KrossBooking usati da Mattone: disponibilità, prenotazioni, portali check-in e accesso."
 ---
 
-L'API di KrossBooking utilizza un sistema di autenticazione basato su token bearer. Tutte le chiamate che Mattone effettua verso Kross passano attraverso il gateway multi-tenant `mcp.mattone.co`, che gestisce l'autenticazione, la rotazione dei token e il whitelisting dell'IP — in questo modo le strutture degli studenti non devono aprire accessi multipli o gestire token direttamente.
+L'API di KrossBooking utilizza un sistema di autenticazione basato su token bearer. Tutte le chiamate che Mattone effettua verso Kross passano attraverso il gateway multi-tenant `mcp.mattone.co`, che gestisce l'autenticazione, la rotazione dei token e il whitelisting dell'IP, in questo modo le strutture degli studenti non devono aprire accessi multipli o gestire token direttamente.
 
 ## Autenticazione
 
@@ -23,7 +23,7 @@ I campi richiesti nel body della richiesta sono:
 </ParamField>
 
 <ParamField body="password" type="string" required>
-  Password API associata all'utente. Cifrata nel Vault Mattone — non viene mai esposta in chiaro nelle chiamate di sistema.
+  Password API associata all'utente. Cifrata nel Vault Mattone, non viene mai esposta in chiaro nelle chiamate di sistema.
 </ParamField>
 
 <ParamField body="api_key" type="string" required>
@@ -51,7 +51,7 @@ Tutti gli endpoint KrossBooking sono su **API v5**, in **`POST`** su base `https
 | Portali check-in incompleti | `reservations/get-list` (blocco `guest_portal`) | `get-incomplete-portals` | Read |
 | Stato portale ospite | `reservations/get-list` (blocco `guest_portal`) | `check-portal-status` | Read |
 | Istruzioni check-in | `get-check-in-instructions` | `get-checkin-instructions` | Read |
-| Manuale casa / contratto | `get-house-manual` · `get-contract` | — | Read |
+| Manuale casa / contratto | `get-house-manual` · `get-contract` |, | Read |
 
 <Note>
   I tool MCP sono i nomi usati da Conduit per invocare gli endpoint Kross attraverso il gateway `mcp.mattone.co`. Non è necessario chiamare gli endpoint REST direttamente: Conduit utilizza i tool MCP, che gestiscono autenticazione, token e retry in modo trasparente.

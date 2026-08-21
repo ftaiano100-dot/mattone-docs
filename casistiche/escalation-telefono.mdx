@@ -4,25 +4,25 @@ sidebarTitle: "Escalation"
 description: "Scopri quando e come Conduit trasferisce un ospite a un operatore umano, via telefono o WABA, e come il team gestisce la presa in carico."
 ---
 
-Quando Conduit non riesce a risolvere il problema di un ospite — perché l'ospite chiede esplicitamente di parlare con una persona, perché la situazione supera i guardrail del sistema o perché si tratta di un'emergenza — il sistema attiva un'escalation verso un operatore umano: trasferimento telefonico diretto (warm transfer) se la telefonia è abilitata, oppure notifica via WhatsApp Business (WABA) con messaggio all'ospite e avviso allo studente. Questo playbook spiega quando scatta l'escalation, cosa fa il sistema e come il team gestisce la presa in carico fino alla chiusura del caso.
+Quando Conduit non riesce a risolvere il problema di un ospite, perché l'ospite chiede esplicitamente di parlare con una persona, perché la situazione supera i guardrail del sistema o perché si tratta di un'emergenza, il sistema attiva un'escalation verso un operatore umano: trasferimento telefonico diretto (warm transfer) se la telefonia è abilitata, oppure notifica via WhatsApp Business (WABA) con messaggio all'ospite e avviso allo studente. Questo playbook spiega quando scatta l'escalation, cosa fa il sistema e come il team gestisce la presa in carico fino alla chiusura del caso.
 
 ## Quando si attiva
 
 L'escalation si attiva in quattro scenari principali:
 
-- **Richiesta esplicita dell'ospite** — L'ospite scrive frasi come "voglio parlare con qualcuno", "ho bisogno di un operatore", "chiamatemi". Conduit riconosce l'intenzione e avvia il trasferimento.
-- **Guardrail del sistema** — Conduit raggiunge un limite operativo: argomenti legali, situazioni di emergenza medica, richieste che richiedono decisioni fuori dal suo perimetro (es. negoziare un rimborso non previsto dalla policy). In questi casi il sistema scala in automatico.
-- **Intervento fisico necessario** — Il problema richiede la presenza di qualcuno in loco: guasto alla serratura smart, perdita d'acqua, problema con gli elettrodomestici. Conduit non può intervenire fisicamente e trasferisce subito.
-- **Soglia di frustrazione superata** — Dopo un numero configurabile di tentativi falliti o messaggi ripetuti dell'ospite sullo stesso problema, Conduit rileva il pattern e scala per evitare che la situazione degeneri.
+- **Richiesta esplicita dell'ospite**: L'ospite scrive frasi come "voglio parlare con qualcuno", "ho bisogno di un operatore", "chiamatemi". Conduit riconosce l'intenzione e avvia il trasferimento.
+- **Guardrail del sistema**: Conduit raggiunge un limite operativo: argomenti legali, situazioni di emergenza medica, richieste che richiedono decisioni fuori dal suo perimetro (es. negoziare un rimborso non previsto dalla policy). In questi casi il sistema scala in automatico.
+- **Intervento fisico necessario**: Il problema richiede la presenza di qualcuno in loco: guasto alla serratura smart, perdita d'acqua, problema con gli elettrodomestici. Conduit non può intervenire fisicamente e trasferisce subito.
+- **Soglia di frustrazione superata**: Dopo un numero configurabile di tentativi falliti o messaggi ripetuti dell'ospite sullo stesso problema, Conduit rileva il pattern e scala per evitare che la situazione degeneri.
 
 ## Cosa fa il sistema (warm transfer)
 
 Il flusso di escalation si svolge in quattro passaggi:
 
-1. **Rilevamento del trigger** — Conduit identifica uno dei trigger elencati sopra (richiesta esplicita, guardrail, intervento fisico, frustrazione).
-2. **Trasferimento telefonico** *(se la telefonia è attiva)* — Conduit avvia un warm transfer verso il numero di telefono dello studente configurato nel profilo. L'ospite viene messo brevemente in attesa mentre Conduit "introduce" la chiamata all'operatore con un breve sommario del problema.
-3. **Notifica WABA** *(se la telefonia non è attiva o come canale parallelo)* — Conduit invia all'ospite un messaggio di rassicurazione ("Un membro del nostro team ti contatterà a breve") e invia allo studente una notifica WhatsApp con il riassunto della conversazione e i dati dell'ospite.
-4. **Log dell'evento** — L'escalation viene registrata nella dashboard Mattone con timestamp, motivo, canale usato e ID prenotazione, rendendola consultabile dal team.
+1. **Rilevamento del trigger**: Conduit identifica uno dei trigger elencati sopra (richiesta esplicita, guardrail, intervento fisico, frustrazione).
+2. **Trasferimento telefonico** *(se la telefonia è attiva)*, Conduit avvia un warm transfer verso il numero di telefono dello studente configurato nel profilo. L'ospite viene messo brevemente in attesa mentre Conduit "introduce" la chiamata all'operatore con un breve sommario del problema.
+3. **Notifica WABA** *(se la telefonia non è attiva o come canale parallelo)*, Conduit invia all'ospite un messaggio di rassicurazione ("Un membro del nostro team ti contatterà a breve") e invia allo studente una notifica WhatsApp con il riassunto della conversazione e i dati dell'ospite.
+4. **Log dell'evento**: L'escalation viene registrata nella dashboard Mattone con timestamp, motivo, canale usato e ID prenotazione, rendendola consultabile dal team.
 
 <Note>
 Il collegamento WABA (WhatsApp Business API) è un processo separato che richiede circa **una settimana** tramite l'assistenza Conduit. Senza WABA attiva, l'escalation può avvenire solo via telefonia o altri canali alternativi configurati. Pianifica l'attivazione WABA nelle prime fasi dell'onboarding di ogni nuovo studente.
@@ -34,13 +34,13 @@ Quando ricevi una chiamata di trasferimento o una notifica di escalation, segui 
 
 <Steps>
   <Step title="Ricevi la chiamata o la notifica">
-    Se è un warm transfer telefonico, rispondi alla chiamata — Conduit ti fornirà un breve briefing vocale prima di collegare l'ospite. Se è una notifica WABA, apri il messaggio: troverai il nome dell'ospite, il listing, il motivo dell'escalation e un link alla conversazione in dashboard.
+    Se è un warm transfer telefonico, rispondi alla chiamata, Conduit ti fornirà un breve briefing vocale prima di collegare l'ospite. Se è una notifica WABA, apri il messaggio: troverai il nome dell'ospite, il listing, il motivo dell'escalation e un link alla conversazione in dashboard.
   </Step>
   <Step title="Leggi il sommario della conversazione">
-    Prima di parlare con l'ospite (o subito dopo aver risposto), consulta il sommario della conversazione Conduit disponibile nella dashboard. Questo ti evita di chiedere all'ospite di ripetere tutto dall'inizio — un'esperienza frustrante che peggiora una situazione già delicata.
+    Prima di parlare con l'ospite (o subito dopo aver risposto), consulta il sommario della conversazione Conduit disponibile nella dashboard. Questo ti evita di chiedere all'ospite di ripetere tutto dall'inizio, un'esperienza frustrante che peggiora una situazione già delicata.
   </Step>
   <Step title="Gestisci il problema direttamente con l'ospite">
-    Parla con l'ospite, risolvi il problema o — se richiede un intervento fisico — coordina l'invio di un tecnico o di personale in loco. Mantieni il tono professionale e rassicurante: l'ospite è già in uno stato di stress.
+    Parla con l'ospite, risolvi il problema o, se richiede un intervento fisico, coordina l'invio di un tecnico o di personale in loco. Mantieni il tono professionale e rassicurante: l'ospite è già in uno stato di stress.
   </Step>
   <Step title="Chiudi l'escalation in dashboard e aggiungi una nota">
     Una volta risolto, torna nella dashboard Mattone, apri il record dell'escalation e marcalo come "risolto". Aggiungi una nota sintetica che descriva la soluzione adottata: questo dato alimenta la reportistica e aiuta a identificare pattern ricorrenti.
@@ -69,11 +69,11 @@ Quando ricevi una chiamata di trasferimento o una notifica di escalation, segui 
 </Accordion>
 
 <Tip>
-Tieni sempre aggiornato il numero di telefono dello studente in dashboard. In caso di cambio numero, l'escalation telefonica smette di funzionare silenziosamente — non c'è un alert automatico. Includi la verifica del numero nel checklist mensile di manutenzione del profilo studente.
+Tieni sempre aggiornato il numero di telefono dello studente in dashboard. In caso di cambio numero, l'escalation telefonica smette di funzionare silenziosamente, non c'è un alert automatico. Includi la verifica del numero nel checklist mensile di manutenzione del profilo studente.
 </Tip>
 
 <Tip>
-**▷ Prompt Claude Code — Configura l'escalation**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Configura l'escalation**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
@@ -94,6 +94,6 @@ squilla alla persona giusta.
 ```
 
 <CardGroup cols={2}>
-  <Card title="Conduit — Telefonia & WABA" icon="arrow-up-right-from-square" href="/integrazioni/conduit/telefonia-waba">Numero, voice, escalation</Card>
+  <Card title="Conduit, Telefonia & WABA" icon="arrow-up-right-from-square" href="/integrazioni/conduit/telefonia-waba">Numero, voice, escalation</Card>
   <Card title="Metodo troubleshooting" icon="arrow-up-right-from-square" href="/troubleshooting/metodo">Se la chiamata non arriva</Card>
 </CardGroup>

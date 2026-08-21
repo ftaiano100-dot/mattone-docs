@@ -4,10 +4,10 @@ sidebarTitle: "5 · Stripe"
 description: "Configura Stripe con una Restricted Key a permessi minimi per permettere a Conduit di generare link di pagamento per extra e upsell direttamente in chat."
 ---
 
-Configura Stripe in modo che Conduit possa generare link di pagamento per extra e upsell direttamente nella chat con l'ospite — costi del parcheggio, set di asciugamani aggiuntivi, early check-in e qualsiasi altro servizio a pagamento che lo studente vuole offrire. La connessione richiede una **chiave a permessi minimi** (Restricted Key): non usare mai la Secret Key (quella dà accesso a tutto).
+Configura Stripe in modo che Conduit possa generare link di pagamento per extra e upsell direttamente nella chat con l'ospite, costi del parcheggio, set di asciugamani aggiuntivi, early check-in e qualsiasi altro servizio a pagamento che lo studente vuole offrire. La connessione richiede una **chiave a permessi minimi** (Restricted Key): non usare mai la Secret Key (quella dà accesso a tutto).
 
 <Warning>
-  Mai usare la Secret Key (`sk_live_…`) — usa solo la Restricted Key (`rk_live_…`) con i permessi minimi necessari. La Secret Key dà accesso completo all'account Stripe dello studente, inclusi rimborsi e modifiche al piano.
+  Mai usare la Secret Key (`sk_live_…`), usa solo la Restricted Key (`rk_live_…`) con i permessi minimi necessari. La Secret Key dà accesso completo all'account Stripe dello studente, inclusi rimborsi e modifiche al piano.
 </Warning>
 
 <Info>
@@ -38,7 +38,7 @@ Nient'altro deve essere abilitato. Se lo studente non sa come creare una Restric
     3. Clicca su **Create restricted key**
     4. Assegna un nome descrittivo (es. *Mattone - Conduit*)
     5. Imposta i permessi: `Products` = Write, `Prices` = Write, `Payment Links` = Write, tutto il resto = None
-    6. Clicca **Create key** e copia immediatamente il valore — viene mostrato una sola volta
+    6. Clicca **Create key** e copia immediatamente il valore, viene mostrato una sola volta
 
     La chiave ha il formato `rk_live_…`.
   </Step>
@@ -50,7 +50,7 @@ Nient'altro deve essere abilitato. Se lo studente non sa come creare una Restric
   </Step>
 
   <Step title="Incolla la chiave nella piattaforma Mattone (Connessioni → Pagamenti)">
-    La chiave si inserisce **da dentro la piattaforma Mattone**, nella sezione dedicata alle connessioni — non va lasciata in chiaro da nessun'altra parte.
+    La chiave si inserisce **da dentro la piattaforma Mattone**, nella sezione dedicata alle connessioni, non va lasciata in chiaro da nessun'altra parte.
 
     1. Vai su [**app.mattone.co**](https://app.mattone.co/connessioni) → **Connessioni**.
     2. Apri la card **Pagamenti / Stripe** dello studente.
@@ -63,8 +63,8 @@ Nient'altro deve essere abilitato. Se lo studente non sa come creare una Restric
   <Step title="Monta il tool e la skill in Conduit">
     Nel workspace Conduit dello studente, monta:
 
-    - **Tool** `stripe-payment-link` — collegato alla Restricted Key salvata nel Vault
-    - **Skill** `payment-link-generator` — istruisce l'agente su quando e come proporre un pagamento all'ospite
+    - **Tool** `stripe-payment-link`, collegato alla Restricted Key salvata nel Vault
+    - **Skill** `payment-link-generator`, istruisce l'agente su quando e come proporre un pagamento all'ospite
 
     Ricorda: tool senza skill = agente che ignora il tool. Montagli sempre insieme.
   </Step>
@@ -76,24 +76,24 @@ Nient'altro deve essere abilitato. Se lo studente non sa come creare una Restric
     - Il link aperto nel browser mostra la pagina di pagamento corretta con il prezzo indicato
     - Il log registra l'evento senza errori
 
-    Se il test fallisce con errore di permessi, la Restricted Key non ha i permessi corretti — chiedi allo studente di ricontrollarli o di ricreare la chiave.
+    Se il test fallisce con errore di permessi, la Restricted Key non ha i permessi corretti, chiedi allo studente di ricontrollarli o di ricreare la chiave.
   </Step>
 </Steps>
 
 <Info>
-  **Cosa dire allo studente — chiave Stripe**
+  **Cosa dire allo studente, chiave Stripe**
 
   La chiave si crea su Stripe e si **incolla nella piattaforma Mattone**: lo studente non deve mandarcela in chat né via email. Passa questi passi, plain:
 
   1. Accedi a [**dashboard.stripe.com**](https://dashboard.stripe.com) → **Developers → API Keys**.
-  2. Clicca **Create restricted key** (chiave a **permessi minimi** — **NON** la Secret Key intera).
+  2. Clicca **Create restricted key** (chiave a **permessi minimi**, **NON** la Secret Key intera).
   3. Dà un nome (es. *Mattone - Conduit*) e imposta i permessi: **Products = Write**, **Prices = Write**, **Payment Links = Write**, **tutto il resto = None**.
   4. Clicca **Create key** e **copia subito** il valore (`rk_live_…`): Stripe lo mostra una sola volta.
   5. Vai su [**app.mattone.co**](https://app.mattone.co/connessioni) → **Connessioni → Pagamenti / Stripe** e **incolla lì** la chiave. Fatto: la piattaforma la cifra nel Vault.
 
   Da dire chiaro: *"Crea una chiave a permessi limitati (Restricted), mai la Secret piena. Incollala solo dentro la piattaforma, non mandarla in chat o via email. Se per sbaglio finisce in un messaggio, avvisaci: la revochiamo e ne creiamo una nuova."*
 
-  🎥 **Video pratico (extra), condivisibile:** *"Come prendere e mettere la chiave Stripe"* (Cosmica Group) — [kommodo.ai/recordings/IQC7ADofCfiURbkPqxyF](https://kommodo.ai/recordings/IQC7ADofCfiURbkPqxyF). È un aiuto visivo, non una lezione formale: puoi **girare il link direttamente allo studente**.
+  🎥 **Video pratico (extra), condivisibile:** *"Come prendere e mettere la chiave Stripe"* (Cosmica Group), [kommodo.ai/recordings/IQC7ADofCfiURbkPqxyF](https://kommodo.ai/recordings/IQC7ADofCfiURbkPqxyF). È un aiuto visivo, non una lezione formale: puoi **girare il link direttamente allo studente**.
 </Info>
 
 <Warning>
@@ -105,7 +105,7 @@ Nient'altro deve essere abilitato. Se lo studente non sa come creare una Restric
 Step completato? Procedi con → [Step 6 · Verifica finale](/onboarding/6-verifica-finale)
 
 <Tip>
-**▷ Prompt Claude Code — Pagamenti Stripe**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Pagamenti Stripe**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
@@ -132,7 +132,7 @@ passami il box "Cosa dire allo studente" + il link al video tutorial
 
 <CardGroup cols={2}>
   <Card title="Stripe → API keys" icon="arrow-up-right-from-square" href="https://dashboard.stripe.com/apikeys">Lo studente crea la Restricted Key (rk_live)</Card>
-  <Card title="Video: chiavi Stripe su Mattone" icon="video" href="https://kommodo.ai/recordings/IQC7ADofCfiURbkPqxyF">Guida ufficiale Cosmica Group — da girare allo studente</Card>
+  <Card title="Video: chiavi Stripe su Mattone" icon="video" href="https://kommodo.ai/recordings/IQC7ADofCfiURbkPqxyF">Guida ufficiale Cosmica Group, da girare allo studente</Card>
   <Card title="Connessioni → Pagamenti (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Dove lo studente incolla la Restricted Key</Card>
   <Card title="Extra / Upsell (casistica)" icon="arrow-up-right-from-square" href="/casistiche/extra-upsell">Come l'agente vende dal listino</Card>
 </CardGroup>

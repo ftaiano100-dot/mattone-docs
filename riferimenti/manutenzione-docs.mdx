@@ -4,15 +4,15 @@ sidebarTitle: "Manutenzione Docs"
 description: "Guida pratica per il team Mattone: dove inserire nuovi contenuti, come pubblicare una modifica e le regole di stile per tenere la documentazione coerente."
 ---
 
-Questa documentazione è la fonte di verità unica per il team di delivery — quando impari qualcosa di nuovo, da un incidente, da una sessione di supporto Conduit o da un cliente, quel contenuto va qui, nel posto giusto, non in un nuovo file casuale. Una documentazione frammentata è peggio di nessuna documentazione: il team smette di fidarsi e comincia a tenersi le informazioni in privato.
+Questa documentazione è la fonte di verità unica per il team di delivery, quando impari qualcosa di nuovo, da un incidente, da una sessione di supporto Conduit o da un cliente, quel contenuto va qui, nel posto giusto, non in un nuovo file casuale. Una documentazione frammentata è peggio di nessuna documentazione: il team smette di fidarsi e comincia a tenersi le informazioni in privato.
 
 ## Dove metto una cosa nuova
 
-Prima di creare una pagina nuova, chiediti dove va il contenuto che hai in mano. Nella maggior parte dei casi esiste già la pagina giusta — va solo aggiornata.
+Prima di creare una pagina nuova, chiediti dove va il contenuto che hai in mano. Nella maggior parte dei casi esiste già la pagina giusta, va solo aggiornata.
 
 <AccordionGroup>
   <Accordion title="È una lezione o un errore risolto?">
-    Va nella pagina **troubleshooting** dell'integrazione giusta. Aggiungi una riga alla tabella esistente con il codice errore (o sintomo), la causa e la soluzione. Non creare una pagina "errori" separata — tienila vicina all'integrazione a cui appartiene.
+    Va nella pagina **troubleshooting** dell'integrazione giusta. Aggiungi una riga alla tabella esistente con il codice errore (o sintomo), la causa e la soluzione. Non creare una pagina "errori" separata, tienila vicina all'integrazione a cui appartiene.
   </Accordion>
   <Accordion title="È come si collega o funziona un pezzo?">
     Va nella **sotto-pagina dell'integrazione** corrispondente. Ad esempio, se hai capito come funziona la sincronizzazione della KB con Notion, la spiegazione va in **Conduit → KB**. Se riguarda la configurazione di uno smart lock, va in **Shelly / SwitchBot → configurazione**.
@@ -21,10 +21,10 @@ Prima di creare una pagina nuova, chiediti dove va il contenuto che hai in mano.
     Va in **Casistiche**. Le casistiche sono procedure step-by-step per situazioni che si ripresentano (es. "ospite bloccato fuori", "prenotazione non sincronizzata", "link pagamento non arriva"). Se la stessa sequenza di azioni si ripete più di due volte, documentala lì.
   </Accordion>
   <Accordion title="È una regola operativa valida per tutto il team?">
-    Va in **Best practice**. Le best practice sono regole trasversali che non appartengono a una singola integrazione — sicurezza, comunicazione con gli studenti, gestione delle escalation, regole zero-segreti.
+    Va in **Best practice**. Le best practice sono regole trasversali che non appartengono a una singola integrazione, sicurezza, comunicazione con gli studenti, gestione delle escalation, regole zero-segreti.
   </Accordion>
   <Accordion title="È una nuova integrazione?">
-    Crea un nuovo gruppo in `docs.json` seguendo il pattern delle integrazioni esistenti: aggiungi una **panoramica** e le **sotto-pagine** necessarie (configurazione, troubleshooting, tool/skill). Non inventare una struttura nuova — copia il pattern di un gruppo esistente (es. KrossBooking) e adattalo.
+    Crea un nuovo gruppo in `docs.json` seguendo il pattern delle integrazioni esistenti: aggiungi una **panoramica** e le **sotto-pagine** necessarie (configurazione, troubleshooting, tool/skill). Non inventare una struttura nuova, copia il pattern di un gruppo esistente (es. KrossBooking) e adattalo.
   </Accordion>
 </AccordionGroup>
 
@@ -35,9 +35,9 @@ Ogni modifica alla documentazione segue questo flusso:
 1. Modifica il file `.mdx` corrispondente nel workspace
 2. Esegui il commit con un messaggio descrittivo (es. `docs: aggiunto troubleshooting porta Shelly offline`)
 3. Lancia `git push origin main`
-4. Mintlify effettua il deploy automatico — la modifica è live in pochi minuti
+4. Mintlify effettua il deploy automatico, la modifica è live in pochi minuti
 
-Se stai **aggiungendo o rinominando pagine**, aggiorna anche `docs.json` prima del push — altrimenti la pagina non compare nella sidebar anche se il file esiste.
+Se stai **aggiungendo o rinominando pagine**, aggiorna anche `docs.json` prima del push, altrimenti la pagina non compare nella sidebar anche se il file esiste.
 
 ## Regole di stile
 
@@ -45,13 +45,13 @@ Segui queste regole per mantenere la documentazione coerente e leggibile anche p
 
 - **Linguaggio plain, anche per i non-dev.** Evita acronimi senza spiegazione e gergo tecnico non necessario. Se devi usare un termine tecnico, spiegalo la prima volta che compare.
 - **Ogni troubleshooting = problema + soluzione.** Non inserire mai solo il messaggio d'errore senza la soluzione. Una tabella incompleta è fuorviante.
-- **Cita la fonte quando adatti contenuto esistente.** Se la spiegazione è tratta da un runbook operativo o da una sessione di supporto, indicalo in nota — aiuta chi vuole approfondire a trovare il contesto originale.
+- **Cita la fonte quando adatti contenuto esistente.** Se la spiegazione è tratta da un runbook operativo o da una sessione di supporto, indicalo in nota, aiuta chi vuole approfondire a trovare il contesto originale.
 - **Dettagli tecnici profondi (schemi API, payload) → linka il repo, non incollarli qui.** La documentazione è una guida operativa, non un dump del codice. E soprattutto: non incollare mai secrets o chiavi, nemmeno di esempio.
 
 <Warning>
-  Non creare pagine parallele sullo stesso tema. Se esiste già una pagina su "configurazione Shelly", aggiorna quella — non aprirne un'altra con un titolo leggermente diverso. Le pagine duplicate causano confusione e vengono abbandonate: nel giro di settimane nessuno sa quale delle due è aggiornata.
+  Non creare pagine parallele sullo stesso tema. Se esiste già una pagina su "configurazione Shelly", aggiorna quella, non aprirne un'altra con un titolo leggermente diverso. Le pagine duplicate causano confusione e vengono abbandonate: nel giro di settimane nessuno sa quale delle due è aggiornata.
 </Warning>
 
 <Note>
-  La struttura di `docs.json` rispecchia esattamente la struttura della sidebar visibile nel portale. Se rinomini un file `.mdx` o sposti una pagina da un gruppo all'altro, aggiorna `docs.json` di conseguenza — altrimenti la sidebar mostra link rotti o voci fantasma.
+  La struttura di `docs.json` rispecchia esattamente la struttura della sidebar visibile nel portale. Se rinomini un file `.mdx` o sposti una pagina da un gruppo all'altro, aggiorna `docs.json` di conseguenza, altrimenti la sidebar mostra link rotti o voci fantasma.
 </Note>

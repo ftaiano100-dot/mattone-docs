@@ -4,20 +4,20 @@ sidebarTitle: "Metodo"
 description: "Il metodo in 5 mosse per diagnosticare qualsiasi problema di integrazione Mattone: dalla riproduzione alla documentazione della soluzione."
 ---
 
-Questo metodo funziona per qualsiasi integrazione — KrossBooking, Conduit, SwitchBot, Stripe, GHL. Non iniziare mai a cambiare impostazioni a caso: ogni modifica non guidata da una diagnosi rischia di oscurare il problema originale e crearne di nuovi. Segui queste 5 mosse nell'ordine in cui sono scritte.
+Questo metodo funziona per qualsiasi integrazione, KrossBooking, Conduit, SwitchBot, Stripe, GHL. Non iniziare mai a cambiare impostazioni a caso: ogni modifica non guidata da una diagnosi rischia di oscurare il problema originale e crearne di nuovi. Segui queste 5 mosse nell'ordine in cui sono scritte.
 
 <Steps>
   <Step title="Riproduci">
     Provoca il problema intenzionalmente. Se la porta non si apre, premi "Apri" dal link e osserva esattamente cosa succede. Se l'agente non risponde, invia il messaggio che dovrebbe triggerare il tool e nota la risposta effettiva.
 
-    Hai bisogno di un caso concreto e riproducibile prima di procedere. Un problema che "a volte capita" o che "qualcuno ha detto che succede" non è ancora un problema su cui puoi lavorare — prima devi vederlo tu stesso.
+    Hai bisogno di un caso concreto e riproducibile prima di procedere. Un problema che "a volte capita" o che "qualcuno ha detto che succede" non è ancora un problema su cui puoi lavorare, prima devi vederlo tu stesso.
   </Step>
   <Step title="Leggi i LOG">
     Guarda l'esito reale, non quello che l'interfaccia ti mostra. Le fonti da controllare sono:
 
-    - **Vercel runtime logs** — per i tool MCP e le chiamate server
-    - **Risposta grezza dell'API** — spesso contiene il codice di errore numerico con il significato preciso
-    - **Console del browser** — per i flussi frontend e i redirect di pagamento
+    - **Vercel runtime logs**: per i tool MCP e le chiamate server
+    - **Risposta grezza dell'API**: spesso contiene il codice di errore numerico con il significato preciso
+    - **Console del browser**: per i flussi frontend e i redirect di pagamento
 
     <Warning>
       **Il log batte l'impressione.** Se l'app dice "scarico" e il log dice `161 - device offline`, il log ha ragione. Agisci sempre sul log, mai sull'impressione.
@@ -32,10 +32,10 @@ Questo metodo funziona per qualsiasi integrazione — KrossBooking, Conduit, Swi
     - **404** → risorsa non trovata: listing_id errato, tool non esistente, endpoint sbagliato
     - **500** → errore interno del servizio: può essere nostro o del servizio esterno
 
-    La domanda da rispondere è: il problema è nell'autenticazione o nel device? È nel nostro codice o nel servizio esterno? Il codice di errore ti dice dove guardare — non serve ancora sapere come risolvere.
+    La domanda da rispondere è: il problema è nell'autenticazione o nel device? È nel nostro codice o nel servizio esterno? Il codice di errore ti dice dove guardare, non serve ancora sapere come risolvere.
   </Step>
   <Step title="Verifica l'ipotesi">
-    Prima di applicare una soluzione, testa la causa. Se pensi che il problema sia una credenziale scaduta, verifica che quella credenziale sia effettivamente scaduta — non cambiare la configurazione basandoti su una supposizione.
+    Prima di applicare una soluzione, testa la causa. Se pensi che il problema sia una credenziale scaduta, verifica che quella credenziale sia effettivamente scaduta, non cambiare la configurazione basandoti su una supposizione.
 
     Un modo semplice: formula la tua ipotesi come "Il problema è X perché il log mostra Y". Se non riesci a completare questa frase con evidenza concreta dal log, torna al passo 2 e leggi più in profondità.
 
@@ -44,13 +44,13 @@ Questo metodo funziona per qualsiasi integrazione — KrossBooking, Conduit, Swi
   <Step title="Notifica + documenta">
     Una volta risolto il problema, fai due cose prima di chiudere:
 
-    1. **Notifica** — assicurati che l'utente (studente o operatore) veda un messaggio chiaro che spiega cosa è successo e come è stato risolto. Niente errori silenziosi, niente messaggi generici.
-    2. **Documenta** — aggiungi lo scenario alla pagina Troubleshooting dell'integrazione corrispondente con: il codice di errore, la causa, la soluzione applicata. Il prossimo a incontrare lo stesso problema potrebbe essere un account manager non tecnico alle 22:00.
+    1. **Notifica**: assicurati che l'utente (studente o operatore) veda un messaggio chiaro che spiega cosa è successo e come è stato risolto. Niente errori silenziosi, niente messaggi generici.
+    2. **Documenta**: aggiungi lo scenario alla pagina Troubleshooting dell'integrazione corrispondente con: il codice di errore, la causa, la soluzione applicata. Il prossimo a incontrare lo stesso problema potrebbe essere un account manager non tecnico alle 22:00.
   </Step>
 </Steps>
 
 <Tip>
-  **Caso studio — SwitchBot codice 161:** lo studente segnala che la porta non risponde. L'app SwitchBot mostra la batteria come "scarica". Seguendo il metodo: (1) riproduci il problema premendo "Apri" dal link; (2) leggi i Vercel runtime logs → risposta `161`; (3) isola: `161` = device offline, non batteria scarica; (4) verifica: l'Hub Mini risulta disconnesso dal WiFi dell'appartamento; (5) soluzione: ripristina la connessione WiFi dell'Hub Mini. Il fix basato sull'app (sostituire le batterie) sarebbe stato inutile. Il fix basato sul log (ripristino WiFi) ha risolto il problema in 10 minuti.
+  **Caso studio, SwitchBot codice 161:** lo studente segnala che la porta non risponde. L'app SwitchBot mostra la batteria come "scarica". Seguendo il metodo: (1) riproduci il problema premendo "Apri" dal link; (2) leggi i Vercel runtime logs → risposta `161`; (3) isola: `161` = device offline, non batteria scarica; (4) verifica: l'Hub Mini risulta disconnesso dal WiFi dell'appartamento; (5) soluzione: ripristina la connessione WiFi dell'Hub Mini. Il fix basato sull'app (sostituire le batterie) sarebbe stato inutile. Il fix basato sul log (ripristino WiFi) ha risolto il problema in 10 minuti.
 </Tip>
 
 <Note>

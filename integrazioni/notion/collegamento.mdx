@@ -4,14 +4,14 @@ sidebarTitle: "Collegamento"
 description: "Guida passo-passo per autorizzare il workspace Notion dello studente e permettere alla piattaforma di leggere il DB Apartments e sincronizzare la KB."
 ---
 
-Collega il workspace Notion dello studente alla piattaforma Mattone in modo che la piattaforma possa leggere il registro degli appartamenti e mantenere la KB di Conduit costantemente aggiornata. Il collegamento avviene tramite OAuth — è lo studente ad autorizzare l'accesso direttamente dal suo account Notion.
+Collega il workspace Notion dello studente alla piattaforma Mattone in modo che la piattaforma possa leggere il registro degli appartamenti e mantenere la KB di Conduit costantemente aggiornata. Il collegamento avviene tramite OAuth, è lo studente ad autorizzare l'accesso direttamente dal suo account Notion.
 
 ## Prerequisiti
 
 Prima di procedere, verifica che siano soddisfatte le seguenti condizioni:
 
 - Lo studente ha un account Notion attivo con il DB Apartments già creato (a partire dal template Mattone o costruito manualmente rispettando la struttura richiesta).
-- Lo studente è **amministratore** del proprio workspace Notion — senza i permessi di admin l'autorizzazione OAuth non andrà a buon fine.
+- Lo studente è **amministratore** del proprio workspace Notion, senza i permessi di admin l'autorizzazione OAuth non andrà a buon fine.
 - Hai accesso alla piattaforma Mattone con il profilo dello studente aperto.
 
 ## Collegamento
@@ -24,7 +24,7 @@ Prima di procedere, verifica che siano soddisfatte le seguenti condizioni:
     Notion mostra la pagina di autorizzazione. Lo studente deve essere già autenticato con l'account corretto. Se vede un account sbagliato, deve uscire da Notion e rientrare prima di continuare.
   </Step>
   <Step title="Seleziona le pagine e i database da condividere">
-    Notion chiede quali risorse vuoi condividere con la piattaforma Mattone. Lo studente deve selezionare **solo il DB Apartments** — non l'intero workspace. Usa la ricerca per trovarlo rapidamente.
+    Notion chiede quali risorse vuoi condividere con la piattaforma Mattone. Lo studente deve selezionare **solo il DB Apartments**, non l'intero workspace. Usa la ricerca per trovarlo rapidamente.
   </Step>
   <Step title="Autorizza la connessione">
     Clicca su **Consenti accesso**. Notion genera il token OAuth e restituisce il controllo alla piattaforma Mattone.
@@ -38,7 +38,7 @@ Prima di procedere, verifica che siano soddisfatte le seguenti condizioni:
 </Steps>
 
 <Warning>
-  Lo studente deve condividere **solo il DB Apartments**, non l'intero workspace Notion. Condividere risorse non necessarie espone dati personali e aziendali non pertinenti — per privacy e sicurezza, limita sempre l'accesso al minimo indispensabile.
+  Lo studente deve condividere **solo il DB Apartments**, non l'intero workspace Notion. Condividere risorse non necessarie espone dati personali e aziendali non pertinenti, per privacy e sicurezza, limita sempre l'accesso al minimo indispensabile.
 </Warning>
 
 ## Verifica
@@ -54,7 +54,7 @@ Il collegamento è completato correttamente quando si verificano tutte queste co
 </Note>
 
 <Tip>
-**▷ Prompt Claude Code — Collega Notion**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Collega Notion**  ·  incolla in Claude Code:
 </Tip>
 
 ```text

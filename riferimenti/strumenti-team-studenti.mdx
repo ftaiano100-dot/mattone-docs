@@ -38,8 +38,8 @@ Questo è il flusso **ufficiale** di Claude Code per aggiungere un server MCP, v
     ```
 
     Flag utili:
-    - `--scope local|project|user` — dove salvare la config. Default `local` (solo per te, in questo progetto). `user` = disponibile in tutti i tuoi progetti. `project` = condiviso col team via file `.mcp.json` nel repo.
-    - `-e CHIAVE=valore` (o `--env CHIAVE=valore`) — passa una variabile d'ambiente/segreto al server (es. una API key). **Non incollare mai il valore reale nei docs o in chat.**
+    - `--scope local|project|user`, dove salvare la config. Default `local` (solo per te, in questo progetto). `user` = disponibile in tutti i tuoi progetti. `project` = condiviso col team via file `.mcp.json` nel repo.
+    - `-e CHIAVE=valore` (o `--env CHIAVE=valore`), passa una variabile d'ambiente/segreto al server (es. una API key). **Non incollare mai il valore reale nei docs o in chat.**
   </Step>
   <Step title="Verifica che sia collegato">
     ```bash
@@ -60,7 +60,7 @@ Questo è il flusso **ufficiale** di Claude Code per aggiungere un server MCP, v
 ## Collegare i singoli strumenti
 
 <Warning>
-  **Non abbiamo pubblicato qui l'endpoint/comando esatto di ogni MCP per non inventare URL.** Per WhatsApp MCP e Slack MCP usa **l'URL o il comando di installazione ufficiale fornito dal team** (gestore accessi / canale interno): incollalo nel comando `claude mcp add` del flusso generico qui sopra. **Il link/comando specifico va confermato prima di pubblicarlo** — meglio chiederlo al team che affidarsi a un indirizzo non verificato.
+  **Non abbiamo pubblicato qui l'endpoint/comando esatto di ogni MCP per non inventare URL.** Per WhatsApp MCP e Slack MCP usa **l'URL o il comando di installazione ufficiale fornito dal team** (gestore accessi / canale interno): incollalo nel comando `claude mcp add` del flusso generico qui sopra. **Il link/comando specifico va confermato prima di pubblicarlo**, meglio chiederlo al team che affidarsi a un indirizzo non verificato.
 </Warning>
 
 ### WhatsApp MCP
@@ -75,7 +75,7 @@ Questo è il flusso **ufficiale** di Claude Code per aggiungere un server MCP, v
 
 ### Resend (email)
 - **Cosa fa:** invia email. È **già integrato nella piattaforma** Mattone per reminder e recupero password (via API, lato server).
-- **Come si usa:** per le email di sistema non serve fare nulla — le manda la piattaforma. Per inviare email **da Claude Code** esiste l'opzione di un MCP Resend che usa una API key Resend passata come env (`-e`), **mai** in chiaro nei docs.
+- **Come si usa:** per le email di sistema non serve fare nulla, le manda la piattaforma. Per inviare email **da Claude Code** esiste l'opzione di un MCP Resend che usa una API key Resend passata come env (`-e`), **mai** in chiaro nei docs.
 - **Da confermare col team:** se e quale MCP Resend usare e dove sta la API key (Vault / env). *(non inventare pacchetto o URL)*
 
 ## Se non hai ancora collegato uno strumento
@@ -84,7 +84,7 @@ Se `claude mcp list` non mostra WhatsApp o Slack, non ce l'hai ancora nella tua 
 
 ## Best practice: avvisare lo studente di cosa gli manca
 
-Quando dallo stato dell'onboarding risulta che manca un pezzo **dello studente** — la carta / il pagamento, il collegamento Notion, il contratto firmato, la Restricted Key Stripe, il numero per WABA — **avvisalo subito**, con un messaggio plain, gentile e chiaro. Ricostruisci "cosa manca" incrociando le tre fonti in [Stato & continuazione](/onboarding/stato-e-continuazione) (`/connessioni` + `pms_integrations` + Vault).
+Quando dallo stato dell'onboarding risulta che manca un pezzo **dello studente**, la carta / il pagamento, il collegamento Notion, il contratto firmato, la Restricted Key Stripe, il numero per WABA, **avvisalo subito**, con un messaggio plain, gentile e chiaro. Ricostruisci "cosa manca" incrociando le tre fonti in [Stato & continuazione](/onboarding/stato-e-continuazione) (`/connessioni` + `pms_integrations` + Vault).
 
 Principi del messaggio:
 - **Un elenco corto**: solo i pezzi mancanti, non tutto l'onboarding.
@@ -93,13 +93,13 @@ Principi del messaggio:
 - **Chiedi conferma quando è fatto**, così aggiorni lo stato.
 
 <Note>
-  **Esempio di messaggio (WhatsApp / Slack / email) — plain:**
+  **Esempio di messaggio (WhatsApp / Slack / email), plain:**
 
   > Ciao [Nome]! Per completare l'attivazione del tuo assistente ci mancano un paio di cose da parte tua:
   >
-  > 1. **Collegamento Notion** — vai su app.mattone.co → Connessioni → *Collega Notion* e autorizza (è un click, non devi incollare nessuna password).
-  > 2. **Contratto firmato** — trovi il contratto nella tua area: una volta firmato ci sblocca l'attivazione.
-  > 3. **Metodo di pagamento** — aggiungi la carta così possiamo far partire il servizio.
+  > 1. **Collegamento Notion**, vai su app.mattone.co → Connessioni → *Collega Notion* e autorizza (è un click, non devi incollare nessuna password).
+  > 2. **Contratto firmato**, trovi il contratto nella tua area: una volta firmato ci sblocca l'attivazione.
+  > 3. **Metodo di pagamento**, aggiungi la carta così possiamo far partire il servizio.
   >
   > Appena fatte, scrivimi un "ok" qui e proseguo io con il resto. Grazie!
 

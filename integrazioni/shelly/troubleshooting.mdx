@@ -4,7 +4,7 @@ sidebarTitle: "Troubleshooting"
 description: "Diagnosi e risoluzione dei problemi più comuni nell'integrazione Shelly: device offline, token scaduto, canale relay errato e apertura mancata."
 ---
 
-Usa questa guida per diagnosticare i problemi dell'integrazione Shelly — la maggior parte dei casi riguarda un device offline o un token Shelly Cloud scaduto o non valido. Prima di qualsiasi modifica alla configurazione, controlla sempre i log della piattaforma per identificare il codice di errore esatto.
+Usa questa guida per diagnosticare i problemi dell'integrazione Shelly, la maggior parte dei casi riguarda un device offline o un token Shelly Cloud scaduto o non valido. Prima di qualsiasi modifica alla configurazione, controlla sempre i log della piattaforma per identificare il codice di errore esatto.
 
 ## Tabella sintomi, cause e soluzioni
 
@@ -17,18 +17,18 @@ Usa questa guida per diagnosticare i problemi dell'integrazione Shelly — la ma
 | Apertura ritardata (oltre 3 secondi) | Cloud Shelly lento o rete locale congestionata | Verifica la latenza del cloud Shelly; testa l'apertura in orari diversi per escludere picchi di traffico |
 
 <Tip>
-  Per verificare lo stato del device senza aprire l'app Shelly Cloud, usa il tool `check-device-status` da Conduit — restituisce lo stato del device in tempo reale con il codice risposta esatto, permettendoti di distinguere subito tra device offline e token non valido.
+  Per verificare lo stato del device senza aprire l'app Shelly Cloud, usa il tool `check-device-status` da Conduit, restituisce lo stato del device in tempo reale con il codice risposta esatto, permettendoti di distinguere subito tra device offline e token non valido.
 </Tip>
 
 <Tip>
-**▷ Prompt Claude Code — Debug Shelly**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Debug Shelly**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
 Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
-Per prima cosa apri il repo di check-in giusto — `~/Projects/cosmica-booking`
+Per prima cosa apri il repo di check-in giusto, `~/Projects/cosmica-booking`
 (baseline: `src/lib/shelly.ts`, SHELLY_DEVICES) o il repo di check-in dello
-studente — e LEGGI le pagine mattone-docs /troubleshooting/metodo e
+studente, e LEGGI le pagine mattone-docs /troubleshooting/metodo e
 /integrazioni/shelly/troubleshooting. Poi procedi:
 
 Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema

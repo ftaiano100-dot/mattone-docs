@@ -7,7 +7,7 @@ description: "Guida completa ai sei step obbligatori per attivare un nuovo stude
 L'onboarding **non è una sequenza rigida uguale per tutti**: prima ci sono i **preliminari comuni** (Fase 0), poi si sceglie il **percorso giusto** in base al tipo di studente. All'interno del ramo operativo, però, l'ordine dei sei step conta: ogni step costruisce le fondamenta del successivo (Conduit non legge le prenotazioni senza il PMS, il PMS non sa quali appartamenti gestire senza l'anagrafica Notion).
 
 <Warning>
-  **GATE DI ATTIVAZIONE CONDUIT — a chi fa l'onboarding.** **Non attivare il workspace Conduit** di uno studente se non ha **entrambe** queste cose:
+  **GATE DI ATTIVAZIONE CONDUIT, a chi fa l'onboarding.** **Non attivare il workspace Conduit** di uno studente se non ha **entrambe** queste cose:
   1. **Contratto "Servizio AI Ospiti" FIRMATO.**
   2. **Carta a file nella piattaforma** (metodo di pagamento aggiunto dallo studente).
 
@@ -15,13 +15,13 @@ L'onboarding **non è una sequenza rigida uguale per tutti**: prima ci sono i **
 </Warning>
 
 <Warning>
-  Dentro il ramo operativo, l'ordine non è casuale — saltare uno step rompe ciò che viene dopo. Ma un pezzo che lo studente "per ora non fa" si segna **"non ora"**, non si cancella.
+  Dentro il ramo operativo, l'ordine non è casuale, saltare uno step rompe ciò che viene dopo. Ma un pezzo che lo studente "per ora non fa" si segna **"non ora"**, non si cancella.
 </Warning>
 
-## Fase 0 — Preliminari (comuni a tutti, prima di ogni integrazione)
+## Fase 0, Preliminari (comuni a tutti, prima di ogni integrazione)
 Da fare **sempre**, prima di collegare qualsiasi cosa:
 <Steps>
-  <Step title="Contratti & amministrazione">Contratto firmato, dati di fatturazione e aspetti amministrativi a posto. Per chi attiva **Conduit**: l'attivazione richiede **contratto firmato + carta a file** (entrambi gate). Il contratto è l'**Addendum "Servizio AI Ospiti"** (Mattone.co LLC ↔ studente), firmato **prima** dell'attivazione — regola canone €9/Listing/mese, Costi a Consumo, durata minima 12 mesi e addebito ricorrente su carta. Vedi [Step 3 · Conduit](/onboarding/3-conduit) e, per il mancato pagamento, [Mancato pagamento](/delivery/mancato-pagamento).</Step>
+  <Step title="Contratti & amministrazione">Contratto firmato, dati di fatturazione e aspetti amministrativi a posto. Per chi attiva **Conduit**: l'attivazione richiede **contratto firmato + carta a file** (entrambi gate). Il contratto è l'**Addendum "Servizio AI Ospiti"** (Mattone.co LLC ↔ studente), firmato **prima** dell'attivazione, regola canone €9/Listing/mese, Costi a Consumo, durata minima 12 mesi e addebito ricorrente su carta. Vedi [Step 3 · Conduit](/onboarding/3-conduit) e, per il mancato pagamento, [Mancato pagamento](/delivery/mancato-pagamento).</Step>
   <Step title="Account piattaforma">Account su `app.mattone.co`, accesso allo studente, profilo con i `tools_access` giusti.</Step>
   <Step title="Preliminari e allineamento">Cosa vuole lo studente, quali tool userà, quali gestionali/immobili ha. Da qui si sceglie il percorso.</Step>
 </Steps>
@@ -39,7 +39,7 @@ Non tutti partono dallo stesso punto. Scegli il ramo in base al profilo:
 <Tip>I **passaggi custom** (numeri, fee, link nelle skill; PMS diverso da Kross; presenza/assenza di smart-lock o Stripe) si adattano per singolo studente: cambia la **config**, non la procedura.</Tip>
 
 ## Passi facili da dimenticare (ma che contano)
-- **Accesso al Meta Business Manager (BM)**: chiedilo **presto**. Serve per abilitare la **WABA** (WhatsApp ufficiale) **e** per le **campagne marketing**. Meglio farsi dare accesso al **BM dello studente** (come partner, per ID — mai la password). Vedi [WABA / Meta BM](/integrazioni/waba/panoramica).
+- **Accesso al Meta Business Manager (BM)**: chiedilo **presto**. Serve per abilitare la **WABA** (WhatsApp ufficiale) **e** per le **campagne marketing**. Meglio farsi dare accesso al **BM dello studente** (come partner, per ID, mai la password). Vedi [WABA / Meta BM](/integrazioni/waba/panoramica).
 - **GHL (marketing)**: si crea un **nuovo Sub-Account** per lo studente, si **importa il nostro Snapshot** (workflow/pipeline/funnel), si **double-checka**, poi si crea il **PIT** e si collega. Vedi [PIT & location](/integrazioni/ghl/pit-location).
 - **Operations** (gestione operativa: pulizie, revenue/EBITDA): si collega al gestionale quando serve la parte operativa/finanziaria. ⚠️ Collegamento Operations↔Kross **in verifica per tutti gli studenti** → fai sempre il test. Vedi [Operations](/integrazioni/operations/panoramica).
 - **Reconciliation** (riconciliazione bancaria, Revolut): opzionale, per chi vuole quadrare gli incassi. **In miglioramento**. Vedi [Reconciliation](/integrazioni/operations/reconciliation).
@@ -53,7 +53,7 @@ Non tutti partono dallo stesso punto. Scegli il ramo in base al profilo:
     → [Vai allo Step 1](/onboarding/1-anagrafica-notion)
   </Step>
 
-  <Step title="PMS — KrossBooking">
+  <Step title="PMS, KrossBooking">
     Collega il PMS KrossBooking allo studente. Solo dopo questa connessione Conduit può leggere prenotazioni, dati ospite e stato check-in in tempo reale.
 
     → [Vai allo Step 2](/onboarding/2-pms-kross)
@@ -71,7 +71,7 @@ Non tutti partono dallo stesso punto. Scegli il ramo in base al profilo:
     → [Vai allo Step 4](/onboarding/4-smart-checkin)
   </Step>
 
-  <Step title="Pagamenti — Stripe">
+  <Step title="Pagamenti, Stripe">
     Collega Stripe con una **chiave a permessi minimi** (Restricted Key) in modo che Conduit possa generare link di pagamento per extra e upsell direttamente in chat con l'ospite.
 
     → [Vai allo Step 5](/onboarding/5-pagamenti-stripe)
@@ -115,5 +115,5 @@ Pensa a una **matrice passi × stato** per studente, non a una lista lineare: og
 <Warning>**GAP noto**: non esiste ancora un **tracker unico** (matrice passi×stato, con "non ora" e handoff) per il team delivery. Oggi lo si ricostruisce da `pms_integrations` + `/connessioni` + Vault. Da gestire lato piattaforma. Vista d'insieme volumi: [Delivery a volumi](/delivery/flusso-completo).</Warning>
 
 <Note>
-  Se rimani bloccato su uno qualsiasi degli step, consulta prima la pagina [Metodo di troubleshooting](/troubleshooting/metodo) — descrive il processo sistematico per diagnosticare qualsiasi problema sulla piattaforma prima di escalare.
+  Se rimani bloccato su uno qualsiasi degli step, consulta prima la pagina [Metodo di troubleshooting](/troubleshooting/metodo), descrive il processo sistematico per diagnosticare qualsiasi problema sulla piattaforma prima di escalare.
 </Note>

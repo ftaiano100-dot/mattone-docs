@@ -7,13 +7,13 @@ description: "Configura l'apertura remota via link per appartamenti con smart lo
 Se lo studente ha una smart lock su uno o più appartamenti, configura l'apertura remota via link in modo che Conduit possa inviare all'ospite un link di accesso direttamente in chat. Se lo studente non ha nessuna smart lock, salta questo step e passa direttamente allo [Step 5 · Stripe](/onboarding/5-pagamenti-stripe). Verifica il campo `smart_lock` nel DB Apartments (Step 1) per sapere quali appartamenti richiedono questa configurazione.
 
 <Tip>
-  Testa sempre un'apertura reale durante l'onboarding — non segnare questo step come completato senza aver visto la porta aprirsi fisicamente (o aver ricevuto conferma dallo studente che la porta si è aperta) e senza aver letto i log dell'evento.
+  Testa sempre un'apertura reale durante l'onboarding, non segnare questo step come completato senza aver visto la porta aprirsi fisicamente (o aver ricevuto conferma dallo studente che la porta si è aperta) e senza aver letto i log dell'evento.
 </Tip>
 
 ## Quale device? Cosa consigliamo
 
 <Info>
-  **Best practice Mattone — cosa raccomandiamo.**
+  **Best practice Mattone, cosa raccomandiamo.**
   - **Consigliato di default (baseline collaudata da Cosmica): Shelly.** È un relay che apre citofono/porta. È lo **standard** perché è semplice e affidabile: **un device = una riga** nella mappa, si connette direttamente al WiFi (nessun hub intermedio) e si **aggiunge senza deploy**. Per una nuova installazione, parti da qui.
   - **Alternativa già gestita: SwitchBot Smart Lock.** La usiamo quando lo studente **ha già** quel brand installato. Richiede alcuni requisiti in più (Hub Mini su **WiFi 2.4GHz stabile**, LED blu fisso, account **owner**, firma **HMAC** lato integrazione).
   - **Altre marche (Tuya / Aqara / Yale / …): caso per caso.** Non sono incluse di default: le **valutiamo su richiesta** e l'integrazione custom può essere un **upsell a pagamento** (servizio in più). Non prometterle allo studente senza aver verificato la fattibilità con il team.
@@ -22,10 +22,10 @@ Se lo studente ha una smart lock su uno o più appartamenti, configura l'apertur
 I device supportati "pronti" sono due, con requisiti e procedure di configurazione differenti:
 
 <CardGroup cols={2}>
-  <Card title="Shelly (relay) — consigliato" icon="bolt" href="/integrazioni/shelly/panoramica">
+  <Card title="Shelly (relay), consigliato" icon="bolt" href="/integrazioni/shelly/panoramica">
     **La scelta di default.** Ideale per citofoni e porte con relè. È la configurazione più semplice: richiede solo il Cloud token dell'account Shelly, nessun hub, si aggiunge senza deploy. Standard per le nuove installazioni.
   </Card>
-  <Card title="SwitchBot Smart Lock — alternativa" icon="lock" href="/integrazioni/switchbot/panoramica">
+  <Card title="SwitchBot Smart Lock, alternativa" icon="lock" href="/integrazioni/switchbot/panoramica">
     Serratura elettronica standalone. Richiede Hub Mini su WiFi 2.4GHz e l'account owner SwitchBot. Scegli questa opzione **solo se** lo studente ha già installato un SwitchBot.
   </Card>
 </CardGroup>
@@ -57,7 +57,7 @@ I device supportati "pronti" sono due, con requisiti e procedure di configurazio
   <Step title="Registra il device nel tool">
     Nella piattaforma Mattone, apri il pannello del tool smart lock per lo studente e inserisci le credenziali raccolte. Associa il device all'appartamento corretto usando il `listing_id` del DB Apartments.
 
-    Salva la configurazione — le credenziali vengono cifrate nel Vault.
+    Salva la configurazione, le credenziali vengono cifrate nel Vault.
   </Step>
 
   <Step title="Esegui un test di apertura reale e leggi i log">
@@ -68,7 +68,7 @@ I device supportati "pronti" sono due, con requisiti e procedure di configurazio
     - `listing_id` corretto (non di un altro appartamento)
     - Esito `success`
 
-    Se il log mostra errori o l'appartamento nel log non è quello atteso, non procedere — consulta la guida di troubleshooting del device ([Shelly](/integrazioni/shelly/troubleshooting) o [SwitchBot](/integrazioni/switchbot/troubleshooting)).
+    Se il log mostra errori o l'appartamento nel log non è quello atteso, non procedere, consulta la guida di troubleshooting del device ([Shelly](/integrazioni/shelly/troubleshooting) o [SwitchBot](/integrazioni/switchbot/troubleshooting)).
   </Step>
 </Steps>
 
@@ -77,19 +77,19 @@ I device supportati "pronti" sono due, con requisiti e procedure di configurazio
 Step completato? Procedi con → [Step 5 · Stripe](/onboarding/5-pagamenti-stripe)
 
 <Tip>
-**▷ Prompt Claude Code — Smart check-in**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Smart check-in**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
 Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
-Per prima cosa apri il repo di check-in giusto — `~/Projects/cosmica-booking`
+Per prima cosa apri il repo di check-in giusto, `~/Projects/cosmica-booking`
 (baseline Cosmica: `src/lib/shelly.ts` + guest portal `/access/<slug>`) o il
-repo di check-in dello studente se ha device propri — e LEGGI la pagina
+repo di check-in dello studente se ha device propri, e LEGGI la pagina
 mattone-docs /onboarding/4-smart-checkin. Poi procedi:
 
 Guidami nello step 4 (Smart check-in) per lo studente [NOME], seguendo
 mattone-docs /onboarding/4-smart-checkin. Chiedimi quale device ha
-(Shelly o SwitchBot) e i dati necessari (deviceId, account/credenziali) —
+(Shelly o SwitchBot) e i dati necessari (deviceId, account/credenziali),
 le credenziali vanno nel Vault, non in chiaro. Aiutami ad aggiungere la riga
 al registro (slug, deviceId, label, type, account), fai commit+push e poi
 verifica: list_properties mostra il nuovo slug, il guest portal /access/<slug>
@@ -99,6 +99,6 @@ offline)?
 ```
 
 <CardGroup cols={2}>
-  <Card title="Shelly — collegamento" icon="arrow-up-right-from-square" href="/integrazioni/shelly/collegamento">1 entry nel registro + push</Card>
-  <Card title="SwitchBot — collegamento" icon="arrow-up-right-from-square" href="/integrazioni/switchbot/collegamento">Token owner + Device ID</Card>
+  <Card title="Shelly, collegamento" icon="arrow-up-right-from-square" href="/integrazioni/shelly/collegamento">1 entry nel registro + push</Card>
+  <Card title="SwitchBot, collegamento" icon="arrow-up-right-from-square" href="/integrazioni/switchbot/collegamento">Token owner + Device ID</Card>
 </CardGroup>

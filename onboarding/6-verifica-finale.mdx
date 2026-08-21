@@ -4,7 +4,7 @@ sidebarTitle: "6 · Verifica Finale"
 description: "Checklist e smoke test per dichiarare l'onboarding completato: ogni punto va verificato con evidenza reale dai log, non solo dall'interfaccia."
 ---
 
-Non dichiarare l'onboarding completato finché ogni punto di questa checklist non è stato verificato con evidenza reale dai log. L'interfaccia può mostrare tutto verde mentre qualcosa non funziona correttamente — solo i log dimostrano che ogni componente ha eseguito con successo. Prenditi il tempo necessario per questo step: un onboarding dichiarato "fatto" troppo presto genera problemi agli ospiti reali.
+Non dichiarare l'onboarding completato finché ogni punto di questa checklist non è stato verificato con evidenza reale dai log. L'interfaccia può mostrare tutto verde mentre qualcosa non funziona correttamente, solo i log dimostrano che ogni componente ha eseguito con successo. Prenditi il tempo necessario per questo step: un onboarding dichiarato "fatto" troppo presto genera problemi agli ospiti reali.
 
 <Warning>
   Non dichiarare "fatto" se non hai visto i log. L'apparenza inganna.
@@ -14,13 +14,13 @@ Non dichiarare l'onboarding completato finché ogni punto di questa checklist no
 
 Verifica ogni punto nell'ordine indicato. Segna una voce come completata solo dopo aver aperto i log e confermato l'esito positivo.
 
-- [ ] **Accesso Admin Mattone al workspace Conduit** — `francesco@mattone.co` compare nella lista membri del workspace con ruolo **Admin** (va aggiunto **a mano** dalla dashboard: non esiste API). Se manca, il team perde l'accesso UI a quel workspace: verificalo **prima** di considerare il workspace "pronto"
-- [ ] **Kross verde** — il test di connessione via `mcp.mattone.co` restituisce verde e Conduit riesce a recuperare almeno una prenotazione reale per lo studente
-- [ ] **KB Conduit per-listing** — testa una domanda da ospite su un appartamento specifico (es. *"Come arrivo all'appartamento?"*) e verifica che la risposta usi solo le informazioni di quell'appartamento; zero leak da altri appartamenti
-- [ ] **Ogni tool ha la sua skill** — apri la configurazione Conduit dello studente e verifica che ogni tool montato (Kross, Shelly/SwitchBot, Stripe) abbia la skill corrispondente abbinata
-- [ ] **Smart-lock: apertura reale testata, log letto** — *(solo se applicabile)* un'apertura reale è stata eseguita durante l'onboarding e il log mostra `success` con `listing_id` corretto e timestamp atteso
-- [ ] **Stripe: link di test generato** — Conduit ha generato almeno un link di pagamento di test che aperto nel browser mostra la pagina Stripe corretta
-- [ ] **Telefonia/WABA: messaggio di prova ricevuto** — un messaggio di test inviato al numero/WABA dello studente ha ricevuto risposta da Conduit; il log mostra la conversazione
+- [ ] **Accesso Admin Mattone al workspace Conduit**, `francesco@mattone.co` compare nella lista membri del workspace con ruolo **Admin** (va aggiunto **a mano** dalla dashboard: non esiste API). Se manca, il team perde l'accesso UI a quel workspace: verificalo **prima** di considerare il workspace "pronto"
+- [ ] **Kross verde**, il test di connessione via `mcp.mattone.co` restituisce verde e Conduit riesce a recuperare almeno una prenotazione reale per lo studente
+- [ ] **KB Conduit per-listing**, testa una domanda da ospite su un appartamento specifico (es. *"Come arrivo all'appartamento?"*) e verifica che la risposta usi solo le informazioni di quell'appartamento; zero leak da altri appartamenti
+- [ ] **Ogni tool ha la sua skill**, apri la configurazione Conduit dello studente e verifica che ogni tool montato (Kross, Shelly/SwitchBot, Stripe) abbia la skill corrispondente abbinata
+- [ ] **Smart-lock: apertura reale testata, log letto**, *(solo se applicabile)* un'apertura reale è stata eseguita durante l'onboarding e il log mostra `success` con `listing_id` corretto e timestamp atteso
+- [ ] **Stripe: link di test generato**, Conduit ha generato almeno un link di pagamento di test che aperto nel browser mostra la pagina Stripe corretta
+- [ ] **Telefonia/WABA: messaggio di prova ricevuto**, un messaggio di test inviato al numero/WABA dello studente ha ricevuto risposta da Conduit; il log mostra la conversazione
 
 ## Regola
 
@@ -48,14 +48,14 @@ L'onboarding è ufficialmente completato quando:
 Documenta la data di completamento e salva un riferimento ai log di verifica nel profilo dello studente sulla piattaforma.
 
 <Tip>
-**▷ Prompt Claude Code — Verifica finale**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Verifica finale**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
 Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
-Per prima cosa apri i repo coinvolti — `~/Projects/api-kross-mattone`
+Per prima cosa apri i repo coinvolti, `~/Projects/api-kross-mattone`
 (provisioning/skill), `~/Projects/mattone-platform` (connessioni/Vault) e il
-gateway `~/Projects/mattone-mcp-gateway` — e LEGGI la checklist in mattone-docs
+gateway `~/Projects/mattone-mcp-gateway`, e LEGGI la checklist in mattone-docs
 /onboarding/6-verifica-finale; usa gli MCP (Conduit, Supabase) per le prove
 reali. Poi procedi:
 

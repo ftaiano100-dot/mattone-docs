@@ -4,7 +4,7 @@ sidebarTitle: "PIT & Location"
 description: "Come generare il Private Integration Token GHL per una location studente, quali scope concedere e come salvarlo in modo sicuro su Mattone."
 ---
 
-Ogni location GHL richiede un Private Integration Token (PIT) per permettere a Mattone di leggere i dati di lead e spesa pubblicitaria. Il PIT è un token API con scope limitato, generato dall'amministratore della location — non è condiviso tra sub-account e non può essere usato per accedere ad altre location. Questa pagina spiega come generarlo, quali permessi assegnare e come consegnarlo al team Mattone in modo sicuro.
+Ogni location GHL richiede un Private Integration Token (PIT) per permettere a Mattone di leggere i dati di lead e spesa pubblicitaria. Il PIT è un token API con scope limitato, generato dall'amministratore della location, non è condiviso tra sub-account e non può essere usato per accedere ad altre location. Questa pagina spiega come generarlo, quali permessi assegnare e come consegnarlo al team Mattone in modo sicuro.
 
 ## Cos'è il PIT
 
@@ -14,27 +14,27 @@ Il PIT (Private Integration Token) è una chiave API per-location disponibile ne
 
 <Steps>
   <Step title="Accedi a GHL come amministratore della location">
-    Lo studente (o tu, se hai accesso admin alla sua location) accede a GHL e si assicura di essere nel contesto della **location corretta** — non dell'account agenzia. Verifica il nome della location in alto a sinistra nell'interfaccia.
+    Lo studente (o tu, se hai accesso admin alla sua location) accede a GHL e si assicura di essere nel contesto della **location corretta**, non dell'account agenzia. Verifica il nome della location in alto a sinistra nell'interfaccia.
   </Step>
   <Step title="Vai in Settings → Private Integrations">
-    Nel menu laterale di GHL, vai in **Settings** e seleziona **Private Integrations**. Se la voce non è visibile, l'account potrebbe non avere i permessi necessari — contatta il supporto GHL o il team Mattone.
+    Nel menu laterale di GHL, vai in **Settings** e seleziona **Private Integrations**. Se la voce non è visibile, l'account potrebbe non avere i permessi necessari, contatta il supporto GHL o il team Mattone.
   </Step>
   <Step title="Crea una nuova integrazione">
     Clicca su **Create new integration**. Assegna un nome descrittivo, ad esempio `"Mattone Platform"`. Questo nome ti permetterà di identificare il token in futuro se devi verificarne lo stato o rigenerarlo.
   </Step>
   <Step title="Seleziona gli scope necessari">
-    Seleziona **esattamente** questi tre scope — non aggiungere altri per minimizzare il rischio:
-    - **Contacts Read** — per leggere i lead e i dati di contatto
-    - **Opportunities Read** — per leggere il valore delle opportunità nel funnel
-    - **Campaigns Read** — per l'attribuzione della spesa pubblicitaria
+    Seleziona **esattamente** questi tre scope, non aggiungere altri per minimizzare il rischio:
+    - **Contacts Read**: per leggere i lead e i dati di contatto
+    - **Opportunities Read**: per leggere il valore delle opportunità nel funnel
+    - **Campaigns Read**: per l'attribuzione della spesa pubblicitaria
 
     Clicca su **Save** o **Generate** per creare l'integrazione.
   </Step>
   <Step title="Copia il token generato">
-    GHL mostra il token generato **una sola volta** — copialo immediatamente in un posto sicuro temporaneo (ad esempio un gestore di password). Se esci dalla pagina senza copiarlo, dovrai rigenerare il token.
+    GHL mostra il token generato **una sola volta**, copialo immediatamente in un posto sicuro temporaneo (ad esempio un gestore di password). Se esci dalla pagina senza copiarlo, dovrai rigenerare il token.
   </Step>
   <Step title="Consegna il token al team Mattone su canale sicuro">
-    Invia il token al team Mattone **solo su canale sicuro** — mai in una chat di gruppo, email non cifrata o documento condiviso. Usa il canale di consegna credenziali indicato nel tuo processo di onboarding.
+    Invia il token al team Mattone **solo su canale sicuro**, mai in una chat di gruppo, email non cifrata o documento condiviso. Usa il canale di consegna credenziali indicato nel tuo processo di onboarding.
   </Step>
   <Step title="Il team configura il token sulla piattaforma">
     Il team tecnico Mattone registra il token nella piattaforma in modo sicuro, associandolo alla location GHL dello studente. Da questo momento la piattaforma può accedere ai dati GHL dello studente.
@@ -42,7 +42,7 @@ Il PIT (Private Integration Token) è una chiave API per-location disponibile ne
 </Steps>
 
 <Warning>
-  Il PIT **scade immediatamente** se l'integrazione "Mattone Platform" viene eliminata da GHL Settings — anche accidentalmente. Se i dati di lead o ROAS di uno studente smettono di aggiornarsi, verifica prima di tutto che l'integrazione sia ancora attiva in GHL → Settings → Private Integrations. Se è stata eliminata, genera un nuovo PIT seguendo questa procedura e contatta il team tecnico per aggiornare la configurazione.
+  Il PIT **scade immediatamente** se l'integrazione "Mattone Platform" viene eliminata da GHL Settings, anche accidentalmente. Se i dati di lead o ROAS di uno studente smettono di aggiornarsi, verifica prima di tutto che l'integrazione sia ancora attiva in GHL → Settings → Private Integrations. Se è stata eliminata, genera un nuovo PIT seguendo questa procedura e contatta il team tecnico per aggiornare la configurazione.
 </Warning>
 
 ## Quando si collega e a cosa serve
@@ -60,6 +60,6 @@ In GHL un cliente vive in un **Sub-Account** (la vecchia "Location"). Uno **Snap
 </Steps>
 
 ## Fonti ufficiali
-- **GoHighLevel — creare un Sub-Account usando uno Snapshot** (doc ufficiale): https://help.gohighlevel.com/support/solutions/articles/155000005762-create-a-new-sub-account-using-snapshot
-- **GoHighLevel — Snapshots (panoramica)**: https://help.gohighlevel.com/support/solutions/articles/48000982511-snapshots-overview · **importare uno Snapshot**: https://help.gohighlevel.com/support/solutions/articles/48000982581-how-to-import-snapshots
+- **GoHighLevel, creare un Sub-Account usando uno Snapshot** (doc ufficiale): https://help.gohighlevel.com/support/solutions/articles/155000005762-create-a-new-sub-account-using-snapshot
+- **GoHighLevel, Snapshots (panoramica)**: https://help.gohighlevel.com/support/solutions/articles/48000982511-snapshots-overview · **importare uno Snapshot**: https://help.gohighlevel.com/support/solutions/articles/48000982581-how-to-import-snapshots
 - **Private Integrations Token**: https://marketplace.gohighlevel.com/docs/Authorization/PrivateIntegrationsToken/ · **GHL API**: https://highlevel.stoplight.io

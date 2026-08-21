@@ -1,5 +1,6 @@
 ---
-title: "Reconciliation — riconciliazione bancaria (Revolut)"
+title: "Reconciliation: riconciliazione bancaria (Revolut)"
+sidebarTitle: "Reconciliation"
 description: "Il tool che confronta i movimenti bancari con le prenotazioni/payout: quando serve, come si collega a Revolut Business, e stato (in miglioramento)."
 ---
 
@@ -17,7 +18,7 @@ description: "Il tool che confronta i movimenti bancari con le prenotazioni/payo
 - Prende i **movimenti bancari** e li **abbina** alle prenotazioni/payout del PMS (Kross), per canale (Booking / Airbnb / Stripe).
 - Mostra il tasso di **match** e le righe non abbinate (da controllare).
 
-## Come si collega — Revolut Business
+## Come si collega, Revolut Business
 - Il tool si connette a **Revolut Business** (il conto). Il collegamento passa dalla **Mattone Platform** con una comunicazione **da-servizio-a-servizio** protetta da un segreto condiviso (nel Vault come `RECON_HMAC_SECRET`, mai nei docs).
 - In pratica: i movimenti Revolut arrivano al tool tramite questa sincronizzazione; tu li **riconcili** contro le prenotazioni.
 
@@ -27,7 +28,7 @@ description: "Il tool che confronta i movimenti bancari con le prenotazioni/payo
   <Step title="Riconcilia">Confronta movimenti ↔ prenotazioni/payout per canale; controlla le righe non abbinate.</Step>
 </Steps>
 
-<Warning>**In miglioramento (Mattia).** Alcune cose sono ancora da rifinire (velocità di deduplica, conteggi Kross, formato di alcune righe). Se un risultato sembra strano, verificalo e segnalalo — non darlo per definitivo.</Warning>
+<Warning>**In miglioramento (Mattia).** Alcune cose sono ancora da rifinire (velocità di deduplica, conteggi Kross, formato di alcune righe). Se un risultato sembra strano, verificalo e segnalalo, non darlo per definitivo.</Warning>
 
 ## Fonti ufficiali
 - **Revolut Business API** (doc ufficiale): https://developer.revolut.com/docs/api/business · portale sviluppatori: https://developer.revolut.com/

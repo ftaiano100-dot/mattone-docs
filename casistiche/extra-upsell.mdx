@@ -4,7 +4,7 @@ sidebarTitle: "Extra & Upsell"
 description: "Gestisci la vendita di servizi extra tramite Conduit: dalla ricerca del prezzo in KB alla generazione del link Stripe e alla conferma dell'ospite."
 ---
 
-Quando un ospite richiede un servizio aggiuntivo — un trasferimento in aeroporto, una pulizia extra, la colazione, il parcheggio o qualsiasi altro extra previsto dallo studente — Conduit cerca il prezzo nella KB del listino, genera un link di pagamento Stripe con l'importo corretto e lo invia direttamente in chat. Questo playbook copre l'intero flusso automatico, spiega come intervenire quando qualcosa non funziona e fornisce un catalogo di riferimento dei servizi extra più comuni.
+Quando un ospite richiede un servizio aggiuntivo, un trasferimento in aeroporto, una pulizia extra, la colazione, il parcheggio o qualsiasi altro extra previsto dallo studente, Conduit cerca il prezzo nella KB del listino, genera un link di pagamento Stripe con l'importo corretto e lo invia direttamente in chat. Questo playbook copre l'intero flusso automatico, spiega come intervenire quando qualcosa non funziona e fornisce un catalogo di riferimento dei servizi extra più comuni.
 
 ## Quando si attiva
 
@@ -20,11 +20,11 @@ Conduit riconosce la richiesta anche in linguaggio colloquiale e la abbina al se
 
 Il flusso automatico si svolge in cinque passaggi:
 
-1. **Ricezione della richiesta** — L'ospite chiede un extra via chat; Conduit classifica la richiesta e identifica il servizio.
-2. **Ricerca prezzo in KB** — Conduit interroga la KB del listino dello studente, filtrando per `listing_id`, per trovare il prezzo del servizio richiesto.
-3. **Generazione link Stripe** — Conduit chiama il tool `stripe-payment-link` passando il nome del servizio e l'importo recuperato dalla KB, ottenendo un link univoco.
-4. **Invio all'ospite** — Conduit invia il link direttamente in chat con un messaggio esplicativo (es. "Ecco il link per procedere al pagamento della pulizia extra: [link]").
-5. **Conferma post-pagamento** — Se il webhook Stripe è configurato, alla ricezione del pagamento Conduit invia all'ospite un messaggio di conferma e, se previsto dal workflow, notifica il fornitore del servizio.
+1. **Ricezione della richiesta**: L'ospite chiede un extra via chat; Conduit classifica la richiesta e identifica il servizio.
+2. **Ricerca prezzo in KB**: Conduit interroga la KB del listino dello studente, filtrando per `listing_id`, per trovare il prezzo del servizio richiesto.
+3. **Generazione link Stripe**: Conduit chiama il tool `stripe-payment-link` passando il nome del servizio e l'importo recuperato dalla KB, ottenendo un link univoco.
+4. **Invio all'ospite**: Conduit invia il link direttamente in chat con un messaggio esplicativo (es. "Ecco il link per procedere al pagamento della pulizia extra: [link]").
+5. **Conferma post-pagamento**: Se il webhook Stripe è configurato, alla ricezione del pagamento Conduit invia all'ospite un messaggio di conferma e, se previsto dal workflow, notifica il fornitore del servizio.
 
 <Info>
 Il webhook Stripe non è configurato di default su ogni installazione. Se l'ospite paga ma non riceve conferma, è molto probabile che il webhook manchi. Vedi la sezione "Quando interviene il team" per i dettagli.
@@ -70,7 +70,7 @@ Se uno studente gestisce più appartamenti con prezzi diversi, crea un documento
 </Tip>
 
 <Tip>
-**▷ Prompt Claude Code — Configura extra/upsell**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Configura extra/upsell**  ·  incolla in Claude Code:
 </Tip>
 
 ```text

@@ -4,7 +4,7 @@ sidebarTitle: "Check-in Incompleto"
 description: "Gestisci gli ospiti che non completano il portale di check-in online: reminder automatici, blocco del link porta e intervento manuale del team."
 ---
 
-Quando un ospite non ha ancora completato il check-in online entro le soglie di remind configurate, Conduit invia automaticamente una serie di promemoria crescenti via WhatsApp e — se l'ospite arriva senza aver completato il portale — blocca l'invio del link di apertura porta fino alla conferma del completamento. Questo playbook descrive l'intero flusso automatico, le azioni che il team deve intraprendere nei casi in cui il sistema non è sufficiente e le verifiche tecniche da eseguire in caso di anomalie.
+Quando un ospite non ha ancora completato il check-in online entro le soglie di remind configurate, Conduit invia automaticamente una serie di promemoria crescenti via WhatsApp e, se l'ospite arriva senza aver completato il portale, blocca l'invio del link di apertura porta fino alla conferma del completamento. Questo playbook descrive l'intero flusso automatico, le azioni che il team deve intraprendere nei casi in cui il sistema non è sufficiente e le verifiche tecniche da eseguire in caso di anomalie.
 
 ## Quando si attiva
 
@@ -20,11 +20,11 @@ Conduit monitora continuamente lo stato dei portali tramite il tool `get-incompl
 
 La sequenza automatica si sviluppa in cinque passaggi:
 
-1. **Monitoraggio continuo** — Conduit chiama il tool `get-incomplete-portals` a intervalli regolari per ottenere la lista delle prenotazioni con check-in non completato nelle prossime 48 ore.
-2. **Reminder T-48h** — Al raggiungimento della soglia delle 48 ore prima dell'arrivo, Conduit invia all'ospite un messaggio WhatsApp amichevole con il link diretto al portale di check-in.
-3. **Reminder T-24h** — Se il portale è ancora incompleto, Conduit invia un secondo messaggio con tono più urgente, sottolineando che il completamento è necessario per ricevere le istruzioni di accesso.
-4. **Reminder T-2h e notifica al team** — Due ore prima dell'arrivo, se il portale è ancora incompleto, Conduit invia un ultimo messaggio urgente all'ospite e notifica simultaneamente lo studente (e/o il team di delivery) affinché possano intervenire.
-5. **Blocco del link porta** — Il link di apertura della serratura smart non viene mai inviato all'ospite finché il portale non risulta completato e confermato. Questo blocco è automatico e non può essere aggirato da Conduit.
+1. **Monitoraggio continuo**: Conduit chiama il tool `get-incomplete-portals` a intervalli regolari per ottenere la lista delle prenotazioni con check-in non completato nelle prossime 48 ore.
+2. **Reminder T-48h**: Al raggiungimento della soglia delle 48 ore prima dell'arrivo, Conduit invia all'ospite un messaggio WhatsApp amichevole con il link diretto al portale di check-in.
+3. **Reminder T-24h**: Se il portale è ancora incompleto, Conduit invia un secondo messaggio con tono più urgente, sottolineando che il completamento è necessario per ricevere le istruzioni di accesso.
+4. **Reminder T-2h e notifica al team**: Due ore prima dell'arrivo, se il portale è ancora incompleto, Conduit invia un ultimo messaggio urgente all'ospite e notifica simultaneamente lo studente (e/o il team di delivery) affinché possano intervenire.
+5. **Blocco del link porta**: Il link di apertura della serratura smart non viene mai inviato all'ospite finché il portale non risulta completato e confermato. Questo blocco è automatico e non può essere aggirato da Conduit.
 
 <Warning>
 Non inviare mai il link di apertura porta a un ospite che non ha completato il check-in online. L'identificazione dell'ospite tramite il portale è un **requisito legale** in Italia (obbligo di comunicazione alle autorità di pubblica sicurezza ai sensi del Testo Unico delle Leggi di Pubblica Sicurezza). Inviare l'accesso senza identificazione espone lo studente a sanzioni amministrative.
@@ -70,7 +70,7 @@ Se il portale fallisce sistematicamente per uno specifico appartamento ma funzio
 </Tip>
 
 <Accordion title="Cosa fare se l'ospite non usa WhatsApp">
-  Se l'ospite non ha WhatsApp o ha un numero non registrato su WABA, i reminder automatici non vengono recapitati. In questo caso Conduit dovrebbe rilevare il fallimento nella consegna e notificare il team. Verifica che questa notifica sia configurata nel workflow. In alternativa, il link al portale può essere inviato via email o SMS — verifica con lo studente quale canale di fallback preferisce e configuralo nella scheda del listing.
+  Se l'ospite non ha WhatsApp o ha un numero non registrato su WABA, i reminder automatici non vengono recapitati. In questo caso Conduit dovrebbe rilevare il fallimento nella consegna e notificare il team. Verifica che questa notifica sia configurata nel workflow. In alternativa, il link al portale può essere inviato via email o SMS, verifica con lo studente quale canale di fallback preferisce e configuralo nella scheda del listing.
 </Accordion>
 
 <Accordion title="Come forzare manualmente il check dell'incomplete portals">
@@ -78,7 +78,7 @@ Se il portale fallisce sistematicamente per uno specifico appartamento ma funzio
 </Accordion>
 
 <Tip>
-**▷ Prompt Claude Code — Gestisci check-in non completato**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Gestisci check-in non completato**  ·  incolla in Claude Code:
 </Tip>
 
 ```text

@@ -7,18 +7,18 @@ description: "Imposta l'agente AI Conduit: KB per-listing da Notion, custom tool
 Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogni studente ha il proprio workspace isolato composto da KB, agente e tool. La configurazione va eseguita in un ordine preciso: prima la base di conoscenza, poi i tool con le relative skill, poi i workflow, e infine il canale telefonico/WABA. Saltare o invertire questi passaggi causa comportamenti imprevisti nell'agente.
 
 <Warning>
-  **GATE DI ATTIVAZIONE — due condizioni OBBLIGATORIE prima di attivare il workspace Conduit.** A chi fa l'onboarding: **non attivare il workspace/agente Conduit** di uno studente se non ha **entrambe**:
+  **GATE DI ATTIVAZIONE, due condizioni OBBLIGATORIE prima di attivare il workspace Conduit.** A chi fa l'onboarding: **non attivare il workspace/agente Conduit** di uno studente se non ha **entrambe**:
 
-  1. **Contratto "Servizio AI Ospiti" FIRMATO** — l'**Addendum "Servizio AI Ospiti"** (Mattone.co LLC ↔ studente) che regola **canone €9/Listing/mese**, **Costi a Consumo**, **durata minima 12 mesi** e **autorizzazione all'addebito**. Verifica firma + **Data attivazione** (sezione "Dettagli Attivazione" del contratto).
-  2. **Carta a file nella piattaforma** — lo studente deve aver **aggiunto il metodo di pagamento** (carta) nell'area billing della piattaforma. Senza carta, l'addebito ricorrente non può partire.
+  1. **Contratto "Servizio AI Ospiti" FIRMATO**: l'**Addendum "Servizio AI Ospiti"** (Mattone.co LLC ↔ studente) che regola **canone €9/Listing/mese**, **Costi a Consumo**, **durata minima 12 mesi** e **autorizzazione all'addebito**. Verifica firma + **Data attivazione** (sezione "Dettagli Attivazione" del contratto).
+  2. **Carta a file nella piattaforma**: lo studente deve aver **aggiunto il metodo di pagamento** (carta) nell'area billing della piattaforma. Senza carta, l'addebito ricorrente non può partire.
 
   **Se manca anche solo UNA delle due → NON attivare. Nessuna eccezione.** L'attivazione fa **decorrere il canone dalla Data di attivazione**.
 
-  **Dove si legge lo stato:** `contract_signed = true` **e** presenza della **carta** (metodo di pagamento) nella piattaforma / area billing dello studente. Lo stato **"contratto firmato"** va registrato **nella piattaforma** (app.mattone.co), non solo qui: quando confermi la firma, flaggalo (o carica il PDF firmato) nella scheda dello studente — la piattaforma è la fonte unica, lo **studente stesso vede il suo contratto** nella sua area e l'attivazione del billing resta legata a quel flag.
+  **Dove si legge lo stato:** `contract_signed = true` **e** presenza della **carta** (metodo di pagamento) nella piattaforma / area billing dello studente. Lo stato **"contratto firmato"** va registrato **nella piattaforma** (app.mattone.co), non solo qui: quando confermi la firma, flaggalo (o carica il PDF firmato) nella scheda dello studente, la piattaforma è la fonte unica, lo **studente stesso vede il suo contratto** nella sua area e l'attivazione del billing resta legata a quel flag.
 </Warning>
 
 <Warning>
-  **PRIMA DI TUTTO — accesso Admin Mattone (obbligatorio, facile da dimenticare).** Appena creato il workspace Conduit di uno studente, aggiungi **`francesco@mattone.co`** come **Admin** (dashboard Conduit → membri/team → invita come **Admin**). È l'unico modo per garantire che il team Mattone abbia sempre accesso a quel workspace.
+  **PRIMA DI TUTTO, accesso Admin Mattone (obbligatorio, facile da dimenticare).** Appena creato il workspace Conduit di uno studente, aggiungi **`francesco@mattone.co`** come **Admin** (dashboard Conduit → membri/team → invita come **Admin**). È l'unico modo per garantire che il team Mattone abbia sempre accesso a quel workspace.
 
   ⚠️ **Non esiste un'API** per aggiungere membri: va fatto **a mano** nella dashboard. Se te ne dimentichi, il team **perde l'accesso** (dalla UI) a quel workspace. **Verifica** che l'Admin Mattone sia nella lista membri prima di considerare il workspace pronto.
 
@@ -26,7 +26,7 @@ Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogn
 </Warning>
 
 <Warning>
-  KB globale = leak tra appartamenti. Ogni KB deve avere lo scope sulla directory per-listing — non creare mai una KB condivisa tra più appartamenti dello stesso studente.
+  KB globale = leak tra appartamenti. Ogni KB deve avere lo scope sulla directory per-listing, non creare mai una KB condivisa tra più appartamenti dello stesso studente.
 </Warning>
 
 ## Ordine corretto
@@ -38,7 +38,7 @@ Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogn
     **Ordine:**
     1. Il **registro appartamenti su Notion** è collegato e completo (Step 1 dell'onboarding).
     2. Il **bridge Notion → Conduit** genera la **KB per-appartamento** dentro il workspace Conduit: una cartella per ogni appartamento, con gli `entity_id` scopati sul `listing_id` corrispondente.
-    3. Da lì l'**agente risponde con i dati giusti** — quelli di quell'appartamento e basta.
+    3. Da lì l'**agente risponde con i dati giusti**, quelli di quell'appartamento e basta.
 
     Lo scope per-listing garantisce che Conduit risponda all'ospite del Loft Navigli A **solo** con le informazioni del Loft Navigli A. **Non creare mai una KB globale**: causa leak tra appartamenti (accessi sbagliati, listino errato, regole di un altro immobile).
 
@@ -75,10 +75,10 @@ Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogn
     - **Il team Mattone** → **supporta la parte WABA/Meta**: registrazione **WhatsApp Business API con Meta** e **collegamento al Business Manager Facebook** (meglio nuovo), tramite Conduit support.
     - Warm transfer al telefono dello studente per le chiamate che l'agente non gestisce.
 
-    Lo standard, già a doc: il numero **italiano** è quello guest-facing (WhatsApp, chiamate, annunci OTA); l'agente VoiceAI può girare su un numero di backend Conduit con **forwarding** dal numero italiano — è normale, l'ospite vede sempre il numero italiano.
+    Lo standard, già a doc: il numero **italiano** è quello guest-facing (WhatsApp, chiamate, annunci OTA); l'agente VoiceAI può girare su un numero di backend Conduit con **forwarding** dal numero italiano, è normale, l'ospite vede sempre il numero italiano.
 
     <Info>
-      **Cosa dire allo studente — numero IT + WhatsApp ufficiale (WABA)**
+      **Cosa dire allo studente, numero IT + WhatsApp ufficiale (WABA)**
 
       Serve circa **1 settimana**, quindi partiamo subito. Passa allo studente questi passi, plain:
 
@@ -93,14 +93,14 @@ Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogn
       Prerequisiti da chiedere allo studente in anticipo: un **numero non già usato su WhatsApp** (personale o business), **accesso a Facebook Business Manager** come amministratore, e un **documento aziendale** (es. visura) per la verifica Meta.
     </Info>
 
-    Apri il ticket al supporto Conduit appena hai completato la KB e i tool — in questo modo quando il canale è pronto, il workspace è già configurato correttamente.
+    Apri il ticket al supporto Conduit appena hai completato la KB e i tool, in questo modo quando il canale è pronto, il workspace è già configurato correttamente.
 
     → Guida dettagliata: [Telefonia e WABA](/integrazioni/conduit/telefonia-waba)
   </Step>
 </Steps>
 
 <Note>
-  Per la documentazione completa dell'integrazione Conduit — architettura del workspace, limiti, gestione degli errori e best practice — consulta [Conduit · Panoramica](/integrazioni/conduit/panoramica).
+  Per la documentazione completa dell'integrazione Conduit, architettura del workspace, limiti, gestione degli errori e best practice, consulta [Conduit · Panoramica](/integrazioni/conduit/panoramica).
 </Note>
 
 ---
@@ -108,7 +108,7 @@ Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogn
 Step completato? Procedi con → [Step 4 · Smart check-in](/onboarding/4-smart-checkin)
 
 <Tip>
-**▷ Prompt Claude Code — Monta l'agente Conduit**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Monta l'agente Conduit**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
@@ -125,7 +125,7 @@ provisionare qualsiasi cosa: (a) contratto "Servizio AI Ospiti" FIRMATO
 pagamento aggiunto dallo studente, area billing). Se manca ANCHE SOLO UNA delle
 due, FERMATI e dimmelo: NON attivare il workspace, nessuna eccezione. Solo a
 gate superato, procedi. Rispetta l'ordine: prima KB per-listing dal Notion
-(bridge, mai globale), poi custom tool — OGNUNO con la sua prompting skill —
+(bridge, mai globale), poi custom tool, OGNUNO con la sua prompting skill,
 poi workflow, poi telefonia/WABA. Verifica che la api_key Kross vera sia già
 nel Vault PRIMA di iniettare i tool. Poi controlla via MCP che le 4 skill core
 siano ATTACCATE al Guest Agent (skill_ids != 0) e che i nomi tool siano

@@ -4,7 +4,7 @@ sidebarTitle: "DB Apartments"
 description: "Campi obbligatori del database Apartments in Notion, come allinearlo al template Mattone e come verificare che il bridge sincronizzi correttamente."
 ---
 
-Il DB Apartments è il registro anagrafico degli appartamenti — è qui che lo studente inserisce e aggiorna tutte le informazioni sulle proprie strutture. Perché il bridge funzioni correttamente e generi voci KB accurate in Conduit, il database deve essere allineato al template Mattone: stessi nomi di campo, stessi tipi e, soprattutto, lo stesso `listing_id` presente in KrossBooking.
+Il DB Apartments è il registro anagrafico degli appartamenti, è qui che lo studente inserisce e aggiorna tutte le informazioni sulle proprie strutture. Perché il bridge funzioni correttamente e generi voci KB accurate in Conduit, il database deve essere allineato al template Mattone: stessi nomi di campo, stessi tipi e, soprattutto, lo stesso `listing_id` presente in KrossBooking.
 
 ## Campi obbligatori
 
@@ -14,7 +14,7 @@ Questi campi devono essere presenti nel DB Apartments con il tipo Notion corrett
 |---|---|---|
 | Nome | Title | Nome dell'appartamento (es. "Bilocale Navigli") |
 | Indirizzo | Text | Indirizzo completo con CAP e città |
-| listing_id | Number | ID univoco nel PMS (KrossBooking) — campo critico |
+| listing_id | Number | ID univoco nel PMS (KrossBooking), campo critico |
 | PMS | Select | KrossBooking / Hostaway / altro |
 | Smart Lock | Select | Nessuno / Shelly / SwitchBot |
 | Note accesso | Text | Istruzioni di accesso per l'ospite (codice, orari, ecc.) |

@@ -18,7 +18,7 @@ Prima di iniziare, assicurati che siano tutti soddisfatti:
 
 <Steps>
   <Step title="Genera il token Shelly Cloud">
-    Lo studente accede al portale Shelly Cloud (o all'app Shelly Smart Control), va in **Account → Impostazioni → API token** e clicca su **Genera nuovo token**. Copia il token generato — sarà visibile una sola volta.
+    Lo studente accede al portale Shelly Cloud (o all'app Shelly Smart Control), va in **Account → Impostazioni → API token** e clicca su **Genera nuovo token**. Copia il token generato, sarà visibile una sola volta.
   </Step>
   <Step title="Invia il token in modo sicuro al team Mattone">
     Lo studente invia il token al team Mattone tramite il canale sicuro concordato (mai via chat ordinaria, email non cifrata o documenti condivisi). Il team riceve anche il **Device ID** del device Shelly, visibile nelle impostazioni del device in Shelly Cloud.
@@ -38,7 +38,7 @@ Prima di iniziare, assicurati che siano tutti soddisfatti:
 </Steps>
 
 <Warning>
-  Salva le credenziali Shelly **solo nel Vault** — mai in messaggi, email, fogli di calcolo o documenti condivisi. Credenziali esposte consentono il controllo remoto del device a chiunque le possieda.
+  Salva le credenziali Shelly **solo nel Vault**, mai in messaggi, email, fogli di calcolo o documenti condivisi. Credenziali esposte consentono il controllo remoto del device a chiunque le possieda.
 </Warning>
 
 <Note>
@@ -56,18 +56,18 @@ Dopo il collegamento, controlla che tutto funzioni correttamente:
 - I log mostrano una **risposta di successo**, senza codici di errore
 
 <Tip>
-  Verifica che il relay Shelly attivi il circuito corretto — alcuni edifici hanno più relay sullo stesso citofono o più porte controllabili. Esegui sempre il primo test con una persona fisicamente presente all'immobile per confermare quale porta si apre.
+  Verifica che il relay Shelly attivi il circuito corretto, alcuni edifici hanno più relay sullo stesso citofono o più porte controllabili. Esegui sempre il primo test con una persona fisicamente presente all'immobile per confermare quale porta si apre.
 </Tip>
 
 <Tip>
-**▷ Prompt Claude Code — Aggiungi un device Shelly**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Aggiungi un device Shelly**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
 Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
-Per prima cosa apri il repo di check-in giusto — `~/Projects/cosmica-booking`
+Per prima cosa apri il repo di check-in giusto, `~/Projects/cosmica-booking`
 (baseline Cosmica: `src/lib/shelly.ts` + guest portal `/access/<slug>`) o il
-repo di check-in dello studente — e LEGGI la pagina mattone-docs
+repo di check-in dello studente, e LEGGI la pagina mattone-docs
 /integrazioni/shelly/collegamento. Poi procedi:
 
 Aggiungi un device Shelly per la proprietà [NOME/SLUG] seguendo mattone-docs

@@ -4,14 +4,14 @@ sidebarTitle: "Collegamento"
 description: "Come collegare SwitchBot Smart Lock a Mattone: recupero del token owner, Device ID, verifica Hub Mini e test di apertura remota con lettura dei log."
 ---
 
-Per abilitare l'apertura remota tramite SwitchBot, hai bisogno del token owner e del Device ID dall'account SwitchBot dello studente — segui questi passaggi nell'ordine esatto. Un errore nell'ordine o l'uso dell'account sbagliato causa il fallimento silenzioso dei comandi, spesso senza un messaggio di errore chiaro.
+Per abilitare l'apertura remota tramite SwitchBot, hai bisogno del token owner e del Device ID dall'account SwitchBot dello studente, segui questi passaggi nell'ordine esatto. Un errore nell'ordine o l'uso dell'account sbagliato causa il fallimento silenzioso dei comandi, spesso senza un messaggio di errore chiaro.
 
 ## Prerequisiti
 
 Prima di iniziare, verifica che siano tutti attivi:
 
-- **Hub Mini online** — LED frontale BLU fisso (non giallo, non rosso)
-- **Serratura entro ~5 metri dall'Hub Mini** — verifica la posizione fisica
+- **Hub Mini online**: LED frontale BLU fisso (non giallo, non rosso)
+- **Serratura entro ~5 metri dall'Hub Mini**: verifica la posizione fisica
 - **Cloud Service attivo** sulla serratura nell'app SwitchBot (Smart Lock → Cloud Service → attivo)
 
 ## Collegamento
@@ -27,7 +27,7 @@ Prima di iniziare, verifica che siano tutti attivi:
     Nell'app SwitchBot, vai su **Dispositivi**, seleziona la Smart Lock e annota il **Device ID** visibile nelle impostazioni del dispositivo (di solito una stringa alfanumerica maiuscola).
   </Step>
   <Step title="Verifica Hub Mini e Cloud Service">
-    Controlla che il LED dell'Hub Mini sia BLU fisso e che il Cloud Service sulla serratura sia attivo. Questi due controlli devono passare prima di procedere — altrimenti il test fallirà con errore 161.
+    Controlla che il LED dell'Hub Mini sia BLU fisso e che il Cloud Service sulla serratura sia attivo. Questi due controlli devono passare prima di procedere, altrimenti il test fallirà con errore 161.
   </Step>
   <Step title="Invia le credenziali in modo sicuro al team Mattone">
     Lo studente invia **Token + Client Secret + Device ID** al team Mattone tramite il canale sicuro concordato. Mai via email ordinaria, chat non cifrata o documenti condivisi.
@@ -39,16 +39,16 @@ Prima di iniziare, verifica che siano tutti attivi:
     Nella piattaforma Mattone, vai su **Devices → Aggiungi SwitchBot**. Inserisci il Token, il Client Secret e il Device ID, quindi salva la configurazione.
   </Step>
   <Step title="Test di apertura e lettura dei log">
-    Esegui un'apertura di test dalla piattaforma. **Leggi i log immediatamente dopo** — un errore 161 indica Hub Mini offline, non un problema di credenziali. Il log deve mostrare una risposta di successo senza codici di errore.
+    Esegui un'apertura di test dalla piattaforma. **Leggi i log immediatamente dopo**, un errore 161 indica Hub Mini offline, non un problema di credenziali. Il log deve mostrare una risposta di successo senza codici di errore.
   </Step>
 </Steps>
 
 <Warning>
-  Usa **SEMPRE** l'account OWNER della Home SwitchBot — l'account member non ha i permessi necessari per il controllo remoto tramite API. Un token generato da un account member non produrrà un errore esplicito in fase di configurazione, ma il comando di apertura fallirà silenziosamente.
+  Usa **SEMPRE** l'account OWNER della Home SwitchBot, l'account member non ha i permessi necessari per il controllo remoto tramite API. Un token generato da un account member non produrrà un errore esplicito in fase di configurazione, ma il comando di apertura fallirà silenziosamente.
 </Warning>
 
 <Warning>
-  Se il LED dell'Hub Mini non è BLU, il comando non raggiunge la serratura — qualunque test effettuato restituirà errore 161 (device offline). Verifica il LED e la connessione WiFi 2.4GHz **prima** di eseguire qualsiasi test.
+  Se il LED dell'Hub Mini non è BLU, il comando non raggiunge la serratura, qualunque test effettuato restituirà errore 161 (device offline). Verifica il LED e la connessione WiFi 2.4GHz **prima** di eseguire qualsiasi test.
 </Warning>
 
 ## Verifica
@@ -57,16 +57,16 @@ Dopo il collegamento, controlla che tutto funzioni:
 
 - Il device appare come **online** nel pannello Devices della piattaforma
 - Il test di apertura **sblocca fisicamente la serratura**
-- I log mostrano una **risposta di successo** — nessun errore 161, nessun 401
+- I log mostrano una **risposta di successo**, nessun errore 161, nessun 401
 
 <Tip>
-**▷ Prompt Claude Code — Collega una serratura SwitchBot**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Collega una serratura SwitchBot**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
 Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
-Per prima cosa apri il repo di check-in giusto — `~/Projects/cosmica-booking`
-(baseline Cosmica) o il repo di check-in dello studente — e, per il path Vault
+Per prima cosa apri il repo di check-in giusto, `~/Projects/cosmica-booking`
+(baseline Cosmica) o il repo di check-in dello studente, e, per il path Vault
 studenti, il gateway `~/Projects/mattone-mcp-gateway`; poi LEGGI la pagina
 mattone-docs /integrazioni/switchbot/collegamento. Poi procedi:
 

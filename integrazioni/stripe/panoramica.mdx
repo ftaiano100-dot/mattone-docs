@@ -1,5 +1,6 @@
 ---
-title: "Stripe — pagamenti dello studente"
+title: "Stripe: pagamenti dello studente"
+sidebarTitle: "Panoramica"
 description: "Restricted key a permessi minimi, collegamento nel Vault, e doppio uso: extra in chat Conduit + checkout del sito direct booking."
 ---
 
@@ -11,7 +12,7 @@ Si usa una **chiave a permessi minimi** (Restricted Key, `rk_live_…`), **non**
 
 - **Cosa deve poter fare**: creare **prodotti, prezzi e link di pagamento** (Products / Prices / Payment Links = Write). Nient'altro.
 - **Cosa NON deve poter fare**: rimborsi, leggere i **dati dei clienti**, toccare l'account. Tutto il resto = **None**.
-- La chiave sta cifrata nel Vault come `stripe_key_<student_token>` — mai nei repo, mai in chat.
+- La chiave sta cifrata nel Vault come `stripe_key_<student_token>`, mai nei repo, mai in chat.
 
 <Warning>Stripe è **opzionale/fallback**: si monta solo per chi vende extra a listino. Il pagamento di **prenotazioni/allunghi** va sul flusso **nativo del PMS** (online check-in), mai su Stripe autonomo. Se il nativo non incassa → escala a umano.</Warning>
 
@@ -38,7 +39,7 @@ Si usa una **chiave a permessi minimi** (Restricted Key, `rk_live_…`), **non**
 <Note>Fonti: `conduit-custom-tool/STRIPE-PAYMENT-LINK-attivazione-e-test.md`, memoria `reference_conduit_stripe_payments`. Attivazione step-by-step: [Onboarding · Pagamenti Stripe](/onboarding/5-pagamenti-stripe). Uso sul sito: [Direct Booking](/integrazioni/direct-booking/panoramica).</Note>
 
 <Tip>
-**▷ Prompt Claude Code — Collega Stripe**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Collega Stripe**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
@@ -51,7 +52,7 @@ Poi procedi:
 Aiutami a collegare Stripe per lo studente [NOME] seguendo mattone-docs
 /integrazioni/stripe/panoramica. Verifica prima se vende extra a listino (se no,
 non montarlo). Chiedimi la Restricted key (rk_live) a permessi minimi
-(Products/Prices/Payment Links = Write, resto None) — va nel Vault come
+(Products/Prices/Payment Links = Write, resto None), va nel Vault come
 stripe_key_<token>, mai in chat. Ordine tassativo: chiave nel Vault -> tool
 stripe -> skill payment-link-generator. Poi test T1 (link da 1.00), T2 (agente
 genera a "sì", escala se prezzo non a listino), T3 (causale corretta). Ricordami
@@ -64,4 +65,4 @@ che la stessa chiave serve anche al checkout del sito direct booking.
 </CardGroup>
 
 ## Fonti ufficiali
-- **Stripe** — doc ufficiale: https://docs.stripe.com (chiavi API: https://docs.stripe.com/keys · Payment Links: https://docs.stripe.com/payment-links)
+- **Stripe**: doc ufficiale: https://docs.stripe.com (chiavi API: https://docs.stripe.com/keys · Payment Links: https://docs.stripe.com/payment-links)

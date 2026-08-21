@@ -4,10 +4,10 @@ sidebarTitle: "Panoramica"
 description: "Panoramica dell'integrazione SwitchBot Smart Lock in Mattone: prerequisiti, differenze con Shelly e come abilitare l'apertura remota tramite Hub Mini."
 ---
 
-SwitchBot Smart Lock (Lock o Lock Pro) permette di aprire la porta da remoto tramite un link — richiede un Hub Mini per il controllo cloud ed è l'alternativa a Shelly per gli studenti che hanno già hardware SwitchBot installato. A differenza di Shelly, SwitchBot non comunica direttamente via WiFi: il comando passa dall'Hub Mini alla serratura tramite Bluetooth, e dall'Hub Mini al cloud tramite WiFi.
+SwitchBot Smart Lock (Lock o Lock Pro) permette di aprire la porta da remoto tramite un link, richiede un Hub Mini per il controllo cloud ed è l'alternativa a Shelly per gli studenti che hanno già hardware SwitchBot installato. A differenza di Shelly, SwitchBot non comunica direttamente via WiFi: il comando passa dall'Hub Mini alla serratura tramite Bluetooth, e dall'Hub Mini al cloud tramite WiFi.
 
 <Info>
-  **Alternativa già gestita — non la scelta di default.** Il device che raccomandiamo di base è **[Shelly](/integrazioni/shelly/panoramica)** (più semplice, un device = una riga, nessun hub, si aggiunge senza deploy). SwitchBot lo usiamo quando lo studente **ha già** quel brand installato: è pienamente supportato, ma richiede requisiti in più (**Hub Mini su WiFi 2.4GHz stabile**, LED blu fisso, account **owner** — vedi "Prerequisiti CRITICI" sotto; l'autenticazione all'API SwitchBot usa una **firma HMAC**, gestita dalla nostra integrazione). Marche diverse (Tuya/Aqara/Yale, ecc.) sono **caso per caso** e possono essere un **upsell a pagamento**.
+  **Alternativa già gestita, non la scelta di default.** Il device che raccomandiamo di base è **[Shelly](/integrazioni/shelly/panoramica)** (più semplice, un device = una riga, nessun hub, si aggiunge senza deploy). SwitchBot lo usiamo quando lo studente **ha già** quel brand installato: è pienamente supportato, ma richiede requisiti in più (**Hub Mini su WiFi 2.4GHz stabile**, LED blu fisso, account **owner**, vedi "Prerequisiti CRITICI" sotto; l'autenticazione all'API SwitchBot usa una **firma HMAC**, gestita dalla nostra integrazione). Marche diverse (Tuya/Aqara/Yale, ecc.) sono **caso per caso** e possono essere un **upsell a pagamento**.
 </Info>
 
 ## Prerequisiti CRITICI
@@ -15,10 +15,10 @@ SwitchBot Smart Lock (Lock o Lock Pro) permette di aprire la porta da remoto tra
 <Warning>
   Prima di procedere con qualsiasi configurazione o test, verifica che **tutti** questi prerequisiti siano soddisfatti:
 
-  - **Hub Mini su WiFi 2.4GHz** — il LED frontale deve essere **BLU fisso** (= connesso al cloud). Un LED giallo o rosso indica che l'Hub è offline.
-  - **Serratura entro ~5 metri dall'Hub Mini** — la comunicazione avviene via Bluetooth; distanze maggiori o muri spessi possono interrompere il segnale.
-  - **Token dall'account OWNER della Home** — l'account member non ha i permessi necessari per il controllo remoto tramite API.
-  - **Cloud Service attivo sulla serratura** — verifica nell'app SwitchBot: Smart Lock → Cloud Service → deve essere attivato.
+  - **Hub Mini su WiFi 2.4GHz**: il LED frontale deve essere **BLU fisso** (= connesso al cloud). Un LED giallo o rosso indica che l'Hub è offline.
+  - **Serratura entro ~5 metri dall'Hub Mini**: la comunicazione avviene via Bluetooth; distanze maggiori o muri spessi possono interrompere il segnale.
+  - **Token dall'account OWNER della Home**: l'account member non ha i permessi necessari per il controllo remoto tramite API.
+  - **Cloud Service attivo sulla serratura**: verifica nell'app SwitchBot: Smart Lock → Cloud Service → deve essere attivato.
 </Warning>
 
 <CardGroup cols={2}>
@@ -42,8 +42,8 @@ Scegli SwitchBot se lo studente ha già l'hardware SwitchBot installato e non vu
 | Ideale per | Chi ha già SwitchBot | Nuove installazioni |
 
 <Note>
-  Il LED dell'Hub Mini **deve essere BLU** — un LED giallo o rosso indica che l'Hub è offline e nessun comando raggiunge la serratura. Controlla sempre il LED prima di eseguire test o segnalare un'anomalia.
+  Il LED dell'Hub Mini **deve essere BLU**, un LED giallo o rosso indica che l'Hub è offline e nessun comando raggiunge la serratura. Controlla sempre il LED prima di eseguire test o segnalare un'anomalia.
 </Note>
 
 ## Fonti ufficiali
-- **SwitchBot API** — doc ufficiale: https://github.com/OpenWonderLabs/SwitchBotAPI
+- **SwitchBot API**: doc ufficiale: https://github.com/OpenWonderLabs/SwitchBotAPI

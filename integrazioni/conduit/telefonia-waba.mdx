@@ -4,9 +4,9 @@ sidebarTitle: "Telefonia & WABA"
 description: "Attiva telefonia VoiceAI e WhatsApp Business su Conduit: tracce disponibili, tempistiche di ~1 settimana, prerequisiti WABA e warm transfer allo studente."
 ---
 
-Conduit può comunicare con gli ospiti via telefono (agente VoiceAI) e via WhatsApp Business (WABA) — questi sono i canali attraverso cui l'AI risponde, invia reminder e gestisce le escalation. Telefonia e WABA sono due tracce di configurazione separate, indipendenti dal resto del workspace (KB, tool, workflow) e richiedono circa una settimana di attivazione tramite il supporto Conduit. Pianifica questi passaggi nelle prime due settimane di onboarding: il workspace deve essere già pronto quando il canale viene attivato.
+Conduit può comunicare con gli ospiti via telefono (agente VoiceAI) e via WhatsApp Business (WABA), questi sono i canali attraverso cui l'AI risponde, invia reminder e gestisce le escalation. Telefonia e WABA sono due tracce di configurazione separate, indipendenti dal resto del workspace (KB, tool, workflow) e richiedono circa una settimana di attivazione tramite il supporto Conduit. Pianifica questi passaggi nelle prime due settimane di onboarding: il workspace deve essere già pronto quando il canale viene attivato.
 
-## Il numero di telefono — come funziona (dubbi frequenti)
+## Il numero di telefono, come funziona (dubbi frequenti)
 
 Il numero è la parte che genera più domande in onboarding. In breve: **un solo numero fisso italiano dedicato, richiesto a Conduit (la richiesta parte dallo studente col prefisso della sua città, la pratica la segue il team Mattone), che serve sia per WhatsApp sia per le chiamate.** Non serve comprare una SIM.
 
@@ -15,11 +15,11 @@ Il numero è la parte che genera più domande in onboarding. In breve: **un solo
   - **Lo studente** → **avvia la richiesta** del numero fornendo il **prefisso della propria città** (numero italiano dedicato). **Non contatta Conduit direttamente.**
   - **Il team Mattone** → **sottomette e segue la pratica** con Conduit support fino all'attivazione: richiesta del numero, registrazione **WhatsApp Business API con Meta** e **collegamento al Business Manager Facebook**.
 
-  Quindi: la richiesta **parte dallo studente** (dà il prefisso città), ma la pratica con Conduit e l'aggancio a Meta **li gestiamo noi per lui** — lo studente non scrive a Conduit.
+  Quindi: la richiesta **parte dallo studente** (dà il prefisso città), ma la pratica con Conduit e l'aggancio a Meta **li gestiamo noi per lui**, lo studente non scrive a Conduit.
 </Info>
 
 <Note>
-  **Come funziona la pratica (dettaglio team).** La richiesta del numero si **sottomette a Conduit support**: si riceve una conferma con un **Case Number** e i tempi sono di **~5 giorni lavorativi**. Il numero è **provisionato via Twilio** dentro il workspace Conduit — è questo il "numero backend" con **forwarding** verso il numero italiano guest-facing (vedi il dettaglio tecnico più sotto). I workspace di uno stesso studente/azienda vanno **allineati sotto lo stesso subaccount** per poter acquistare e associare il numero. La pratica la segue il **team Mattone**; lo studente non interagisce con Conduit support.
+  **Come funziona la pratica (dettaglio team).** La richiesta del numero si **sottomette a Conduit support**: si riceve una conferma con un **Case Number** e i tempi sono di **~5 giorni lavorativi**. Il numero è **provisionato via Twilio** dentro il workspace Conduit, è questo il "numero backend" con **forwarding** verso il numero italiano guest-facing (vedi il dettaglio tecnico più sotto). I workspace di uno stesso studente/azienda vanno **allineati sotto lo stesso subaccount** per poter acquistare e associare il numero. La pratica la segue il **team Mattone**; lo studente non interagisce con Conduit support.
 </Note>
 
 <AccordionGroup>
@@ -29,7 +29,7 @@ Il numero è la parte che genera più domande in onboarding. In breve: **un solo
   <Accordion title="Devo comprarmi una SIM/eSIM (TIM, Fastweb…)?">
     **No.** Il numero si **richiede a Conduit**: lo studente **avvia la richiesta** dando il **prefisso della sua città**, e il **team Mattone** sottomette e segue la pratica. È un numero dedicato al servizio: non serve una SIM fisica né un abbonamento operatore.
   </Accordion>
-  <Accordion title="Facebook mi propone un numero WhatsApp virtuale — uso quello?">
+  <Accordion title="Facebook mi propone un numero WhatsApp virtuale, uso quello?">
     **No, non il fai-da-te di Facebook.** Il percorso corretto è: numero **dal portale Conduit** → **registrazione per WhatsApp Business API (WABA)** con Meta → **collegamento a un Business Manager Facebook** (meglio nuovo). La registrazione WABA la facciamo **con il supporto del team Mattone** (vedi "Chi gestisce il collegamento").
   </Accordion>
   <Accordion title="Lo stesso numero vale per WhatsApp, chiamate e annunci OTA?">
@@ -40,7 +40,7 @@ Il numero è la parte che genera più domande in onboarding. In breve: **un solo
 **Il flusso in ordine:** lo **studente avvia la richiesta** del numero (prefisso città) → il **team Mattone la sottomette a Conduit support** (conferma con **Case Number**, **~5 giorni lavorativi**; numero provisionato via **Twilio** nel workspace) → poi il team segue la **registrazione WABA** con Meta e il **collegamento a un Business Manager Facebook** (meglio nuovo). Da lì WhatsApp e chiamate passano dall'agente.
 
 <Info>
-  **Cosa dire allo studente — come richiedere il numero**
+  **Cosa dire allo studente, come richiedere il numero**
 
   Passa allo studente questi passi, plain (l'attivazione richiede **circa 1 settimana**, quindi si parte subito):
 
@@ -56,7 +56,7 @@ Il numero è la parte che genera più domande in onboarding. In breve: **un solo
 </Info>
 
 <Note>
-  **Dettaglio tecnico (team).** L'agente VoiceAI di Conduit può girare su un **numero di backend Conduit (anche USA)** con **forwarding dal numero italiano**: è normale e **standard** (anche il setup Soliséra funziona così). Ciò che l'ospite vede e chiama — e ciò che va sugli annunci OTA — resta il **numero italiano**. Quindi un numero backend +1 nella configurazione dell'agente **non è un problema**.
+  **Dettaglio tecnico (team).** L'agente VoiceAI di Conduit può girare su un **numero di backend Conduit (anche USA)** con **forwarding dal numero italiano**: è normale e **standard** (anche il setup Soliséra funziona così). Ciò che l'ospite vede e chiama, e ciò che va sugli annunci OTA, resta il **numero italiano**. Quindi un numero backend +1 nella configurazione dell'agente **non è un problema**.
 </Note>
 
 ## Tracce disponibili
@@ -85,9 +85,9 @@ Senza WABA, le notifiche automatiche non possono essere inviate via WhatsApp: le
 
 ## Tempistiche
 
-Il tempo di attivazione per il numero telefonico è di **~5 giorni lavorativi** dalla sottomissione della richiesta a Conduit support (che risponde con un **Case Number**) — in pratica **circa 1 settimana**. I tempi possono variare a seconda del carico del supporto e della rapidità dello studente nel fornire i documenti richiesti per Meta (vedi Prerequisiti WABA).
+Il tempo di attivazione per il numero telefonico è di **~5 giorni lavorativi** dalla sottomissione della richiesta a Conduit support (che risponde con un **Case Number**), in pratica **circa 1 settimana**. I tempi possono variare a seconda del carico del supporto e della rapidità dello studente nel fornire i documenti richiesti per Meta (vedi Prerequisiti WABA).
 
-Pianifica la richiesta appena completata la configurazione del workspace (KB, tool, workflow) — non aspettare l'ultimo momento. Se il canale non è attivo all'avvio operativo, lo studente dovrà gestire le comunicazioni manualmente nel frattempo.
+Pianifica la richiesta appena completata la configurazione del workspace (KB, tool, workflow), non aspettare l'ultimo momento. Se il canale non è attivo all'avvio operativo, lo studente dovrà gestire le comunicazioni manualmente nel frattempo.
 
 ## Warm transfer (telefonia)
 
@@ -117,5 +117,5 @@ Prima di avviare la richiesta di attivazione WABA, verifica che lo studente abbi
 - **Documento di identità aziendale**: richiesto da Meta per la verifica del Business Manager. Tipicamente: visura camerale o altro documento di identità dell'attività.
 
 <Note>
-  Senza WABA attivo, le notifiche automatiche — reminder check-in non completato, conferma late check-out, escalation — non possono essere inviate via WhatsApp. L'agente può rispondere ai messaggi in arrivo, ma non può avviare conversazioni proattive. Pianifica l'attivazione WABA nelle prime due settimane di onboarding per evitare di perdere questi flussi nei primi giorni operativi.
+  Senza WABA attivo, le notifiche automatiche, reminder check-in non completato, conferma late check-out, escalation, non possono essere inviate via WhatsApp. L'agente può rispondere ai messaggi in arrivo, ma non può avviare conversazioni proattive. Pianifica l'attivazione WABA nelle prime due settimane di onboarding per evitare di perdere questi flussi nei primi giorni operativi.
 </Note>

@@ -4,25 +4,25 @@ sidebarTitle: "Troubleshooting"
 description: "Come risolvere l'errore 161 di SwitchBot e altri problemi comuni: Hub Mini offline, account member, Cloud Service disabilitato e serratura fuori portata."
 ---
 
-Il problema più frequente con SwitchBot è il codice errore 161 (device offline) — che viene spesso scambiato per un problema di batteria scarica. Prima di sostituire le batterie o modificare qualsiasi configurazione, leggi sempre i log: il codice di errore esatto ti dice subito dove si trova il problema reale.
+Il problema più frequente con SwitchBot è il codice errore 161 (device offline), che viene spesso scambiato per un problema di batteria scarica. Prima di sostituire le batterie o modificare qualsiasi configurazione, leggi sempre i log: il codice di errore esatto ti dice subito dove si trova il problema reale.
 
 ## Caso reale: SwitchBot 161 (20/08)
 
 <Warning>
   **Esempio da un caso reale del team Mattone.**
 
-  L'app SwitchBot mostrava la serratura come "scarica". I log della piattaforma mostravano codice **161 (device offline)**. Il problema era l'Hub Mini offline — non la batteria scarica.
+  L'app SwitchBot mostrava la serratura come "scarica". I log della piattaforma mostravano codice **161 (device offline)**. Il problema era l'Hub Mini offline, non la batteria scarica.
 
   Senza i log avremmo cambiato le batterie a vuoto, senza risolvere nulla. La connessione dell'Hub Mini al WiFi 2.4GHz era caduta; riavviando l'Hub Mini il problema si è risolto in meno di due minuti.
 
-  **Log prima di tutto — sempre.**
+  **Log prima di tutto, sempre.**
 </Warning>
 
 ## Tabella sintomi, cause e soluzioni
 
 | Sintomo | Causa probabile | Soluzione |
 |---|---|---|
-| Errore 161 (device offline) | Hub Mini offline — ha perso la connessione WiFi | Verifica il LED dell'Hub Mini (deve essere BLU fisso); riavvia l'Hub Mini; verifica che il WiFi 2.4GHz sia disponibile e stabile |
+| Errore 161 (device offline) | Hub Mini offline, ha perso la connessione WiFi | Verifica il LED dell'Hub Mini (deve essere BLU fisso); riavvia l'Hub Mini; verifica che il WiFi 2.4GHz sia disponibile e stabile |
 | Non apre ma nessun errore esplicito | Account member invece di owner usato per il token | Chiedi allo studente di generare un nuovo token dall'account OWNER della Home SwitchBot; aggiorna il Vault |
 | Token non valido (errore 401) | Token rigenerato dallo studente o Developer Mode disabilitata | Chiedi allo studente di riabilitare Developer Mode e rigenerare il token; aggiorna il Vault con il nuovo token |
 | Cloud Service non attivo | Cloud Service disabilitato nell'app SwitchBot | App SwitchBot → Smart Lock → Cloud Service → Attiva; attendi 1–2 minuti e ritesta |
@@ -30,17 +30,17 @@ Il problema più frequente con SwitchBot è il codice errore 161 (device offline
 | Serratura non risponde ai comandi (Hub online) | Serratura fisicamente fuori portata Bluetooth (>5m) dall'Hub Mini | Avvicina l'Hub Mini alla serratura; verifica che non ci siano muri spessi o ostacoli tra Hub e serratura |
 
 <Tip>
-  Per diagnosticare rapidamente senza aprire i log della piattaforma, usa il tool `check-device-status` da Conduit — restituisce il codice risposta esatto della serratura in tempo reale, permettendoti di distinguere subito tra Hub offline (161), token non valido (401) e Cloud Service disabilitato.
+  Per diagnosticare rapidamente senza aprire i log della piattaforma, usa il tool `check-device-status` da Conduit, restituisce il codice risposta esatto della serratura in tempo reale, permettendoti di distinguere subito tra Hub offline (161), token non valido (401) e Cloud Service disabilitato.
 </Tip>
 
 <Tip>
-**▷ Prompt Claude Code — Debug SwitchBot (161)**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Debug SwitchBot (161)**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
 Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
-Per prima cosa apri il repo di check-in giusto — `~/Projects/cosmica-booking`
-(baseline) o il repo di check-in dello studente — e LEGGI le pagine mattone-docs
+Per prima cosa apri il repo di check-in giusto, `~/Projects/cosmica-booking`
+(baseline) o il repo di check-in dello studente, e LEGGI le pagine mattone-docs
 /troubleshooting/metodo e /integrazioni/switchbot/troubleshooting. Poi procedi:
 
 Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema
@@ -48,7 +48,7 @@ SwitchBot: [DESCRIVI IL SINTOMO, es. "non apre dal link, rawStatus 161" per
 [SLUG]]. LEGGI rawStatus prima di concludere e mappa il codice (161 offline,
 171 hub offline, 190 re-sync, 401 token). Per il 161 isola in ordine: (1) il
 Token è dell'account OWNER o di un MEMBER? (2) range Hub-lock, (3) Cloud Service
-off. Usa il test simultaneo: il cliente apre da remoto mentre provi l'API —
+off. Usa il test simultaneo: il cliente apre da remoto mentre provi l'API,
 apre lui + tu 161 => problema owner/member. Proponi il fix e aggiorna la
 tabella se lo scenario è nuovo.
 ```

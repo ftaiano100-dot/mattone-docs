@@ -4,7 +4,7 @@ sidebarTitle: "Troubleshooting"
 description: "Tabella sintomo-causa-soluzione per diagnosticare i problemi più comuni dell'integrazione Notion: OAuth revocato, listing_id errati e webhook inattivi."
 ---
 
-Usa questa guida per diagnosticare i problemi dell'integrazione Notion. I casi più frequenti sono la connessione OAuth revocata o scaduta e il disallineamento del `listing_id` tra il DB Notion e KrossBooking — due situazioni che bloccano la sincronizzazione in modo silenzioso, senza errori evidenti.
+Usa questa guida per diagnosticare i problemi dell'integrazione Notion. I casi più frequenti sono la connessione OAuth revocata o scaduta e il disallineamento del `listing_id` tra il DB Notion e KrossBooking, due situazioni che bloccano la sincronizzazione in modo silenzioso, senza errori evidenti.
 
 ## Tabella di diagnosi
 
@@ -30,7 +30,7 @@ Usa questa guida per diagnosticare i problemi dell'integrazione Notion. I casi p
 </Accordion>
 
 <Accordion title="Come identificare un listing_id errato">
-  Un `listing_id` sbagliato non produce errori evidenti — il bridge sincronizza comunque, ma con lo scope errato. I sintomi sono: Conduit risponde con le informazioni dell'appartamento A quando dovrebbe rispondere su B, oppure le cartelle KB appaiono vuote.
+  Un `listing_id` sbagliato non produce errori evidenti, il bridge sincronizza comunque, ma con lo scope errato. I sintomi sono: Conduit risponde con le informazioni dell'appartamento A quando dovrebbe rispondere su B, oppure le cartelle KB appaiono vuote.
 
   Per verificare:
   1. Apri **KrossBooking → Strutture** e nota l'ID nell'URL di ogni appartamento.
@@ -53,7 +53,7 @@ Usa questa guida per diagnosticare i problemi dell'integrazione Notion. I casi p
 </Tip>
 
 <Tip>
-**▷ Prompt Claude Code — Debug Notion / bridge**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Debug Notion / bridge**  ·  incolla in Claude Code:
 </Tip>
 
 ```text

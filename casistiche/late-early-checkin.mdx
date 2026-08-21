@@ -13,19 +13,19 @@ Il flusso si attiva ogni volta che un ospite invia via WhatsApp o chat una richi
 - **Late check-out**: vuole lasciare l'appartamento più tardi del previsto (es. alle 13:00 invece delle 11:00)
 - **Early check-in**: vuole entrare prima dell'orario standard (es. alle 12:00 invece delle 15:00)
 
-Conduit intercetta queste richieste grazie alle sue skill di comprensione del linguaggio naturale: non è necessario che l'ospite usi termini tecnici — anche una frase come "posso restare un po' di più?" viene riconosciuta correttamente.
+Conduit intercetta queste richieste grazie alle sue skill di comprensione del linguaggio naturale: non è necessario che l'ospite usi termini tecnici, anche una frase come "posso restare un po' di più?" viene riconosciuta correttamente.
 
 ## Cosa fa il sistema (in ordine)
 
 Il flusso automatico si sviluppa in quattro passaggi sequenziali:
 
-1. **Verifica disponibilità** — Conduit chiama il tool `check-availability` per controllare se tra il check-out dell'ospite attuale e il prossimo check-in c'è una finestra libera sufficiente (es. almeno 2 ore per il late check-out).
-2. **Recupero tariffa** — Se lo slot è libero, Conduit consulta la KB del listino dello studente (filtrata per `listing_id`) per trovare la tariffa applicabile al servizio richiesto.
-3. **Generazione link Stripe** — Conduit usa il tool `stripe-payment-link` per creare un link di pagamento con l'importo corretto e lo invia all'ospite direttamente in chat.
-4. **Notifica al team pulizie** — Alla conferma del pagamento (o in alcuni flussi subito dopo la generazione del link), Conduit attiva il workflow configurato e invia un messaggio al canale Slack del team pulizie tramite `SEND_SLACK_MESSAGE`, avvisandoli del nuovo orario.
+1. **Verifica disponibilità**: Conduit chiama il tool `check-availability` per controllare se tra il check-out dell'ospite attuale e il prossimo check-in c'è una finestra libera sufficiente (es. almeno 2 ore per il late check-out).
+2. **Recupero tariffa**: Se lo slot è libero, Conduit consulta la KB del listino dello studente (filtrata per `listing_id`) per trovare la tariffa applicabile al servizio richiesto.
+3. **Generazione link Stripe**: Conduit usa il tool `stripe-payment-link` per creare un link di pagamento con l'importo corretto e lo invia all'ospite direttamente in chat.
+4. **Notifica al team pulizie**: Alla conferma del pagamento (o in alcuni flussi subito dopo la generazione del link), Conduit attiva il workflow configurato e invia un messaggio al canale Slack del team pulizie tramite `SEND_SLACK_MESSAGE`, avvisandoli del nuovo orario.
 
 <Note>
-Il passaggio 4 — la notifica al team pulizie — è condizionato alla corretta configurazione del workflow. Se il workflow non è attivo o il canale Slack non è impostato, il pagamento viene incassato ma il team non viene avvisato. Controlla sempre questa parte durante l'onboarding di un nuovo studente.
+Il passaggio 4, la notifica al team pulizie, è condizionato alla corretta configurazione del workflow. Se il workflow non è attivo o il canale Slack non è impostato, il pagamento viene incassato ma il team non viene avvisato. Controlla sempre questa parte durante l'onboarding di un nuovo studente.
 </Note>
 
 ## Quando interviene il team
@@ -37,7 +37,7 @@ Se il flusso automatico si inceppa, segui questi passaggi nell'ordine in cui si 
     Il tool `check-availability` potrebbe essere assente o privo della skill associata. Vai nella configurazione di Conduit per quell'agente, verifica che il tool sia presente nell'elenco degli strumenti abilitati e che la skill corrispondente sia attiva. Controlla anche che il `listing_id` usato dal tool sia quello corretto per quell'appartamento.
   </Step>
   <Step title="Conduit fornisce una tariffa errata">
-    La KB del listino potrebbe essere obsoleta o non correttamente scopata al `listing_id` del listing. Accedi alla KB dello studente, verifica che il documento del listino sia aggiornato con le tariffe correnti e che sia taggato con il `listing_id` giusto — una KB globale senza scope rischia di restituire prezzi di un altro appartamento.
+    La KB del listino potrebbe essere obsoleta o non correttamente scopata al `listing_id` del listing. Accedi alla KB dello studente, verifica che il documento del listino sia aggiornato con le tariffe correnti e che sia taggato con il `listing_id` giusto, una KB globale senza scope rischia di restituire prezzi di un altro appartamento.
   </Step>
   <Step title="L'ospite ha pagato ma il team pulizie non è stato notificato">
     Il workflow di notifica potrebbe essere disattivo o mal configurato. Verifica che il workflow "late check-out / early check-in notification" sia in stato attivo, che il canale Slack di destinazione esista e che il bot Mattone abbia i permessi per scriverci. Se necessario, invia manualmente la notifica al team pulizie e poi correggi la configurazione per evitare che si ripeta.
@@ -65,7 +65,7 @@ Se lo slot è oggettivamente libero (nessun check-in o check-out nelle ore adiac
 </Tip>
 
 <Tip>
-**▷ Prompt Claude Code — Late/Early check-in autonomo**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Late/Early check-in autonomo**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
@@ -86,6 +86,6 @@ Testa: slot libero -> link+notifica; slot occupato -> escala.
 ```
 
 <CardGroup cols={2}>
-  <Card title="Conduit — Workflow" icon="arrow-up-right-from-square" href="/integrazioni/conduit/workflow">Schema e step del flusso</Card>
+  <Card title="Conduit, Workflow" icon="arrow-up-right-from-square" href="/integrazioni/conduit/workflow">Schema e step del flusso</Card>
   <Card title="Guardrail (eccezione-listino)" icon="arrow-up-right-from-square" href="/integrazioni/conduit/guardrail">Come autorizzare la vendita</Card>
 </CardGroup>

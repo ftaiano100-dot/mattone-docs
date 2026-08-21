@@ -12,10 +12,10 @@ Per ogni studente collegato, la piattaforma legge periodicamente i seguenti camp
 
 | Campo GHL | Cosa rappresenta | Usato per |
 |---|---|---|
-| **Contact source** | Il canale o la campagna da cui proviene il lead (es. Facebook Ads, Google Ads, organico) | Attribuzione ROAS — collega ogni lead alla campagna che lo ha generato |
-| **Opportunity value** | Il valore stimato o effettivo del contratto associato al lead nella pipeline GHL | Calcolo del CAC — rappresenta il ricavo potenziale o realizzato per deal |
-| **Pipeline stage** | La fase del funnel in cui si trova il lead (es. Nuovo lead, In trattativa, Cliente chiuso) | Conversion tracking — traccia la progressione dal primo contatto alla chiusura |
-| **Campaign ID** | L'identificativo della campagna pubblicitaria di provenienza del lead | Ad spend attribution — collega il lead alla spesa della campagna corrispondente |
+| **Contact source** | Il canale o la campagna da cui proviene il lead (es. Facebook Ads, Google Ads, organico) | Attribuzione ROAS, collega ogni lead alla campagna che lo ha generato |
+| **Opportunity value** | Il valore stimato o effettivo del contratto associato al lead nella pipeline GHL | Calcolo del CAC, rappresenta il ricavo potenziale o realizzato per deal |
+| **Pipeline stage** | La fase del funnel in cui si trova il lead (es. Nuovo lead, In trattativa, Cliente chiuso) | Conversion tracking, traccia la progressione dal primo contatto alla chiusura |
+| **Campaign ID** | L'identificativo della campagna pubblicitaria di provenienza del lead | Ad spend attribution, collega il lead alla spesa della campagna corrispondente |
 
 ## Come vengono usati
 
@@ -46,5 +46,5 @@ Il **valore opportunità** che alimenta ROAS/CAC può essere:
 La **spesa** pubblicitaria la inserisce il CSM (GHL non la conosce): senza spesa inserita, CPL/CPA/ROAS/CAC restano vuoti.
 
 <Note>
-  I dati GHL si aggiornano **ogni ora** tramite polling dell'API. Se un valore nella dashboard sembra errato o non aggiornato, attendi un ciclo completo di aggiornamento (massimo 60 minuti) prima di escalare. Se dopo un'ora il dato è ancora errato, verifica prima che l'Opportunity value sia compilato correttamente nel CRM GHL dello studente — un valore vuoto o zero produce ROAS e CAC non significativi.
+  I dati GHL si aggiornano **ogni ora** tramite polling dell'API. Se un valore nella dashboard sembra errato o non aggiornato, attendi un ciclo completo di aggiornamento (massimo 60 minuti) prima di escalare. Se dopo un'ora il dato è ancora errato, verifica prima che l'Opportunity value sia compilato correttamente nel CRM GHL dello studente, un valore vuoto o zero produce ROAS e CAC non significativi.
 </Note>

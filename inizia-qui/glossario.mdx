@@ -17,11 +17,11 @@ Questi termini compaiono in ogni sezione di Mattone Docs. Conoscerli evita confu
 | **Skill** | Le istruzioni che dicono all'agente quando e come usare un tool. Senza skill il tool viene ignorato dall'agente o innesca un comportamento nativo inaffidabile. |
 | **Guardrail** | Una regola "non fare mai X" imposta sull'agente. Limita i comportamenti indesiderati indipendentemente da ciò che chiede l'ospite. |
 | **Hub Mini** | La scatoletta SwitchBot che collega fisicamente la serratura al cloud tramite WiFi. Senza Hub Mini online la porta non risponde ai comandi remoti. |
-| **WABA** | WhatsApp Business Account — il numero ufficiale da cui l'agente Conduit scrive agli ospiti. Un numero dedicato per studente. |
+| **WABA** | WhatsApp Business Account, il numero ufficiale da cui l'agente Conduit scrive agli ospiti. Un numero dedicato per studente. |
 | **MCP** | Il ponte (Model Context Protocol) con cui Conduit chiama i tool Mattone. Consente all'agente di invocare azioni esterne in modo strutturato. |
-| **Gateway** | `mcp.mattone.co` — il punto di ingresso unico che smista le chiamate degli agenti studenti verso i servizi corretti (KrossBooking, Shelly, Stripe, ecc.). |
+| **Gateway** | `mcp.mattone.co`, il punto di ingresso unico che smista le chiamate degli agenti studenti verso i servizi corretti (KrossBooking, Shelly, Stripe, ecc.). |
 | **Vault** | Il magazzino cifrato dove sono conservate tutte le credenziali dei clienti. Le chiavi API non vanno mai nei repo né nelle chat: sempre e solo nel Vault. |
-| **Repo** | Abbreviazione di *repository*: una cartella di codice e documenti su **GitHub** dove il team tiene e aggiorna le cose — es. `mattone-docs` (questi docs), la piattaforma, il gateway. Le modifiche vanno online con un `git push`. |
+| **Repo** | Abbreviazione di *repository*: una cartella di codice e documenti su **GitHub** dove il team tiene e aggiorna le cose, es. `mattone-docs` (questi docs), la piattaforma, il gateway. Le modifiche vanno online con un `git push`. |
 | **Le 3 credenziali Kross** | I 3 dati per leggere i dati Kross di un cliente: **hotel_id** (quale struttura/account), **username** (`api…`, l'utente tecnico), **password** (la sua password). Vanno sempre insieme alla **api_key** (la chiave che autorizza a parlare con Kross: nostra **generica** per i partner, **propria** per gli "own"). |
 | **Provision** | Il bottone/azione della Piattaforma che monta gli **strumenti dell'assistente** (+ le loro istruzioni/skill) nello spazio Conduit di uno studente. |
 | **Restricted Key** | Chiave Stripe **a permessi minimi**: può creare prodotti/prezzi/link di pagamento, ma **non** fare rimborsi né leggere i dati dei clienti. Si usa questa, mai la Secret Key. |

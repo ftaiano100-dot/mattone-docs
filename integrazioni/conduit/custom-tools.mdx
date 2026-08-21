@@ -4,7 +4,7 @@ sidebarTitle: "Custom Tools"
 description: "Catalogo e configurazione dei custom tool Conduit: Kross, Smart Lock e Stripe. Come verificare che tool e skill abbinata funzionino insieme correttamente."
 ---
 
-Un custom tool è un'azione concreta che l'agente Conduit può eseguire su richiesta dell'ospite: aprire una porta, generare un link di pagamento, verificare la disponibilità per certe date. I tool vengono provisionati dal team Mattone sul workspace dello studente — lo studente non li configura da solo. Il principio fondamentale da ricordare è che ogni tool deve avere la sua skill di prompting abbinata: senza di essa, l'agente non sa né quando né come usare il tool.
+Un custom tool è un'azione concreta che l'agente Conduit può eseguire su richiesta dell'ospite: aprire una porta, generare un link di pagamento, verificare la disponibilità per certe date. I tool vengono provisionati dal team Mattone sul workspace dello studente, lo studente non li configura da solo. Il principio fondamentale da ricordare è che ogni tool deve avere la sua skill di prompting abbinata: senza di essa, l'agente non sa né quando né come usare il tool.
 
 ## Regola d'oro: tool + skill sempre insieme
 
@@ -58,13 +58,13 @@ Dopo aver montato un tool, esegui sempre questa verifica prima di dichiarare l'o
     Apri il workspace Conduit dello studente e vai nella sezione Tools. Controlla che il tool appena montato sia presente nell'elenco e risulti abilitato. Se non compare, il provisioning non è andato a buon fine: ripeti l'operazione dal catalogo.
   </Step>
   <Step title="Verifica che la skill abbinata esista e sia attiva">
-    Vai nella sezione Skills del workspace. Cerca la skill corrispondente al tool (vedi tabella sopra). Verifica che sia in stato **attivo** — una skill salvata ma disabilitata ha lo stesso effetto di una skill assente: il tool viene ignorato.
+    Vai nella sezione Skills del workspace. Cerca la skill corrispondente al tool (vedi tabella sopra). Verifica che sia in stato **attivo**, una skill salvata ma disabilitata ha lo stesso effetto di una skill assente: il tool viene ignorato.
   </Step>
   <Step title="Testa con un messaggio ospite realistico">
-    Apri una conversazione di test nel workspace e invia un messaggio che dovrebbe attivare il tool. Per esempio, per `open-door` invia "Puoi aprire la porta?"; per `stripe-payment-link` invia "Vorrei fare il late check-out, quanto costa?". Usa un linguaggio naturale, non comandi tecnici — così validi che la skill funziona nelle condizioni reali.
+    Apri una conversazione di test nel workspace e invia un messaggio che dovrebbe attivare il tool. Per esempio, per `open-door` invia "Puoi aprire la porta?"; per `stripe-payment-link` invia "Vorrei fare il late check-out, quanto costa?". Usa un linguaggio naturale, non comandi tecnici, così validi che la skill funziona nelle condizioni reali.
   </Step>
   <Step title="Controlla i log per confermare che il tool sia stato chiamato">
-    Dopo il test, apri i log della conversazione e verifica che il tool sia stato chiamato esplicitamente (vedrai il nome del tool e i parametri passati). Se nei log compare il path nativo invece del tool — o se l'agente risponde genericamente senza chiamare il tool — la skill non sta funzionando: ricontrolla la formulazione e lo stato di attivazione.
+    Dopo il test, apri i log della conversazione e verifica che il tool sia stato chiamato esplicitamente (vedrai il nome del tool e i parametri passati). Se nei log compare il path nativo invece del tool, o se l'agente risponde genericamente senza chiamare il tool, la skill non sta funzionando: ricontrolla la formulazione e lo stato di attivazione.
   </Step>
 </Steps>
 

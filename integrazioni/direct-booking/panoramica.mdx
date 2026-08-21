@@ -1,13 +1,31 @@
 ---
-title: "Sito Direct Booking — come si crea"
+title: "Sito Direct Booking: come si crea"
+sidebarTitle: "Direct Booking"
 description: "Come si costruisce il sito di prenotazione diretta di uno studente: fork del template canonico, stack, PMS, pagamenti, deploy, dominio."
 ---
 
 
 Il **sito di prenotazione diretta** è il sito con cui lo studente vende senza OTA (niente commissioni Airbnb/Booking). Non si parte da zero: si **forka il template canonico** e si personalizza.
 
+## Quando si dà allo studente
+Il sito direct booking **non fa parte dell'onboarding base**: è un **modulo aggiuntivo** che si attiva per lo studente che vuole vendere in diretta. Si affronta **dopo** che le fondamenta sono a posto, perché ne riusa i pezzi:
+
+- **PMS collegato** (KrossBooking o altro): il sito legge appartamenti e disponibilità dallo stesso adapter PMS, quindi il PMS va collegato prima.
+- **Stripe attivo**: il checkout del sito usa la **stessa** chiave Stripe dell'agente Conduit (una sola credenziale nel Vault).
+- **Conduit / smart check-in** (opzionali): se lo studente li ha già, si agganciano al sito come embed.
+
+In pratica lo dai a chi ha completato Anagrafica + PMS + pagamenti e chiede un canale di vendita proprio. Chi non vende in diretta non ne ha bisogno: resta un opt-in.
+
+## Due domini, due cose diverse: `stay.` e `book.`
+Non confondere i due sottodomini:
+
+- **`stay.{brand}.com` = sito di prenotazione diretta** (questa pagina): vetrina + motore di prenotazione + checkout Stripe. Serve a **vendere** il soggiorno senza OTA.
+- **`book.{brand}.com` = guest portal / self check-in**: il portale che l'ospite **già prenotato** usa per l'accesso (istruzioni, apertura porta smart-lock, extra). È il front-end dello smart check-in, vedi [Smart check-in](/onboarding/4-smart-checkin) e la skill `smart-checkin-mcp`.
+
+Uno vende, l'altro accoglie: possono coesistere sullo stesso brand e condividono PMS, Stripe e (se presente) Conduit.
+
 ## Regola d'oro: si forka, non si scaffolda
-Ogni sito studente parte da un **fork** del template canonico `ftaiano100-dot/cosmica-booking` (live: `stay.cosmicarentals.com`), **mai** da `create-next-app`. Il template porta già PMS adapter, i18n, tema, Stripe, health endpoint — ricostruirli a mano introduce bug che il template ha già risolto.
+Ogni sito studente parte da un **fork** del template canonico `ftaiano100-dot/cosmica-booking` (live: `stay.cosmicarentals.com`), **mai** da `create-next-app`. Il template porta già PMS adapter, i18n, tema, Stripe, health endpoint, ricostruirli a mano introduce bug che il template ha già risolto.
 
 ## Stack (dal template)
 - **Next.js** (App Router) + **next-intl** per le lingue (tipico `it, en`; aggiungi `de/fr` se servono i mercati).
@@ -36,7 +54,7 @@ Ogni sito studente parte da un **fork** del template canonico `ftaiano100-dot/co
 <Note>Fonti: skill `direct-booking-engine` (workflow 10 fasi + lezioni L1-L8), repo `ftaiano100-dot/cosmica-booking`, memoria `project_direct_booking_skill`, `project_cosmica_domain_migration`.</Note>
 
 <Tip>
-**▷ Prompt Claude Code — Crea il sito direct booking**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Crea il sito direct booking**  ·  incolla in Claude Code:
 </Tip>
 
 ```text

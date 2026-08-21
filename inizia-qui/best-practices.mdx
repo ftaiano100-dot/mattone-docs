@@ -8,9 +8,9 @@ Queste 7 regole si applicano a ogni integrazione, indipendentemente dal pezzo ch
 
 ## 1. Segui l'ordine, non improvvisare
 
-Ogni connessione ha un "prima" e un "dopo": l'ordine dei passi non è arbitrario ma riflette dipendenze reali tra i componenti. Saltare un passo — anche uno che sembra minore — rompe silenziosamente ciò che viene dopo.
+Ogni connessione ha un "prima" e un "dopo": l'ordine dei passi non è arbitrario ma riflette dipendenze reali tra i componenti. Saltare un passo, anche uno che sembra minore, rompe silenziosamente ciò che viene dopo.
 
-Esempio classico: aggiungere un custom tool a Conduit senza configurare la skill corrispondente. L'agente ignora il tool o tenta un percorso nativo inaffidabile, e il problema non produce un errore visibile — il tool semplicemente non funziona.
+Esempio classico: aggiungere un custom tool a Conduit senza configurare la skill corrispondente. L'agente ignora il tool o tenta un percorso nativo inaffidabile, e il problema non produce un errore visibile, il tool semplicemente non funziona.
 
 <Tip>
   Prima di iniziare qualsiasi configurazione, apri la pagina **Integrazioni** corrispondente e leggi tutti i passi dall'inizio. Identifica le dipendenze prima di toccare qualsiasi impostazione.
@@ -18,10 +18,10 @@ Esempio classico: aggiungere un custom tool a Conduit senza configurare la skill
 
 ## 2. Verifica SEMPRE i log dell'esito reale
 
-Quello che mostra l'interfaccia di un'app è spesso una semplificazione — o peggio, un messaggio fuorviante. I log mostrano l'esito reale. Non fidarti di ciò che l'app ti dice: fidati di ciò che i log mostrano.
+Quello che mostra l'interfaccia di un'app è spesso una semplificazione, o peggio, un messaggio fuorviante. I log mostrano l'esito reale. Non fidarti di ciò che l'app ti dice: fidati di ciò che i log mostrano.
 
 <Warning>
-  **Caso reale — SwitchBot, 20 agosto:** l'app SwitchBot mostrava lo stato della batteria come "scarica". I Vercel runtime logs restituivano invece il codice `161`, che corrisponde a **device offline** (Hub Mini non raggiungibile). La diagnosi basata sull'app avrebbe portato a sostituire le batterie; quella basata sui log ha portato a ripristinare la connessione WiFi dell'Hub Mini. Due fix completamente diversi — uno corretto, l'altro inutile.
+  **Caso reale, SwitchBot, 20 agosto:** l'app SwitchBot mostrava lo stato della batteria come "scarica". I Vercel runtime logs restituivano invece il codice `161`, che corrisponde a **device offline** (Hub Mini non raggiungibile). La diagnosi basata sull'app avrebbe portato a sostituire le batterie; quella basata sui log ha portato a ripristinare la connessione WiFi dell'Hub Mini. Due fix completamente diversi, uno corretto, l'altro inutile.
 </Warning>
 
 Controlla sempre: Vercel runtime logs, risposta grezza dell'API (spesso include il codice di errore), console del browser.
@@ -53,11 +53,11 @@ La sequenza corretta è sempre:
 
 ## 5. Credenziali mai in chat né nei repo
 
-Le chiavi API, i token e le password dei clienti non vanno mai in una chat (WhatsApp, Slack, email) né committate in un repository. Vanno sempre e solo nel **Vault** — il magazzino cifrato delle credenziali.
+Le chiavi API, i token e le password dei clienti non vanno mai in una chat (WhatsApp, Slack, email) né committate in un repository. Vanno sempre e solo nel **Vault**, il magazzino cifrato delle credenziali.
 
 Se uno studente ti invia una credenziale in chat, fai due cose immediatamente:
 1. Salvala nel Vault
-2. Chiedi allo studente di **ruotare la chiave** — quella inviata in chat va considerata compromessa
+2. Chiedi allo studente di **ruotare la chiave**, quella inviata in chat va considerata compromessa
 
 <Warning>
   Una chiave inviata in chat è una chiave esposta. La policy è zero eccezioni.

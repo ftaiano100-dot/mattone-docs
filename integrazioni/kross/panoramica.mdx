@@ -7,7 +7,7 @@ description: "Scopri come KrossBooking si integra con Mattone: lettura prenotazi
 KrossBooking è il sistema di gestione prenotazioni (PMS) usato dalla maggior parte degli studenti Mattone. Attraverso questa integrazione, Conduit legge in tempo reale le prenotazioni attive, i dati degli ospiti e lo stato del check-in, permettendo all'assistente AI di rispondere con informazioni sempre aggiornate e di automatizzare i flussi operativi legati agli arrivi e alle partenze.
 
 ## Un solo ponte per tutti (`mcp.mattone.co`)
-Tutti gli strumenti dell'assistente (i "custom tool") di **ogni** studente passano dallo **stesso ponte tecnico** `mcp.mattone.co` (il gateway multi-tenant, cioè che serve tanti studenti da un unico posto). Il ponte legge dalla cassaforte (Vault) le credenziali **di quello specifico studente** — riconosciuto da un suo codice, `X-Student-Token` — e lì si può anche **personalizzare per studente**.
+Tutti gli strumenti dell'assistente (i "custom tool") di **ogni** studente passano dallo **stesso ponte tecnico** `mcp.mattone.co` (il gateway multi-tenant, cioè che serve tanti studenti da un unico posto). Il ponte legge dalla cassaforte (Vault) le credenziali **di quello specifico studente**, riconosciuto da un suo codice, `X-Student-Token`, e lì si può anche **personalizzare per studente**.
 
 **L'unica differenza tra studenti è QUALE chiave usa il ponte:**
 
@@ -56,5 +56,5 @@ Un solo **percorso canonico**, uguale per tutti gli studenti:
 </Note>
 
 ## Fonti ufficiali
-- **KrossBooking API v5** — non c'è una doc pubblica: è riservata al partner (accessibile dal portale partner / `apiv5` con la chiave). Per la doc → richiedere a Kross (`fabiod@krossbooking.com`).
+- **KrossBooking API v5**: non c'è una doc pubblica: è riservata al partner (accessibile dal portale partner / `apiv5` con la chiave). Per la doc → richiedere a Kross (`fabiod@krossbooking.com`).
 - La consuma **Conduit** (nostro assistente): doc Conduit → https://docs.conduit.ai
