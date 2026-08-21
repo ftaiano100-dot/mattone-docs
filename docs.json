@@ -65,6 +65,7 @@
               "delivery/metriche-numeri",
               "delivery/problemi-ricorrenti-conduit",
               "delivery/personalizzazione-studente",
+              "delivery/mancato-pagamento",
               "delivery/token-conduit-coach"
             ]
           },
