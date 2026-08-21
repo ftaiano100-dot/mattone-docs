@@ -7,6 +7,12 @@ description: "Imposta l'agente AI Conduit: KB per-listing da Notion, custom tool
 Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogni studente ha il proprio workspace isolato composto da KB, agente e tool. La configurazione va eseguita in un ordine preciso: prima la base di conoscenza, poi i tool con le relative skill, poi i workflow, e infine il canale telefonico/WABA. Saltare o invertire questi passaggi causa comportamenti imprevisti nell'agente.
 
 <Warning>
+  **PREREQUISITO CONTRATTUALE — contratto Conduit firmato PRIMA dell'attivazione.** Non attivare il workspace/agente Conduit di uno studente finché non è firmato l'**Addendum "Servizio AI Ospiti"** (Mattone.co LLC ↔ studente): è il contratto che regola il **canone €9/Listing/mese**, i **Costi a Consumo**, la **durata minima 12 mesi** e l'**autorizzazione all'addebito** (Stripe/bonifico). L'attivazione fa **decorrere il canone dalla Data di attivazione**: senza contratto firmato **non si attiva**. Verifica la firma e la **Data attivazione** (sezione "Dettagli Attivazione" del contratto) prima di procedere.
+
+  Lo stato **"contratto firmato"** va registrato **nella piattaforma** (app.mattone.co), non solo qui: quando confermi che è firmato, flaggalo (o carica il PDF firmato) nella scheda dello studente. La piattaforma è la fonte unica — lo **studente stesso vede il suo contratto** nella sua area, e l'attivazione del billing resta legata a quel flag.
+</Warning>
+
+<Warning>
   **PRIMA DI TUTTO — accesso Admin Mattone (obbligatorio, facile da dimenticare).** Appena creato il workspace Conduit di uno studente, aggiungi **`francesco@mattone.co`** come **Admin** (dashboard Conduit → membri/team → invita come **Admin**). È l'unico modo per garantire che il team Mattone abbia sempre accesso a quel workspace.
 
   ⚠️ **Non esiste un'API** per aggiungere membri: va fatto **a mano** nella dashboard. Se te ne dimentichi, il team **perde l'accesso** (dalla UI) a quel workspace. **Verifica** che l'Admin Mattone sia nella lista membri prima di considerare il workspace pronto.
