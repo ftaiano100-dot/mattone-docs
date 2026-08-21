@@ -10,6 +10,19 @@ Il "brain" del team è **Claude Code + i repo**. Qui trovi prompt pronti da **co
 
 <Note>**Principio: i prompt assumono che il repo NON sia già caricato.** Ogni prompt qui e nei docs parte dando per scontato che nella tua sessione Claude Code non ci sia ancora il codice in contesto. Per questo ogni prompt inizia dicendo esplicitamente **quale repo aprire** (es. `~/Projects/mattone-platform`, il gateway `~/Projects/mattone-mcp-gateway`, `~/Projects/api-kross-mattone`, o `~/Projects/cosmica-booking` per il guest portal) e **quale pagina mattone-docs leggere** — così funziona anche se apri Claude Code da zero. Se il repo è già caricato, quelle prime righe sono solo una conferma innocua.</Note>
 
+<CardGroup cols={2}>
+  <Card title="🎥 Video: come usare i prompt / riprendere un onboarding" icon="video">
+    **(video da aggiungere)** — walkthrough del team: aprire Claude Code nel repo giusto, incollare un prompt della libreria, riprendere un onboarding dallo stato in `/connessioni`. *Sostituire questo placeholder con l'URL del video quando disponibile — non inserire link finché non è reale.*
+  </Card>
+  <Card title="Stato & continuazione onboarding" icon="arrow-up-right-from-square" href="/onboarding/stato-e-continuazione">
+    Come capire a che punto è uno studente e da dove ripartire (handoff tra membri del team).
+  </Card>
+</CardGroup>
+
+## Libreria per attività
+
+Sotto lo "0-3" generico trovi i **prompt pronti per le attività ricorrenti** del team. Copia quello che ti serve, sostituisci `[...]`, e lascia che Claude chieda i dati mancanti. Sono tutti **repo-aware** (dicono quale repo aprire + quale pagina docs leggere) e **self-contained**.
+
 ## 0 · Usare questi docs come fonte (setup)
 Il modo più potente è puntare Claude Code **su questo repo di docs** e farsi guidare.
 
@@ -135,6 +148,141 @@ diverso da Kross?), dimmi le varianti. Cita le pagine docs da cui prendi la
 regola.
 ```
 
-<Tip>Questi prompt funzionano meglio se la sessione Claude Code ha accesso ai repo (`api-kross-mattone`, `mattone-platform`) e agli MCP (Conduit, Supabase) — così può leggere davvero i log invece di ragionare a memoria.</Tip>
+## 4 · Riprendere / continuare un onboarding studente
+Usalo quando subentri su uno studente iniziato da qualcun altro (o da te giorni fa) e devi capire **a che punto è** e **da dove ripartire**. Approfondimento: [Stato & continuazione](/onboarding/stato-e-continuazione).
+
+```text
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri il repo `~/Projects/mattone-platform` (connessioni /
+pms_integrations / Vault) e LEGGI le pagine mattone-docs
+/onboarding/stato-e-continuazione e /onboarding/panoramica (matrice passi×stato);
+per lo stato reale usa gli MCP (Supabase per pms_integrations, Conduit per
+l'agente). Poi procedi:
+
+Dimmi a che punto è l'onboarding dello studente [NOME] e da dove riprendere.
+Ricostruisci la MATRICE passi×stato (Anagrafica, Kross, Conduit, Smart check-in,
+Stripe, verifica) assegnando a ognuno uno dei cinque stati (non iniziato / non
+ora / in corso / collegato / verificato). Incrocia SEMPRE tre fonti:
+/connessioni, la tabella pms_integrations e la presenza delle credenziali nel
+Vault. Ricorda che "collegato" != "funziona": per ogni passo collegato leggi i
+log e verifica dal vivo (prenotazione reale, apertura porta, link Stripe). Alla
+fine dimmi: il primo passo non ancora verificato (= da dove ripartire), cosa è
+in "non ora" (rimandato di proposito), e cosa manca ancora dallo studente
+(così posso avvisarlo — vedi il prompt "Avvisare lo studente di cosa gli manca").
+```
+
+## 5 · Provisioning di un nuovo studente (Kross + tool + skill + KB)
+Usalo per **montare da zero** l'agente di uno studente: credenziali Kross nel Vault, custom tool con la loro skill, KB per-listing dal Notion. Rispetta l'ordine del [pacchetto completo Conduit](/integrazioni/conduit/pacchetto-completo).
+
+```text
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri i repo `~/Projects/api-kross-mattone` (provisioning, custom
+tool + catalog.json, skill onboarding) e `~/Projects/mattone-platform` (bridge
+KB da Notion, connessioni/Vault), e LEGGI le pagine mattone-docs
+/onboarding/3-conduit e /integrazioni/conduit/pacchetto-completo; per creare e
+testare usa l'MCP Conduit (simulate_conversation). Poi procedi:
+
+Fai il provisioning dell'agente Conduit per lo studente [NOME], nell'ordine
+tassativo: 1) verifica che la terna Kross (hotel_id+username+password) sia già
+nel Vault come cred_secret_id (NON chiedermi le credenziali in chiaro, dimmi
+solo se ci sono); 2) genera la KB per-listing dal Notion tramite il bridge (una
+cartella per appartamento, entity_id scopati sul listing_id — MAI una KB
+globale); 3) monta i custom tool con NOMI CANONICI, OGNUNO con la sua prompting
+skill (Kross->kross-reservation-reader, Shelly/SwitchBot->smart-lock-opener,
+Stripe->payment-link-generator): tool senza skill = agente che lo ignora; 4)
+configura i workflow deterministici. Poi verifica via MCP che le skill core
+siano ATTACCATE al Guest Agent (skill_ids != 0) e testa con simulate_conversation
+mostrandomi il trace: deve fare load_skill -> tool giusto -> risposta corretta,
+non il nativo. Chiedimi workspace_id/agent_id se non li hai.
+```
+
+## 6 · Bridge KB Notion → Conduit (per-listing, mai globale)
+Usalo quando devi (ri)generare o correggere la Knowledge Base di uno studente dal registro appartamenti Notion. Dettagli: [Bridge Notion → Conduit](/integrazioni/notion/bridge-conduit) · [KB per-listing](/integrazioni/conduit/kb).
+
+```text
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri il repo `~/Projects/mattone-platform` (bridge KB
+Notion->Conduit) e LEGGI le pagine mattone-docs /integrazioni/notion/bridge-conduit
+e /integrazioni/conduit/kb; usa gli MCP (Notion per i dati veri, Conduit per la
+KB risultante). Poi procedi:
+
+(Ri)genera la KB Conduit dello studente [NOME] dal registro appartamenti Notion.
+Regole tassative: UNA cartella KB per appartamento, con gli entity_id scopati
+sul listing_id corrispondente; MAI una KB globale condivisa tra appartamenti
+(causa leak: accessi/listino/regole di un altro immobile). Prima di scrivere,
+dimmi: quali righe Notion verranno incluse e quali rischiano di essere scartate
+dallo split-by-listing (e perché — es. Name diverso dal listing PMS, campi
+mancanti). Dopo il sync, verifica su Conduit che ogni cartella esista e sia
+scopata sul listing giusto. Non inventare dati: se un campo manca nel Notion,
+segnalamelo invece di riempirlo.
+```
+
+## 7 · Controllare lo stato / health di un workspace studente
+Usalo per un check rapido: skill attaccate, tool canonici, KPI dell'agente. Approfondimento: [Monitorare gli studenti](/delivery/monitorare-studenti).
+
+```text
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri il repo `~/Projects/api-kross-mattone` (custom tool +
+catalog.json, nomi canonici) e LEGGI le pagine mattone-docs
+/delivery/monitorare-studenti e /integrazioni/conduit/troubleshooting; per lo
+stato reale usa l'MCP Conduit. Poi procedi:
+
+Fai un health-check del workspace Conduit dello studente [NOME] e dammi un
+verdetto sintetico verde/giallo/rosso. Controlla: 1) le skill core sono
+ATTACCATE al Guest Agent (skill_ids != 0), non solo esistenti; 2) i custom tool
+hanno i NOMI CANONICI attesi e sono montati (Kross/Shelly/Stripe secondo cosa
+usa lo studente); 3) ogni tool ha la sua skill abbinata (tool orfani = ignorati
+dall'agente); 4) la KB è per-listing (nessuna cartella globale); 5) i KPI base
+(automation rate / % risposte gestite, escalation, eventuali errori ricorrenti).
+Fai un simulate_conversation di prova e mostrami il trace. Elenca in coda SOLO i
+problemi trovati, ordinati per gravità, con l'azione di fix per ciascuno.
+```
+
+## 8 · Sistemare un workspace rotto (fleet)
+Usalo quando un agente studente è rotto (skill staccate, tool con nome sbagliato, KB non aggiornata) e vuoi ripararlo. Contesto fleet + token: [Token Conduit coach](/delivery/token-conduit-coach) · [Problemi ricorrenti Conduit](/delivery/problemi-ricorrenti-conduit).
+
+```text
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri il repo `~/Projects/api-kross-mattone` (provisioning +
+custom tool) e LEGGI le pagine mattone-docs /delivery/problemi-ricorrenti-conduit
+e /delivery/token-conduit-coach; per intervenire sui workspace usa l'MCP Conduit
+con il token coach (accesso a tutti i workspace studenti). Poi procedi:
+
+Ripara il workspace Conduit dello studente [NOME] (o [workspace_id]). Prima
+DIAGNOSTICA leggendo lo stato reale via MCP (non a memoria): skill_ids staccate,
+nomi tool non canonici, tool senza skill, KB globale invece che per-listing, KB
+non sincronizzata dal Notion. Mostrami la lista dei problemi trovati con la
+prova (output MCP) PRIMA di toccare qualcosa. Poi proponi il piano di fix
+nell'ordine giusto e, alla mia conferma, applicalo: riattacca le skill core al
+Guest Agent, rinomina/riallinea i tool ai nomi canonici, riabbina tool+skill,
+rigenera la KB per-listing dal bridge Notion. Alla fine ri-testa con
+simulate_conversation e mostrami il trace: deve usare load_skill -> tool giusto.
+Non dichiarare "risolto" senza un test riprodotto.
+```
+
+## 9 · Avvisare lo studente di cosa gli manca
+Usalo quando dallo stato risulta che manca un pezzo dello studente (la carta/pagamento, il collegamento Notion, il contratto firmato, la Restricted Key Stripe…) e devi mandargli un messaggio chiaro. Strumenti team + esempi di messaggio: [Strumenti del team per comunicare con gli studenti](/riferimenti/strumenti-team-studenti).
+
+```text
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri il repo `~/Projects/mattone-platform` (connessioni /
+pms_integrations / Vault) e LEGGI le pagine mattone-docs
+/onboarding/stato-e-continuazione e /riferimenti/strumenti-team-studenti; per lo
+stato reale usa gli MCP (Supabase), e per inviare il messaggio l'MCP
+WhatsApp/Slack (o Resend per email) SE è collegato nella tua sessione. Poi procedi:
+
+Per lo studente [NOME], ricostruisci cosa MANCA (incrociando /connessioni,
+pms_integrations e Vault) e prepara un messaggio da mandargli — plain, gentile,
+chiaro, in italiano — che elenchi SOLO i pezzi mancanti e, per ognuno, l'azione
+concreta che deve fare (es. "collega Notion da app.mattone.co -> Connessioni",
+"firma il contratto nella tua area", "crea la Restricted Key Stripe e incollala
+in Connessioni -> Pagamenti"). NON inviare nulla senza mostrarmi prima la bozza
+e chiedermi conferma del canale (WhatsApp / Slack / email) e del destinatario.
+Se l'MCP WhatsApp/Slack non è collegato nella mia sessione, dimmelo e rimandami
+a /riferimenti/strumenti-team-studenti per installarlo, e intanto dammi il testo
+pronto da copiare.
+```
+
+<Tip>Questi prompt funzionano meglio se la sessione Claude Code ha accesso ai repo (`api-kross-mattone`, `mattone-platform`) e agli MCP (Conduit, Supabase, e — per avvisare gli studenti — WhatsApp/Slack) — così può leggere davvero i log e agire invece di ragionare a memoria.</Tip>
 
 <Note>Fonti: /onboarding/panoramica, /troubleshooting/metodo e le pagine Troubleshooting per integrazione. Il "brain" team = Claude Code + repo (`api-kross-mattone/README.md`, `mattone-integrations-docs/INDEX.md`).</Note>
