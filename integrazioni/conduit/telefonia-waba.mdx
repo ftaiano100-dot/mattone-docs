@@ -8,14 +8,26 @@ Conduit può comunicare con gli ospiti via telefono (agente VoiceAI) e via Whats
 
 ## Il numero di telefono — come funziona (dubbi frequenti)
 
-Il numero è la parte che genera più domande in onboarding. In breve: **un solo numero fisso italiano dedicato, richiesto tramite il portale Conduit, che serve sia per WhatsApp sia per le chiamate.** Non serve comprare una SIM.
+Il numero è la parte che genera più domande in onboarding. In breve: **un solo numero fisso italiano dedicato, richiesto a Conduit (la richiesta parte dallo studente col prefisso della sua città, la pratica la segue il team Mattone), che serve sia per WhatsApp sia per le chiamate.** Non serve comprare una SIM.
+
+<Info>
+  **Chi fa cosa (crystal clear).**
+  - **Lo studente** → **avvia la richiesta** del numero fornendo il **prefisso della propria città** (numero italiano dedicato). **Non contatta Conduit direttamente.**
+  - **Il team Mattone** → **sottomette e segue la pratica** con Conduit support fino all'attivazione: richiesta del numero, registrazione **WhatsApp Business API con Meta** e **collegamento al Business Manager Facebook**.
+
+  Quindi: la richiesta **parte dallo studente** (dà il prefisso città), ma la pratica con Conduit e l'aggancio a Meta **li gestiamo noi per lui** — lo studente non scrive a Conduit.
+</Info>
+
+<Note>
+  **Come funziona la pratica (dettaglio team).** La richiesta del numero si **sottomette a Conduit support**: si riceve una conferma con un **Case Number** e i tempi sono di **~5 giorni lavorativi**. Il numero è **provisionato via Twilio** dentro il workspace Conduit — è questo il "numero backend" con **forwarding** verso il numero italiano guest-facing (vedi il dettaglio tecnico più sotto). I workspace di uno stesso studente/azienda vanno **allineati sotto lo stesso subaccount** per poter acquistare e associare il numero. La pratica la segue il **team Mattone**; lo studente non interagisce con Conduit support.
+</Note>
 
 <AccordionGroup>
   <Accordion title="Serve un numero italiano nuovo? Solo per l'azienda?">
     Sì: un **numero fisso italiano dedicato** allo studente/azienda, usato **sia per WhatsApp (WABA) sia per le chiamate** (VoiceAI). Non si usa il numero personale.
   </Accordion>
   <Accordion title="Devo comprarmi una SIM/eSIM (TIM, Fastweb…)?">
-    **No.** Il numero si **richiede dal portale Conduit**, specificando il **prefisso della città**. È un numero dedicato al servizio: non serve una SIM fisica né un abbonamento operatore.
+    **No.** Il numero si **richiede a Conduit**: lo studente **avvia la richiesta** dando il **prefisso della sua città**, e il **team Mattone** sottomette e segue la pratica. È un numero dedicato al servizio: non serve una SIM fisica né un abbonamento operatore.
   </Accordion>
   <Accordion title="Facebook mi propone un numero WhatsApp virtuale — uso quello?">
     **No, non il fai-da-te di Facebook.** Il percorso corretto è: numero **dal portale Conduit** → **registrazione per WhatsApp Business API (WABA)** con Meta → **collegamento a un Business Manager Facebook** (meglio nuovo). La registrazione WABA la facciamo **con il supporto del team Mattone** (vedi "Chi gestisce il collegamento").
@@ -25,7 +37,7 @@ Il numero è la parte che genera più domande in onboarding. In breve: **un solo
   </Accordion>
 </AccordionGroup>
 
-**Il flusso in ordine:** richiedi il numero dal **portale Conduit** (prefisso città) → lo **registri per WABA** con Meta (ti supportiamo noi) → lo **colleghi a un Business Manager Facebook** nuovo. Da lì WhatsApp e chiamate passano dall'agente.
+**Il flusso in ordine:** lo **studente avvia la richiesta** del numero (prefisso città) → il **team Mattone la sottomette a Conduit support** (conferma con **Case Number**, **~5 giorni lavorativi**; numero provisionato via **Twilio** nel workspace) → poi il team segue la **registrazione WABA** con Meta e il **collegamento a un Business Manager Facebook** (meglio nuovo). Da lì WhatsApp e chiamate passano dall'agente.
 
 <Info>
   **Cosa dire allo studente — come richiedere il numero**
@@ -33,8 +45,8 @@ Il numero è la parte che genera più domande in onboarding. In breve: **un solo
   Passa allo studente questi passi, plain (l'attivazione richiede **circa 1 settimana**, quindi si parte subito):
 
   1. **Non comprare una SIM** (TIM, Fastweb, ecc.) e **non usare il numero WhatsApp fai-da-te che propone Facebook.**
-  2. Dicci **in che città operi**: ci serve il **prefisso della città** per richiedere dal **portale Conduit** un **numero italiano dedicato** al tuo servizio.
-  3. Quel numero lo **registriamo per WhatsApp Business (WABA) con Meta**: questa parte la facciamo **noi insieme a te**.
+  2. **Dacci il prefisso della tua città** e conferma che vuoi partire: la **richiesta del numero la sottomettiamo noi a Conduit per te** (tu non devi scrivere a Conduit). Ti serve un **numero italiano dedicato** al servizio.
+  3. Dopo la richiesta arriva una conferma e il numero viene attivato in **circa 5 giorni lavorativi**; poi la **registrazione per WhatsApp Business (WABA) con Meta la seguiamo noi insieme a te** (team Mattone).
   4. Poi lo **colleghiamo a un Business Manager Facebook** (meglio nuovo): se non ce l'hai, ti guidiamo a crearlo.
   5. Lo **stesso numero italiano** varrà per **WhatsApp, chiamate e come riferimento sugli annunci OTA**.
 
@@ -73,7 +85,7 @@ Senza WABA, le notifiche automatiche non possono essere inviate via WhatsApp: le
 
 ## Tempistiche
 
-Il tempo medio di attivazione per WABA e numero telefonico è **circa 1 settimana** dalla richiesta al supporto Conduit. I tempi possono variare a seconda del carico del supporto e della rapidità dello studente nel fornire i documenti richiesti (vedi Prerequisiti WABA).
+Il tempo di attivazione per il numero telefonico è di **~5 giorni lavorativi** dalla sottomissione della richiesta a Conduit support (che risponde con un **Case Number**) — in pratica **circa 1 settimana**. I tempi possono variare a seconda del carico del supporto e della rapidità dello studente nel fornire i documenti richiesti per Meta (vedi Prerequisiti WABA).
 
 Pianifica la richiesta appena completata la configurazione del workspace (KB, tool, workflow) — non aspettare l'ultimo momento. Se il canale non è attivo all'avvio operativo, lo studente dovrà gestire le comunicazioni manualmente nel frattempo.
 

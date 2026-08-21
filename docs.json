@@ -116,8 +116,16 @@
               "integrazioni/conduit/custom-tools",
               "integrazioni/conduit/workflow",
               "integrazioni/conduit/guardrail",
-              "integrazioni/conduit/telefonia-waba",
               "integrazioni/conduit/troubleshooting"
+            ]
+          },
+          {
+            "group": "Numeri & WhatsApp (WABA)",
+            "pages": [
+              "integrazioni/conduit/telefonia-waba",
+              "integrazioni/waba/panoramica",
+              "integrazioni/waba/collegamento",
+              "integrazioni/waba/troubleshooting"
             ]
           },
           {
@@ -142,17 +150,14 @@
             ]
           },
           {
-            "group": "Smart Lock & Comunicazione",
+            "group": "Smart Lock",
             "pages": [
               "integrazioni/shelly/panoramica",
               "integrazioni/shelly/collegamento",
               "integrazioni/shelly/troubleshooting",
               "integrazioni/switchbot/panoramica",
               "integrazioni/switchbot/collegamento",
-              "integrazioni/switchbot/troubleshooting",
-              "integrazioni/waba/panoramica",
-              "integrazioni/waba/collegamento",
-              "integrazioni/waba/troubleshooting"
+              "integrazioni/switchbot/troubleshooting"
             ]
           }
         ]

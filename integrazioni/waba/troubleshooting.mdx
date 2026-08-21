@@ -4,21 +4,21 @@ sidebarTitle: "Troubleshooting"
 description: "Diagnosi e risoluzione dei problemi WABA più comuni: verifica Meta bloccata, template non approvati, webhook non configurato e WABA sospeso."
 ---
 
-Usa questa guida per diagnosticare i problemi dell'integrazione WABA — la maggior parte dei casi riguarda una verifica Meta non completata o un numero di telefono configurato in modo errato. Per i problemi legati alle policy Meta o alla sospensione dell'account, contatta sempre Francesco che gestisce direttamente l'accesso al Business Manager.
+Usa questa guida per diagnosticare i problemi dell'integrazione WABA — la maggior parte dei casi riguarda una verifica Meta non completata o un numero di telefono configurato in modo errato. Per i problemi legati alle policy Meta o alla sospensione dell'account, contatta sempre il team Mattone, che gestisce direttamente l'accesso al Business Manager.
 
 ## Tabella sintomi, cause e soluzioni
 
 | Sintomo | Causa probabile | Soluzione |
 |---|---|---|
-| Numero non collegato a Conduit | Provisioning WABA non completato o fallito | Contatta Francesco per riaprire il ticket con Conduit support e verificare lo stato del provisioning |
-| Verifica Meta bloccata o in attesa | Business Manager non verificato o documenti insufficienti | Completa la verifica aziendale in Meta Business Manager caricando i documenti richiesti; contatta Francesco se la verifica è bloccata da più di 3 giorni |
+| Numero non collegato a Conduit | Provisioning WABA non completato o fallito | Contatta il team Mattone per riaprire il ticket con Conduit support e verificare lo stato del provisioning |
+| Verifica Meta bloccata o in attesa | Business Manager non verificato o documenti insufficienti | Completa la verifica aziendale in Meta Business Manager caricando i documenti richiesti; contatta il team Mattone se la verifica è bloccata da più di 3 giorni |
 | Messaggi non recapitati all'ospite | Template WhatsApp non approvato da Meta | Verifica lo stato del template in Meta Business Manager → **Message Templates**; un template rifiutato deve essere modificato e ri-sottomesso |
 | URL non accettato da WhatsApp nei messaggi | URL non presente nella whitelist Meta | Aggiungi il dominio alla lista approvata in Meta Business Manager; i link accorciati o i redirect non riconosciuti vengono bloccati da WhatsApp |
-| WABA sospeso | Violazione delle policy Meta (spam, contenuto non conforme) | Contatta Conduit support tramite Francesco fornendo il Business Manager ID; non tentare di creare un nuovo WABA — peggiora la situazione |
+| WABA sospeso | Violazione delle policy Meta (spam, contenuto non conforme) | Contatta Conduit support tramite il team Mattone fornendo il Business Manager ID; non tentare di creare un nuovo WABA — peggiora la situazione |
 | Messaggio in entrata non gestito da Conduit | Webhook WABA non configurato o URL errato | Verifica il webhook URL nelle impostazioni del workspace Conduit; il webhook deve puntare all'endpoint corretto e rispondere con 200 OK |
 
 <Note>
-  Per problemi relativi alla verifica Meta, alla policy WhatsApp o alla sospensione del WABA, contatta **Francesco** — la gestione Meta richiede accesso diretto al Business Manager account e non può essere risolta autonomamente dal team di onboarding senza quell'accesso.
+  Per problemi relativi alla verifica Meta, alla policy WhatsApp o alla sospensione del WABA, contatta il **team Mattone** — la gestione Meta richiede accesso diretto al Business Manager account e non può essere risolta autonomamente dal singolo operatore di onboarding senza quell'accesso.
 </Note>
 
 <Tip>
@@ -29,8 +29,8 @@ Usa questa guida per diagnosticare i problemi dell'integrazione WABA — la magg
 Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
 Per prima cosa apri il repo `~/Projects/api-kross-mattone` (telefonia/WABA) e
 LEGGI le pagine mattone-docs /troubleshooting/metodo e /integrazioni/waba/troubleshooting;
-lo stato numero si verifica in Conduit (MCP Conduit) e il collegamento Meta lo fa
-Francesco. Poi procedi:
+lo stato numero si verifica in Conduit (MCP Conduit) e il supporto WABA/Meta lo
+dà il team Mattone. Poi procedi:
 
 Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema
 WABA: [DESCRIVI IL SINTOMO, es. "il numero non risponde" / "errore url sito
@@ -38,8 +38,8 @@ in registrazione FB->Conduit"]. Verifica lo stato reale in Conduit -> Settings
 -> WhatsApp -> Numbers: è "Registered" (verde)? Ricorda che se non è collegato
 inbound/outbound falliscono in silenzio (una spunta sola). Isola: numero non
 registrato, url sito non accettato (prova www. senza https), OTP su numero
-fisso arriva via CHIAMATA non SMS. Il collegamento Meta lo fa Francesco:
-prepara la checklist di cosa gli serve.
+fisso arriva via CHIAMATA non SMS. Il supporto WABA/Meta lo dà il team Mattone:
+prepara la checklist di cosa serve.
 ```
 
 <CardGroup cols={2}>

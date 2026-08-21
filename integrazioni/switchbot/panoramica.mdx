@@ -6,6 +6,10 @@ description: "Panoramica dell'integrazione SwitchBot Smart Lock in Mattone: prer
 
 SwitchBot Smart Lock (Lock o Lock Pro) permette di aprire la porta da remoto tramite un link — richiede un Hub Mini per il controllo cloud ed è l'alternativa a Shelly per gli studenti che hanno già hardware SwitchBot installato. A differenza di Shelly, SwitchBot non comunica direttamente via WiFi: il comando passa dall'Hub Mini alla serratura tramite Bluetooth, e dall'Hub Mini al cloud tramite WiFi.
 
+<Info>
+  **Alternativa già gestita — non la scelta di default.** Il device che raccomandiamo di base è **[Shelly](/integrazioni/shelly/panoramica)** (più semplice, un device = una riga, nessun hub, si aggiunge senza deploy). SwitchBot lo usiamo quando lo studente **ha già** quel brand installato: è pienamente supportato, ma richiede requisiti in più (**Hub Mini su WiFi 2.4GHz stabile**, LED blu fisso, account **owner** — vedi "Prerequisiti CRITICI" sotto; l'autenticazione all'API SwitchBot usa una **firma HMAC**, gestita dalla nostra integrazione). Marche diverse (Tuya/Aqara/Yale, ecc.) sono **caso per caso** e possono essere un **upsell a pagamento**.
+</Info>
+
 ## Prerequisiti CRITICI
 
 <Warning>

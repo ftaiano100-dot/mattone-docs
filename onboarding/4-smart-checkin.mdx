@@ -10,18 +10,29 @@ Se lo studente ha una smart lock su uno o più appartamenti, configura l'apertur
   Testa sempre un'apertura reale durante l'onboarding — non segnare questo step come completato senza aver visto la porta aprirsi fisicamente (o aver ricevuto conferma dallo studente che la porta si è aperta) e senza aver letto i log dell'evento.
 </Tip>
 
-## Quale device?
+## Quale device? Cosa consigliamo
 
-I device supportati sono due, con requisiti e procedure di configurazione differenti:
+<Info>
+  **Best practice Mattone — cosa raccomandiamo.**
+  - **Consigliato di default (baseline collaudata da Cosmica): Shelly.** È un relay che apre citofono/porta. È lo **standard** perché è semplice e affidabile: **un device = una riga** nella mappa, si connette direttamente al WiFi (nessun hub intermedio) e si **aggiunge senza deploy**. Per una nuova installazione, parti da qui.
+  - **Alternativa già gestita: SwitchBot Smart Lock.** La usiamo quando lo studente **ha già** quel brand installato. Richiede alcuni requisiti in più (Hub Mini su **WiFi 2.4GHz stabile**, LED blu fisso, account **owner**, firma **HMAC** lato integrazione).
+  - **Altre marche (Tuya / Aqara / Yale / …): caso per caso.** Non sono incluse di default: le **valutiamo su richiesta** e l'integrazione custom può essere un **upsell a pagamento** (servizio in più). Non prometterle allo studente senza aver verificato la fattibilità con il team.
+</Info>
+
+I device supportati "pronti" sono due, con requisiti e procedure di configurazione differenti:
 
 <CardGroup cols={2}>
-  <Card title="Shelly (relay)" icon="bolt" href="/integrazioni/shelly/panoramica">
-    Ideale per citofoni e porte con relè. È la configurazione più semplice: richiede solo il Cloud token dell'account Shelly. Scegli questa opzione se lo studente ha già un Shelly installato sull'interfono o sul cancello.
+  <Card title="Shelly (relay) — consigliato" icon="bolt" href="/integrazioni/shelly/panoramica">
+    **La scelta di default.** Ideale per citofoni e porte con relè. È la configurazione più semplice: richiede solo il Cloud token dell'account Shelly, nessun hub, si aggiunge senza deploy. Standard per le nuove installazioni.
   </Card>
-  <Card title="SwitchBot Smart Lock" icon="lock" href="/integrazioni/switchbot/panoramica">
-    Serratura elettronica standalone. Richiede Hub Mini collegato alla rete Wi-Fi dell'appartamento e l'account owner SwitchBot. Scegli questa opzione se lo studente ha installato un SwitchBot Smart Lock.
+  <Card title="SwitchBot Smart Lock — alternativa" icon="lock" href="/integrazioni/switchbot/panoramica">
+    Serratura elettronica standalone. Richiede Hub Mini su WiFi 2.4GHz e l'account owner SwitchBot. Scegli questa opzione **solo se** lo studente ha già installato un SwitchBot.
   </Card>
 </CardGroup>
+
+<Note>
+  Marche diverse da Shelly/SwitchBot (Tuya, Aqara, Yale, ecc.) **non** sono supportate di default: sono valutate **caso per caso** e l'integrazione può essere un **upsell a pagamento**. In tutti i casi, il campo `smart_lock` nel DB Apartments deve riflettere il device reale (`Shelly`, `SwitchBot` o `Nessuna`).
+</Note>
 
 <Warning>
   SwitchBot: usa SEMPRE l'account owner, non member. L'account member non ha il permesso di sblocco remoto e la configurazione sembrerà funzionare ma fallirà al momento del test reale.
