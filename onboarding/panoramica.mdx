@@ -102,7 +102,7 @@ Pensa a una **matrice passi × stato** per studente, non a una lista lineare: og
 - I **custom tool** possono essere preparati **prima/indipendentemente** dal resto della fase Conduit.
 - **Smart-lock** e **Stripe** sono condizionali: possono restare "non ora" a lungo senza bloccare gli altri.
 
-**Dove si leggono oggi gli stati**: tabella `pms_integrations` (Supabase) per lo stato per-connettore, pagina **`/connessioni`** (vista studente), **Vault** per la presenza delle credenziali cifrate.
+**Dove si leggono oggi gli stati**: tabella `pms_integrations` (Supabase) per lo stato per-connettore, pagina **`/connessioni`** (vista studente), **Vault** per la presenza delle credenziali cifrate. Per capire **a che punto è** uno studente e **come riprenderlo** (handoff tra membri del team), vedi [Stato & continuazione](/onboarding/stato-e-continuazione).
 
 <Warning>**GAP noto**: non esiste ancora un **tracker unico** (matrice passi×stato, con "non ora" e handoff) per il team delivery. Oggi lo si ricostruisce da `pms_integrations` + `/connessioni` + Vault. Da gestire lato piattaforma. Vista d'insieme volumi: [Delivery a volumi](/delivery/flusso-completo).</Warning>
 

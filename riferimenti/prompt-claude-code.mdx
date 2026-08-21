@@ -8,6 +8,8 @@ Il "brain" del team è **Claude Code + i repo**. Qui trovi prompt pronti da **co
 
 <Info>Incolla il prompt in una sessione Claude Code aperta nel repo giusto (es. `api-kross-mattone` o `mattone-platform`), sostituisci le parti tra parentesi quadre `[...]`, e lascia che chieda i dati mancanti.</Info>
 
+<Note>**Principio: i prompt assumono che il repo NON sia già caricato.** Ogni prompt qui e nei docs parte dando per scontato che nella tua sessione Claude Code non ci sia ancora il codice in contesto. Per questo ogni prompt inizia dicendo esplicitamente **quale repo aprire** (es. `~/Projects/mattone-platform`, il gateway `~/Projects/mattone-mcp-gateway`, `~/Projects/api-kross-mattone`, o `~/Projects/cosmica-booking` per il guest portal) e **quale pagina mattone-docs leggere** — così funziona anche se apri Claude Code da zero. Se il repo è già caricato, quelle prime righe sono solo una conferma innocua.</Note>
+
 ## 0 · Usare questi docs come fonte (setup)
 Il modo più potente è puntare Claude Code **su questo repo di docs** e farsi guidare.
 
@@ -28,6 +30,12 @@ Il modo più potente è puntare Claude Code **su questo repo di docs** e farsi g
 </Steps>
 
 ```text
+Contesto: in questa sessione di Claude Code potrei NON avere il codice caricato.
+Oltre a questo repo mattone-docs, apri anche il repo pertinente all'ARGOMENTO
+(es. `~/Projects/mattone-platform`, il gateway `~/Projects/mattone-mcp-gateway`,
+`~/Projects/api-kross-mattone`, o `~/Projects/cosmica-booking` per il guest
+portal). Poi:
+
 Usa i docs in questo repo mattone-docs come FONTE per guidarmi su [ARGOMENTO,
 es. "collegare Kross a uno studente" / "il bridge Notion->Conduit" / "il metodo
 di troubleshooting"]. Leggi le pagine pertinenti (cita il percorso da cui prendi
@@ -40,6 +48,13 @@ smart-lock) elenca le varianti. Non inventare: se una cosa non è nei docs, dill
 Usalo quando arriva un nuovo studente da collegare. Claude guida l'onboarding passo-passo nell'ordine corretto e verifica a ogni step.
 
 ```
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri i repo coinvolti — `~/Projects/api-kross-mattone`
+(provisioning + skill onboarding), `~/Projects/mattone-platform` (connessioni/
+Vault/bridge Notion) e il gateway `~/Projects/mattone-mcp-gateway` — e LEGGI la
+pagina mattone-docs /onboarding/panoramica; usa gli MCP (Conduit, Supabase) per
+le verifiche reali. Poi procedi:
+
 Fai da guida per l'onboarding di un nuovo studente Mattone, seguendo la
 procedura in mattone-docs /onboarding/panoramica. Procedi UN passo alla volta,
 in quest'ordine: 1) Anagrafica & Notion, 2) PMS KrossBooking, 3) Conduit
@@ -68,6 +83,15 @@ vende extra? [sì/no]. Fammi la prima domanda.
 Usalo quando un'integrazione non funziona. Claude applica il metodo dei docs e legge i log reali prima di dare un verdetto.
 
 ```
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri il repo dell'integrazione coinvolta (`~/Projects/api-kross-mattone`
+per Conduit/telefonia, il gateway `~/Projects/mattone-mcp-gateway` per Kross/
+Shelly/Stripe, `~/Projects/mattone-platform` per bridge Notion/GHL/connessioni,
+`~/Projects/cosmica-booking` per il guest portal smart check-in) e LEGGI la
+pagina mattone-docs /troubleshooting/metodo più la pagina Troubleshooting
+dell'integrazione; usa gli MCP (Conduit, Supabase) per leggere i log veri. Poi
+procedi:
+
 Applica il metodo di troubleshooting di mattone-docs /troubleshooting/metodo a
 questo problema: [DESCRIVI IL SINTOMO, es. "l'agente Conduit dice 'occupato'
 per Casa Gatto dal 20 al 22/09 ma è libera"].
@@ -92,6 +116,12 @@ Non dire "risolto" senza una prova riprodotta.
 Usalo quando non sei sicuro dell'ordine ("collego prima X o prima Y?"). Claude risponde citando i docs, col "cosa prima / cosa dopo" per non rompere ciò che gira.
 
 ```
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri `~/Projects/mattone-platform` (connessioni/Vault) e, se il
+dubbio tocca la config agente, `~/Projects/api-kross-mattone`; poi LEGGI le
+pagine mattone-docs /onboarding/panoramica e quella dell'integrazione coinvolta.
+Poi procedi:
+
 Ho un dubbio di processo: [ES. "collego prima Kross o prima Conduit?" /
 "monto il tool Stripe prima o dopo la chiave nel Vault?"].
 

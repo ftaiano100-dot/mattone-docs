@@ -1,0 +1,107 @@
+---
+title: "Stato e continuazione dell'onboarding studente"
+sidebarTitle: "Stato & Continuazione"
+description: "Come capire a che punto è l'onboarding di uno studente e come riprenderlo da dove è arrivato — l'handoff tra membri del team senza perdere pezzi."
+---
+
+L'onboarding di uno studente **non lo fa sempre la stessa persona nella stessa sessione**: qualcuno inizia, qualcun altro riprende il giorno dopo. Perché l'handoff non perda pezzi, prima di toccare qualcosa devi capire **a che punto è** quello studente — passo per passo — e **da dove ripartire**. Questa pagina spiega dove si legge lo stato oggi e come continuarlo in sicurezza.
+
+<Info>Pensa a una **matrice passi × stato** per studente, non a una lista lineare "fatto / non fatto". Ogni passo (Anagrafica, Kross, Conduit, Smart check-in, Stripe, verifica) ha il **suo** stato, e chi subentra riparte dal primo passo non ancora verificato. Il modello completo è nella sezione "Stati studente & handoff" di [Panoramica onboarding](/onboarding/panoramica).</Info>
+
+## Dove vive lo stato, oggi
+
+Non esiste ancora un tracker unico: lo stato si ricostruisce da **tre fonti** che vanno lette insieme.
+
+| Fonte | Dove | Cosa dice |
+|---|---|---|
+| **Vista `/connessioni`** | piattaforma `app.mattone.co/connessioni` (vista studente) | lo stato **per-connettore** leggibile a colpo d'occhio: chi è collegato/verificato/in "non ora" |
+| **Tabella `pms_integrations`** | Supabase (repo `~/Projects/mattone-platform`) | la **verità macchina** dello stato per-connettore (record + timestamp); è ciò che alimenta `/connessioni` |
+| **Vault** | Supabase (credenziali cifrate) | **presenza** delle credenziali per quel connettore (es. `cred_secret_id` Kross, `stripe_key_<token>`) — se manca, il passo non è davvero "collegato" |
+
+<Note>La **matrice passi × stato** con la logica del "non ora" e dell'handoff è descritta in [Panoramica onboarding](/onboarding/panoramica). Le tre fonti qui sopra sono i posti concreti dove quella matrice si legge oggi.</Note>
+
+## I cinque stati di un passo
+
+Ogni passo dell'onboarding sta in **uno** di questi stati:
+
+| Stato | Significato | Cosa fare quando subentri |
+|---|---|---|
+| **non iniziato** | nessuna connessione salvata | è il prossimo candidato da lavorare |
+| **non ora / non applicabile** | lo studente per ora non fa questo pezzo → si passa oltre, ma **il passo resta** nel checklist (segnato "non ora"), non sparisce | non toccarlo: è stato rimandato **consapevolmente**, non dimenticato |
+| **in corso** | credenziali inserite ma **non ancora validate** | riprendi da qui: manca il test |
+| **collegato** | connessione salvata (verde in UI) | **NON è "funziona"**: va verificato dal vivo (vedi sotto) |
+| **verificato** | testato dal vivo con auth/azione reale + log letto | chiuso, passa al successivo |
+
+<Warning>**"collegato" ≠ "funziona".** La UI può mostrare verde mentre l'integrazione non risponde davvero. Un passo è chiuso solo quando è **verificato**: auth reale, azione reale (una prenotazione letta, una porta aperta, un link Stripe generato) e **log letto**. Finché non hai la prova, resta "collegato", non "verificato".</Warning>
+
+## Come leggere a che punto è
+
+<Steps>
+  <Step title="Apri /connessioni per quello studente">
+    Su `app.mattone.co/connessioni` guardi lo stato **per-connettore**: è la fotografia più rapida di cosa è collegato e cosa è in "non ora".
+  </Step>
+  <Step title="Conferma con pms_integrations + Vault">
+    Incrocia la vista con la tabella `pms_integrations` (stato macchina, con i timestamp) e con la **presenza** delle credenziali nel Vault. Se `/connessioni` dice "collegato" ma nel Vault manca la credenziale, lo stato reale è più indietro.
+  </Step>
+  <Step title="Ricostruisci la matrice passo per passo">
+    Per ognuno dei sei passi assegna uno dei cinque stati. Il **primo passo non ancora verificato** (escludendo i "non ora") è il punto da cui ripartire.
+  </Step>
+  <Step title="Leggi sempre i log prima di fidarti">
+    Per ogni passo "collegato" che credi funzioni, apri i log e verifica dal vivo. Il log è l'unica prova che l'operazione è andata a buon fine — l'interfaccia no.
+  </Step>
+</Steps>
+
+## Come riprendere (handoff)
+
+<Steps>
+  <Step title="Riparti dal primo passo non verificato">
+    Rispetta l'ordine del ramo operativo (Anagrafica → Kross → Conduit → Smart check-in → Stripe → verifica): ogni passo costruisce le fondamenta del successivo, saltarne uno rompe ciò che viene dopo. I "non ora" si scavalcano, ma restano visibili.
+  </Step>
+  <Step title="Rispetta le dipendenze di fase">
+    Attenzione ai passi che **sembrano** lo stesso ma non lo sono: **Kross caricato in piattaforma** (3 credenziali nel Vault) ≠ **Kross collegato a Conduit** (tool montati nell'agente). I custom tool possono essere preparati prima/indipendentemente; smart-lock e Stripe sono condizionali e possono restare "non ora" a lungo senza bloccare gli altri.
+  </Step>
+  <Step title="Verifica dal vivo prima di dichiarare chiuso un passo">
+    Non segnare "verificato" senza un test reale con log. Se un passo era "collegato", rifallo controllare dal vivo tu che subentri: non ereditare il verde di qualcun altro senza prova.
+  </Step>
+  <Step title="Lascia traccia per chi viene dopo">
+    Aggiorna lo stato in piattaforma e annota cosa hai verificato (con quale log/output) e cosa resta "non ora" o aperto. L'handoff funziona solo se il prossimo vede lo stesso quadro che vedi tu.
+  </Step>
+</Steps>
+
+<Warning>**GAP noto**: non esiste ancora un tracker unico (matrice passi×stato, con "non ora" e handoff) per il team delivery. Oggi lo si ricostruisce da `pms_integrations` + `/connessioni` + Vault. È un miglioramento previsto lato piattaforma.</Warning>
+
+<Tip>
+**▷ Prompt Claude Code — Stato & ripresa onboarding**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri il repo `~/Projects/mattone-platform` (connessioni /
+pms_integrations / Vault) e LEGGI la pagina mattone-docs
+/onboarding/stato-e-continuazione (più /onboarding/panoramica per la matrice
+passi×stato); per lo stato reale usa gli MCP (Supabase per pms_integrations,
+Conduit per l'agente). Poi procedi:
+
+Dimmi a che punto è l'onboarding dello studente [NOME] e da dove riprendere.
+Ricostruisci la MATRICE passi×stato (Anagrafica, Kross, Conduit, Smart check-in,
+Stripe, verifica) assegnando a ognuno uno dei cinque stati (non iniziato / non
+ora / in corso / collegato / verificato). Incrocia SEMPRE tre fonti: /connessioni,
+la tabella pms_integrations e la presenza delle credenziali nel Vault. Ricorda
+che "collegato" != "funziona": per ogni passo che risulta collegato, leggi i log
+e verifica dal vivo (prenotazione reale, apertura porta, link Stripe). Alla fine
+dimmi: il primo passo non ancora verificato (= da dove ripartire), cosa è in
+"non ora" (rimandato di proposito), e cosa manca ancora dallo studente.
+```
+
+## Regola trasversale
+
+**Leggi sempre i log** e ricorda che **"collegato" non è "verificato"**. L'handoff pulito nasce da qui: chi subentra non deve fidarsi del verde in UI, ma ricostruire lo stato dalle tre fonti e chiudere ogni passo con una prova reale. Se qualcosa non torna, applica il [Metodo di troubleshooting](/troubleshooting/metodo) prima di escalare.
+
+<CardGroup cols={2}>
+  <Card title="Panoramica onboarding" icon="arrow-up-right-from-square" href="/onboarding/panoramica">La matrice passi×stato e l'ordine dei sei passi</Card>
+  <Card title="Verifica finale" icon="arrow-up-right-from-square" href="/onboarding/6-verifica-finale">La checklist con evidenza dai log</Card>
+  <Card title="Monitorare gli studenti" icon="arrow-up-right-from-square" href="/delivery/monitorare-studenti">Dopo il go-live: cosa guardare e dove</Card>
+  <Card title="Metodo troubleshooting" icon="arrow-up-right-from-square" href="/troubleshooting/metodo">Quando uno stato non torna</Card>
+</CardGroup>
+
+<Note>Fonti: /onboarding/panoramica (matrice passi×stato, dipendenze di fase), tabella `pms_integrations` (Supabase, repo `~/Projects/mattone-platform`), vista `/connessioni` su `app.mattone.co`, Vault credenziali.</Note>
