@@ -12,12 +12,18 @@ Questo è il pattern architetturale che usiamo ogni volta che serve dare all'AI 
 |---|---|---|---|
 | **Knowledge Node (KB)** | Doc markdown che l'AI cita via ricerca semantica | Fatti statici (WiFi, indirizzo, policy) | MCP: `create/update_knowledge_node` |
 | **Skill** | Procedura comportamentale (trigger + step, `allowed_tools`) | "Cosa fare quando X" | MCP: `create_skill`, `patch_skill` |
-| **Custom Tool** | **Endpoint HTTP** che l'AI chiama | Side-effect / dati da sistemi esterni | **Solo dashboard** — NON via MCP/API |
+| **Custom Tool** | **Codice** (JS/Python) eseguito nella sandbox Conduit, tipicamente per chiamare un nostro endpoint HTTP | Side-effect / dati da sistemi esterni | MCP: `create_custom_tool`, `update_custom_tool`, `run_custom_tool` |
 | **Guardrail** | Regola dura sull'agente | Vincoli negativi ("mai sconti > 5%") | MCP: `patch_agent` (guardrails) |
 | **Agent** | Bundle di skill + guardrail + istruzioni | Modello, delay, autopilot, assegnazione skill | MCP: `patch_agent` |
 
+<Note>
+**Correzione (22/08/2026): i Custom Tools NON sono più "solo da dashboard".** Sono creabili, aggiornabili ed eseguibili via API pubblica e via Conduit MCP: `list_custom_tools`, `get_custom_tool`, `create_custom_tool`, `update_custom_tool`, `delete_custom_tool`, `run_custom_tool`, `list_custom_tool_runtimes`. Verificato in esecuzione. Se trovi ancora la dicitura vecchia in una doc o in una skill (per esempio `conduit-editing-playbook`), è stale.
+
+Resta un solo passo manuale in dashboard: i **secret di workspace**. Conduit MCP non espone alcun `set_secret` e `create_custom_tool` non ha un campo secrets, quindi una chiave referenziata come `process.env.X` va inserita a mano. L'alternativa più pulita è non mettere il segreto in Conduit e far passare il tool dal nostro gateway, dove le credenziali già vivono nel Vault.
+</Note>
+
 <Warning>
-**I Custom Tools si registrano SOLO dalla dashboard Conduit.** Non sono esponibili via MCP/API. KB, Skill, Guardrail e Agent sì (via Conduit MCP). Questa asimmetria è centrale: possiamo automatizzare KB e prompting da codice, ma il collegamento del tool HTTP è un passo manuale in dashboard.
+**Un custom tool non è "registra un URL REST": è codice.** JS su Bun o Python, eseguito nella sandbox Conduit, entrypoint `main`, deve restituire `{ message: string, rawData?: object }`. Il runtime JS ha i builtin Node più `fetch` e **zero pacchetti npm**; Python ha `requests`, `lxml`, `httpx`, `hashlib`, `hmac`, `base64`. La scrittura valida staticamente solo la presenza di `main` e di un `return`: usa `list_custom_tool_runtimes` per la firma esatta prima di scrivere codice nuovo.
 </Warning>
 
 ## L'idea in una riga
@@ -44,8 +50,9 @@ Messaggio ospite
 1. **Endpoint HTTP** sul **gateway multi-tenant** `mcp.mattone.co` (`api/mcp/<capability>.js`, vedi [Gateway multi-tenant](/internal/conduit-knowhow/gateway-multi-tenant)). Espone tool con `name`, `description` (quando usarlo), `inputSchema`.
 2. **Identificazione del tenant per costruzione**: header `X-Student-Token`; le credenziali del sistema esterno vivono nel Vault Supabase, mai nella dashboard Conduit e mai in una env var per-cliente. L'endpoint non deve essere indovinabile con PII ospiti.
 3. **Descrizione = prompt**: la `description` del tool dice all'AI *quando* chiamarlo e *in che ordine* (es. "controlla il portale PRIMA di mandare le istruzioni di check-in").
-4. **Registrazione in dashboard Conduit**: URL + chiave → il tool compare all'agente.
-5. **Skill/Knowledge** che istruiscono esplicitamente l'agente a usarlo (Conduit non "indovina": va detto).
+4. **Creazione del tool**: via `create_custom_tool` (MCP/API) oppure da dashboard. Il codice del tool fa la `fetch` verso il gateway e restituisce `message` all'agente.
+5. **Guardrail sugli errori dentro il codice del tool**: il pattern a 6 porte, obbligatorio. Senza, su un 429 il tool afferma un fatto falso all'ospite. Vedi [Guardrail a 6 porte](/internal/troubleshooting/guardrail-6-porte).
+6. **Skill/Knowledge** che istruiscono esplicitamente l'agente a usarlo (Conduit non "indovina": va detto). Il tool non riceve automaticamente il contesto della conversazione: l'identificativo ospite glielo passa l'LLM come parametro.
 
 ## Esempi in produzione
 
@@ -61,3 +68,5 @@ Stesso schema che replichiamo per ImmobiNet: `get_reservations`, `get_guest`, `c
 ## Regola d'oro
 
 Il tool esiste ≠ l'AI lo usa. Sempre accompagnare il custom tool con una **Skill che dice quando chiamarlo** e, se serve, **Guardrail** su cosa non fare (es. "non aggiornare mai i prezzi"). Per lo scoping e le trappole vedi [KB e Workflow: regole](/internal/conduit-knowhow/kb-e-workflow-regole).
+
+E la seconda regola d'oro, che vale quanto la prima: **un tool che non gestisce gli errori mente**. Su un 429 del PMS, senza guardrail, il tool risponde "date non disponibili" o "nessuna prenotazione trovata" con `isError: false`, e l'agente lo riferisce all'ospite come un fatto. Vedi [Silenzioso e sbagliato](/internal/troubleshooting/silent-wrong) e il [pattern a 6 porte](/internal/troubleshooting/guardrail-6-porte).

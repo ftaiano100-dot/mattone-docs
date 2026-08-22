@@ -49,7 +49,7 @@ Il WSDL pubblico è `https://rentallab.immobinet.it/webservice.wsdl` ed è un **
    creds dal Vault)
         │
         ▼ POST /api/mcp/immobinet + header X-Student-Token
-  Custom Tools Conduit (registrati da DASHBOARD, non via MCP/API)
+  Custom Tools Conduit (creati via MCP/API, oppure da dashboard)
         │
         ▼
   AI Ospiti interroga on-demand
@@ -68,7 +68,7 @@ I tre lavori (Conduit, Direct Booking, PriceLabs) sono **paralleli e indipendent
     Architettura WSDL, 5 bundle, autenticazione, convenzioni dati e le 17 operazioni SOAP con matrice READ/WRITE.
   </Card>
   <Card title="Conduit via Custom Tools" icon="robot" href="/internal/immobinet/conduit-custom-tools">
-    Il path ufficiale (Raniel): niente sync nativo, l'AI chiama un bridge on-demand via custom tool registrato da dashboard.
+    Il path ufficiale (Raniel): niente sync nativo, l'AI chiama un bridge on-demand via custom tool (creabile via MCP/API).
   </Card>
   <Card title="Stato del bridge" icon="wrench" href="/internal/immobinet/bridge-stato">
     Repo `immobinet-bridge`: cosa è fatto, cosa è stub, cosa manca (credenziali Alberto) e i next step per Mattia.

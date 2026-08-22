@@ -1,7 +1,7 @@
 ---
 title: "Conduit + ImmobiNet: il path ufficiale via Custom Tools"
 sidebarTitle: "Conduit via Custom Tools"
-description: "Conduit non sincronizza ImmobiNet nativamente. Il path confermato da Raniel: Custom Tools registrati da dashboard, serviti dal gateway multi-tenant mcp.mattone.co. Include come Airbnb e Booking arrivano indirettamente via ImmobiNet."
+description: "Conduit non sincronizza ImmobiNet nativamente. Il path confermato da Raniel: Custom Tools (creabili via MCP/API) serviti dal gateway multi-tenant mcp.mattone.co. Include come Airbnb e Booking arrivano indirettamente via ImmobiNet."
 ---
 
 <Info>
@@ -30,8 +30,12 @@ Messaggio ospite (Airbnb / Booking / WhatsApp)
         ◀──────────── dati freschi (JSON) ────────┘
 ```
 
+<Note>
+**Correzione (22/08/2026): i Custom Tools di Conduit si creano e si aggiornano via API/MCP**, esattamente come Knowledge Base, Skill e Guardrail: `create_custom_tool`, `update_custom_tool`, `run_custom_tool`, `list_custom_tools`, `get_custom_tool`. La dicitura "solo dashboard" che compariva qui (e nella skill `conduit-editing-playbook`) è **superata**. Resta da dashboard solo l'inserimento dei secret di workspace. Ogni tool va comunque scoped al workspace/listing giusto per evitare cross-contamination.
+</Note>
+
 <Warning>
-**I Custom Tools di Conduit si registrano SOLO dalla dashboard Conduit** — non via API, non via MCP. Questo è diverso da Knowledge Base, Skill e Guardrail (creabili via MCP). Per la procedura di editing sicuro del workspace vedi la skill `conduit-editing-playbook`. Ogni tool va scoped al workspace/listing giusto per evitare cross-contamination.
+**Ogni tool nuovo nasce con la guardrail a 6 porte.** Un custom tool senza gestione degli errori, su un 429 o un timeout del PMS, afferma un fatto falso all'ospite ("nessuna prenotazione trovata") invece di segnalare l'errore, e con `isError: false` è **non intercettabile** dai guardrail dell'agente. Vedi [Silenzioso e sbagliato](/internal/troubleshooting/silent-wrong) e il [pattern a 6 porte](/internal/troubleshooting/guardrail-6-porte).
 </Warning>
 
 ## Dove vive l'endpoint: dentro il gateway multi-tenant
