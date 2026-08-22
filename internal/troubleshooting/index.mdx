@@ -1,0 +1,44 @@
+---
+title: "Troubleshooting dei custom tool Conduit"
+sidebarTitle: "Custom tool: troubleshooting"
+description: "Know-how interno sulla classe di bug più pericolosa dei custom tool Conduit: il tool che su errore transitorio afferma un fatto falso all'ospite. Pattern guardrail, regola d'oro, diagnosi via MCP, casi studio e stato della flotta."
+---
+
+<Warning>
+**Area interna, non pubblicata su `docs.mattone.co`.** Questa cartella vive in `internal/` ed è esclusa dal build Mintlify tramite `.mintignore`, quindi non è raggiungibile online nemmeno via URL diretto. Resta versionata in git per il team. Materiale per chi costruisce e mantiene i workspace Conduit, non per gli studenti.
+</Warning>
+
+## Da dove nasce questa sezione
+
+Il 22/08/2026 abbiamo fatto un audit di tutti i custom tool Conduit della flotta studenti più i due workspace Cosmica. È emersa una classe di bug che non produce errori, non compare nei log come fallimento e non è intercettabile dai guardrail dell'agente: **il tool che, su un errore temporaneo del sistema a valle, risponde con un fatto falso invece che con un errore.**
+
+Il precedente reale è il test Botanique di agosto 2026: l'agente dichiarava "date non disponibili" su date perfettamente libere, e nessuno riusciva a capire perché.
+
+Queste pagine sono il risultato di quell'audit: cosa è successo, come si riconosce, come si previene, come si diagnostica.
+
+## Le pagine
+
+<CardGroup cols={2}>
+  <Card title="La classe di bug silenzioso e sbagliato" icon="triangle-exclamation" href="/internal/troubleshooting/silent-wrong">
+    Perché un tool che mente è peggio di un tool che si rompe. Il post-mortem Botanique e i fallback affermativi da estirpare.
+  </Card>
+  <Card title="Il pattern guardrail a 6 porte" icon="shield-halved" href="/internal/troubleshooting/guardrail-6-porte">
+    L'ordine esatto delle porte, la trappola della porta 4, il contenuto del messaggio BUSY. Snippet riusabile.
+  </Card>
+  <Card title="Regola d'oro: mai dedurre un fatto" icon="scale-balanced" href="/internal/troubleshooting/regola-doro-dati-mancanti">
+    `data: []` non è `data` mancante. Le correzioni reali applicate nel gateway.
+  </Card>
+  <Card title="Come si diagnostica un custom tool" icon="stethoscope" href="/internal/troubleshooting/diagnosi-custom-tools">
+    Lettura via MCP, test read-only con `run_custom_tool`, branch test con fetch stubbato.
+  </Card>
+  <Card title="Caso studio: Soliséra SwitchBot" icon="plug-circle-xmark" href="/internal/troubleshooting/caso-solisera-switchbot">
+    Protocollo disallineato, errore al 100% per tre mesi senza che nessuno se ne accorgesse.
+  </Card>
+  <Card title="Stato guardrail della flotta" icon="table-list" href="/internal/troubleshooting/stato-flotta">
+    Workspace per workspace, chi ha la guardrail e chi no. Snapshot 22/08/2026.
+  </Card>
+</CardGroup>
+
+<Note>
+**Correzione importante rispetto a quanto scritto in passato:** i custom tool Conduit **non sono più "solo da dashboard"**. Sono creabili, aggiornabili ed eseguibili via API pubblica e via Conduit MCP (`list_custom_tools`, `get_custom_tool`, `create_custom_tool`, `update_custom_tool`, `run_custom_tool`, `delete_custom_tool`). Verificato il 22/08/2026. Se trovi ancora la dicitura vecchia in una doc o in una skill, è stale: correggila.
+</Note>

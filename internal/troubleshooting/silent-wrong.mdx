@@ -1,0 +1,104 @@
+---
+title: "Silenzioso e sbagliato: quando il tool mente all'ospite"
+sidebarTitle: "Silenzioso e sbagliato"
+description: "La classe di bug più pericolosa dei custom tool Conduit: su un errore transitorio il tool non segnala l'errore, afferma un fatto falso. Post-mortem Botanique e fallback affermativi da estirpare."
+---
+
+## La definizione
+
+Un custom tool è **silenzioso e sbagliato** quando, di fronte a un errore *transitorio* del sistema a valle (429 rate limit, 5xx, timeout, connessione caduta), non segnala l'errore ma **afferma un fatto** all'ospite:
+
+- "Le date **non sono disponibili**"
+- "**Non trovo nessuna prenotazione** a tuo nome"
+- "**Non c'è nessun ospite** in casa"
+- "Il dispositivo **è offline**"
+
+Nessuna di queste frasi è vera. Sono tutte la stessa cosa: *non ho ricevuto il dato*, travestito da *il dato dice di no*.
+
+<Warning>
+**Perché è la categoria peggiore.** Un tool che restituisce un errore vago ("Error") fa un danno limitato: l'agente lo vede, il guardrail può intercettarlo, l'ospite riceve al massimo una risposta goffa. Un tool che restituisce un fatto falso con `isError: false` è **indistinguibile da un successo**. L'AI non ha alcun modo di sapere che sta mentendo, i guardrail dell'agente non scattano (vedono solo `isError`), e la risposta all'ospite è sbagliata con la stessa sicurezza con cui sarebbe stata giusta.
+</Warning>
+
+Il principio generale, valido oltre Conduit:
+
+> **Dato mancante non è un fatto negativo.** In un calcolo di disponibilità, una notte non coperta da alcun range è *non so*, non *occupata*. Trattarla come occupata è indistinguibile da un vero sold-out.
+
+## Post-mortem: il test Botanique (08/2026)
+
+**Sintomo.** L'agente rispondeva "l'appartamento **non è** completamente disponibile" su date libere. Intermittente, non riproducibile a comando, nessun errore nei log dell'agente.
+
+**Catena reale, dal basso verso l'alto:**
+
+<Steps>
+  <Step title="KrossBooking risponde 429 o 5xx">
+    Sotto burst di chiamate, l'API `/v5` va in rate limit. Verificato: i corpi d'errore Kross sono **JSON valido privo del campo `data`**, per esempio `{"error_code":18,"error_message":"Invalid api key/hotel id","ruid":"..."}` con status 401. Un errore Kross ha la stessa forma di una risposta buona, meno una chiave.
+  </Step>
+  <Step title="Il gateway ritenta e poi si arrende male">
+    `lib/kross.js` fa 3 retry con backoff. A retry esauriti però **fa `return r.json()`** invece di lanciare: restituisce il *corpo d'errore* come se fosse un risultato.
+  </Step>
+  <Step title="L'estrattore trasforma l'errore in zero risultati">
+    A valle, `lib/kross-mcp.js` fa `Array.isArray(res?.data) ? res.data : []`. Il corpo d'errore non ha `data`, quindi `ranges = []`.
+  </Step>
+  <Step title="Zero range diventa 'non disponibile'">
+    Con `ranges = []` nessuna notte risulta coperta, quindi `fully = false`, quindi il tool risponde **"NOT fully available"** con `isError: false`. Per Conduit è una risposta valida e riuscita.
+  </Step>
+  <Step title="L'agente riferisce il falso all'ospite">
+    E in più, se il tool fosse andato in errore visibile, l'agente sarebbe ripiegato sul **calendario nativo Conduit**, che sulle date è a sua volta inaffidabile. Doppia trappola.
+  </Step>
+</Steps>
+
+<Warning>
+**Nessuna guardrail lato Conduit può intercettare questo caso.** Il guardrail dell'agente vede solo `isError`. Un tool che risponde `isError: false` con un contenuto sbagliato è invisibile: la difesa deve stare nel **gateway** e nel **codice del tool**, mai nel prompting.
+</Warning>
+
+**Fix.** Nel gateway (`mattone-mcp-gateway`, branch `fix/kross-retry-exhausted`): il retry deve terminare in un **errore tipizzato** (`transient: true`), mai in un valore; e `data` mancante va distinto da `data: []`. Vedi [Regola d'oro](/internal/troubleshooting/regola-doro-dati-mancanti).
+
+## I fallback affermativi: da estirpare per primi
+
+Nel codice dei custom tool ricorre questo pattern:
+
+```js
+// ❌ MAI
+const text = d.result?.content?.[0]?.text || "No reservation found";
+```
+
+L'operatore `||` scatta anche quando la risposta è arrivata rotta, vuota o in errore. Il risultato è che un **transitorio diventa un fatto asserito all'ospite**.
+
+Frasi trovate e rimosse nell'audit del 22/08:
+
+| Fallback trovato | Cosa afferma di falso | Dove |
+|---|---|---|
+| `\|\| "No reservation found"` | La prenotazione non esiste | Soliséra, SevenHome, MBA Prime Home |
+| `\|\| "Not found"` | La risorsa non esiste | Soliséra, SevenHome, MBA Prime Home |
+| `\|\| "No instructions"` | Non ci sono istruzioni di check-in | Soliséra, SevenHome, MBA Prime Home |
+| `\|\| "No guests in-house"` | Non c'è nessuno in casa | Cosmica Dubai |
+| `\|\| "No check-ins found"` | Non ci sono arrivi | Cosmica Dubai |
+| `\|\| "Error"` | (vago, meno grave ma comunque da sostituire) | tutti i workspace pre-fix |
+
+<Tip>
+**Come si cerca.** In un audit di custom tool, cerca l'operatore `||` **prima** della stringa `"Error"`: è lì che si nascondono i fallback affermativi. Un `|| "Error"` è un problema di qualità; un `|| "No reservation found"` è un problema di verità.
+</Tip>
+
+## Gerarchia di gravità
+
+Dalla meno grave alla più grave:
+
+1. **Errore esplicito e specifico.** Il tool dice cosa non ha funzionato. Ottimo.
+2. **Messaggio BUSY / SISTEMA_OCCUPATO.** Il tool dice "non so", e istruisce l'agente su cosa non fare. È il nostro standard, vedi [pattern a 6 porte](/internal/troubleshooting/guardrail-6-porte).
+3. **`|| "Error"`.** Vago: l'agente non sa se riprovare, e tende a ripiegare sul path nativo inaffidabile.
+4. **Fallback affermativo.** Il tool asserisce un fatto falso all'ospite ma con `isError` coerente: almeno lascia una traccia.
+5. **Silent-wrong puro.** Il tool asserisce un fatto falso con `isError: false`, indistinguibile da un successo. È il caso Botanique, e **non è correggibile lato Conduit**: va risolto a monte.
+
+## Non è solo Conduit
+
+La stessa classe di bug si ripresenta ovunque un errore venga letto come dato. Esempi reali dello stesso 22/08 su altri sistemi:
+
+- **Supabase/PostgREST**: `.select()` senza paginazione è cappato a 1000 righe **in silenzio**. Su una tabella da 5400 righe i totali risultano troncati e le percentuali sbagliate, senza alcun errore.
+- **KrossBooking**: un filtro con nome di parametro sbagliato viene **ignorato in silenzio**, non genera errore. Il risultato sembra filtrato e non lo è.
+- **Conduit KB**: gli `entity_ids` a livello di articolo vengono **scartati in silenzio**, il nodo nasce globale e il contenuto di un appartamento finisce nelle risposte di un altro.
+
+Il denominatore comune: **lo status 2xx non è una prova**. Va sempre guardato il corpo, e va sempre distinto "risposta valida che dice zero" da "risposta che non ho".
+
+<Note>
+Correlati: [Il pattern guardrail a 6 porte](/internal/troubleshooting/guardrail-6-porte) · [Regola d'oro sui dati mancanti](/internal/troubleshooting/regola-doro-dati-mancanti) · [Stato guardrail della flotta](/internal/troubleshooting/stato-flotta).
+</Note>
