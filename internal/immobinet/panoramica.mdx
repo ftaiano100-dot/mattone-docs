@@ -1,0 +1,88 @@
+---
+title: "ImmobiNet: il PMS SOAP legacy e come lo integriamo"
+sidebarTitle: "Panoramica"
+description: "Cos'è ImmobiNet/Rentallab, perché la sua tecnologia SOAP richiede un trattamento speciale, e quali integrazioni (Conduit, Direct Booking, PriceLabs) sono fattibili."
+---
+
+ImmobiNet (motore tecnico **Rentallab**) è un PMS italiano usato da alcuni property manager, tipicamente ex-agenzie immobiliari con volumi alti (es. lo studente Mattone con ~190 appartamenti a Jesolo). A differenza di KrossBooking o Hostaway, ImmobiNet **non espone API REST moderne**: parla solo **SOAP/XML**, una tecnologia più vecchia. Per questo non si collega "out of the box" con Conduit, PriceLabs e gli altri strumenti che consumano REST. Questa sezione raccoglie tutto quello che sappiamo e definisce i path ufficiali per integrarlo.
+
+## Perché ImmobiNet è "diverso e antiquato"
+
+| Aspetto | PMS moderno (Kross, Hostaway) | ImmobiNet / Rentallab |
+|---|---|---|
+| Protocollo | REST/JSON | **SOAP 1.1 / XML** (document/literal) |
+| Auth | API key / Bearer token | **username + password in chiaro nel body** (no token, no OAuth, no WSSE) |
+| Documentazione | Portale partner / doc pubblica | **Nessuna doc ufficiale** — tutto reverse-engineered dal WSDL |
+| Sync nativo Conduit | Sì (import source) | **No** — serve un bridge + custom tools |
+| Sync nativo PriceLabs | Sì | **No** — non è in lista integrazioni PriceLabs |
+| Prezzi | euro decimali | **centesimi** (`int`, euro × 100) |
+| Disponibilità | JSON strutturato | **stringa binaria** `0`/`1` giornaliera |
+
+Il WSDL pubblico è `https://rentallab.immobinet.it/webservice.wsdl` ed è un **aggregatore di 5 bundle** SOAP (agenzia, gruppi, listini/regole, offerte, pulizie). L'analisi completa (17 operazioni) è in [SOAP Webservice](/internal/immobinet/soap-webservice).
+
+## Verdetto per integrazione
+
+| Integrazione | Verdetto | Path ufficiale |
+|---|---|---|
+| **Conduit AI (AI Ospiti)** | ✅ Fattibile | **Custom Tools Conduit** on-demand, serviti dal **gateway multi-tenant `mcp.mattone.co`** (una capability `immobinet` in più, non un deploy per cliente). Path confermato da Raniel (Conduit). Vedi [Conduit via Custom Tools](/internal/immobinet/conduit-custom-tools) |
+| **Prenotazioni Airbnb / Booking** | ✅ Indirette, gratis | ImmobiNet fa da **channel manager**: le prenotazioni OTA atterrano in ImmobiNet e il layer di estrazione le cattura di conseguenza. Il canale è su `metadata/portale`. Vedi [Airbnb e Booking indiretti](/internal/immobinet/conduit-custom-tools#airbnb-e-booking-arrivano-indirettamente-via-immobinet) |
+| **Direct Booking Site** | ✅ Fattibile al 100% | Tutti i metodi read + write prenotazioni esistono. Qui `cosmica-booking` **resta il template corretto**: il sito diretto è per definizione single-tenant (un brand, un dominio per PM) |
+| **PriceLabs (revenue)** | ⚠️ Solo indiretto | Nessun write su prezzi via SOAP. Soluzione **Hybrid Sync**: iCal in lettura + Direct Connect alle OTA in scrittura. Vedi [PriceLabs Hybrid Sync](/internal/immobinet/pricelabs-hybrid-sync) |
+
+<Warning>
+**Il collo di bottiglia è l'ESTRAZIONE dei dati da ImmobiNet, non l'integrazione a valle.** Il bridge (`immobinet-bridge`) ha già l'invio delle richieste SOAP e l'auth verificati, ma il **parser delle risposte è ancora uno stub**: si completa solo quando arrivano le **credenziali reali del cliente** (Alberto Milan / Rentallab) per vedere la forma effettiva dell'XML. Finché mancano quelle credenziali, nessun path va live. Vedi [Stato del bridge](/internal/immobinet/bridge-stato).
+</Warning>
+
+## Come si incastrano i pezzi
+
+```
+   Airbnb ─┐
+  Booking ─┼─▶  ImmobiNet (SOAP/XML, rentallab.immobinet.it)  ◀─ ImmobiNet fa da channel manager:
+  Diretto ─┘                    │                                le prenotazioni OTA atterrano QUI
+                                │
+        ┌───────────────────────┼────────────────────────┐
+        │ estrazione SOAP       │ iCal (read)            │
+        ▼                       ▼                        ▼
+  mattone-mcp-gateway    PriceLabs Hybrid Sync    Direct Booking Site
+  api/mcp/immobinet.js   (write prezzi → OTA)     (setPrenotazione + Stripe)
+  (1 deploy, N studenti,
+   creds dal Vault)
+        │
+        ▼ POST /api/mcp/immobinet + header X-Student-Token
+  Custom Tools Conduit (creati via MCP/API, oppure da dashboard)
+        │
+        ▼
+  AI Ospiti interroga on-demand
+```
+
+<Note>
+Il client SOAP scritto in `immobinet-bridge` **non sparisce**: è la fonte da cui si porta il parser dentro il gateway. Cambia il runtime (un gateway multi-tenant invece di un deploy per cliente), non il lavoro già fatto sull'XML.
+</Note>
+
+I tre lavori (Conduit, Direct Booking, PriceLabs) sono **paralleli e indipendenti**: si possono avviare separatamente, tutti condividono lo stesso layer di estrazione SOAP.
+
+## Sezioni correlate
+
+<CardGroup cols={2}>
+  <Card title="SOAP Webservice" icon="code" href="/internal/immobinet/soap-webservice">
+    Architettura WSDL, 5 bundle, autenticazione, convenzioni dati e le 17 operazioni SOAP con matrice READ/WRITE.
+  </Card>
+  <Card title="Conduit via Custom Tools" icon="robot" href="/internal/immobinet/conduit-custom-tools">
+    Il path ufficiale (Raniel): niente sync nativo, l'AI chiama un bridge on-demand via custom tool (creabile via MCP/API).
+  </Card>
+  <Card title="Stato del bridge" icon="wrench" href="/internal/immobinet/bridge-stato">
+    Repo `immobinet-bridge`: cosa è fatto, cosa è stub, cosa manca (credenziali Alberto) e i next step per Mattia.
+  </Card>
+  <Card title="PriceLabs Hybrid Sync" icon="chart-line" href="/internal/immobinet/pricelabs-hybrid-sync">
+    Revenue management senza integrazione nativa: iCal in lettura + Direct Connect alle OTA in scrittura.
+  </Card>
+  <Card title="Troubleshooting" icon="triangle-exclamation" href="/internal/immobinet/troubleshooting">
+    Tabella sintomo → causa → soluzione per i problemi tipici dell'integrazione SOAP.
+  </Card>
+</CardGroup>
+
+## Fonti ufficiali
+
+- **WSDL ImmobiNet/Rentallab**: `https://rentallab.immobinet.it/webservice.wsdl` (nessuna doc ufficiale, tutto reverse-engineered il 2026-04-23; probe live endpoint 2026-05-11).
+- **Conduit** (consuma il bridge via custom tools): [docs.conduit.ai](https://docs.conduit.ai). Guida operativa: skill `conduit-editing-playbook`.
+- Per accedere alle API serve un **account di agenzia ImmobiNet**; le credenziali si richiedono a ImmobiNet/Rentallab support (vedi email tipo in [Stato del bridge](/internal/immobinet/bridge-stato)).

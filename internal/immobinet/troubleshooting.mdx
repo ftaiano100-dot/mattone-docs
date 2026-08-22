@@ -1,0 +1,27 @@
+---
+title: "ImmobiNet: troubleshooting"
+sidebarTitle: "Troubleshooting"
+description: "Tabella sintomo → causa → soluzione per i problemi tipici dell'integrazione SOAP con ImmobiNet/Rentallab."
+---
+
+Usa questa pagina per diagnosticare i problemi del bridge SOAP verso ImmobiNet. Prima di assumere una causa, leggi sempre il **body XML effettivo** della risposta: un fault SOAP torna spesso con HTTP 200 e l'errore dentro l'envelope.
+
+## Tabella di diagnosi
+
+| Sintomo | Causa probabile | Soluzione |
+|---|---|---|
+| **HTTP 401 "Non autorizzato"** | Credenziali mancanti/errate, o account senza accesso al webservice | Verifica `IMMOBINET_USERNAME`/`PASSWORD`; testa prima il login web del cliente (Scenario A). Se il piano non include il webservice → Scenario C, upgrade |
+| **SOAP Fault "elemento non riconosciuto"** | Prefisso namespace sbagliato (schema `qualified`) | `<auth>` va nel namespace `imw` del bundle, `<username>`/`<password>` nel namespace `core`; ogni elemento vuole il prefisso esplicito |
+| **Risposta vuota / parser ritorna `[]`** | Parser `extractReservations`/`extractImmobili` ancora stub | Completare il parser sulla forma XML reale (serve una chiamata autenticata riuscita). Vedi [Stato del bridge](/internal/immobinet/bridge-stato) |
+| **Prezzi assurdi (100x)** | I prezzi ImmobiNet sono in **centesimi** | Dividi per 100 nel mapper (euro = int/100) |
+| **Ultimo giorno soggiorno sballato** | In ImmobiNet `al` è **inclusa** | Adatta il calcolo notti: ImmobiNet include l'ultimo giorno, diverso da ISO/Booking |
+| **Disponibilità illeggibile** | `getDisponibilita` torna una **stringa binaria** `0`/`1` giornaliera | Espandi la stringa contro il range `dal`→`al` per ricavare i giorni liberi/occupati |
+| **Date con orari sbagliati** | Nessun timezone nel payload | Assumi `Europe/Rome` (comportamento server) |
+| **`editPrenotazione` non cambia date/cliente** | `editPrenotazione` aggiorna **solo prezzo/stato** | Per cambio date/immobile serve cancel + re-create, oppure escalation umana in backoffice |
+| **Nuove prenotazioni non arrivano in tempo reale** | PUSH webhook non configurato lato agenzia | Configura l'URL PUSH con Rentallab, oppure fallback polling: `getPrenotazioni(ultima-modifica=<last_sync>)` ogni 2-5 min |
+| **Throttle/timeout sotto carico** | Rate limit non documentato nel WSDL | Cache aggressiva (listings TTL lungo, reservations TTL breve) + circuit breaker; con 100+ unità servono ~50 req/min |
+| **Conduit non vede le prenotazioni** | I dati ImmobiNet **non sono nativi** in Conduit | Vanno esposti come **Custom Tools** (dashboard Conduit), l'AI li chiama on-demand. Vedi [Conduit via Custom Tools](/internal/immobinet/conduit-custom-tools) |
+
+<Note>
+Per errori non in tabella, cattura il **request + response XML completo** (envelope, SOAPAction, status) e allegalo. Il messaggio visibile nell'app è quasi sempre diverso dall'errore reale nel SOAP Fault.
+</Note>

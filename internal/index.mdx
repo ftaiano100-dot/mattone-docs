@@ -1,0 +1,48 @@
+---
+title: "Area interna (non pubblicata)"
+sidebarTitle: "Interno"
+description: "Know-how tecnico del team Mattone: casistiche PMS marginali e pattern Conduit. Versionato nel repo, NON pubblicato su docs.mattone.co."
+---
+
+<Warning>
+**Questa area è interna al team e NON viene pubblicata su `docs.mattone.co`.**
+Vive nella cartella `internal/` del repo `mattone-docs` (versionata, per il team) ma è esclusa dal build Mintlify tramite `.mintignore`. Non è referenziata nel menu (`docs.json`). Contiene know-how tecnico e casistiche PMS secondarie — riferimento per chi costruisce, non materiale per gli studenti.
+</Warning>
+
+## Perché esiste
+
+Alcune cose non stanno bene nella guida pubblica: integrazioni marginali (PMS di nicchia), dettagli di reverse engineering, pattern architetturali interni, "come facciamo le cose" lato Conduit. Le teniamo qui: **nel repo sì, sul sito no.**
+
+## Come è tenuta fuori dal sito
+
+Meccanismo: la cartella `internal/` è elencata in **`.mintignore`** (l'equivalente di `.gitignore` per il build Mintlify). Le pagine **non in `docs.json` sarebbero comunque raggiungibili via URL diretto** sul sito pubblicato; `.mintignore` invece le **esclude del tutto dal build**, quindi non finiscono online in nessuna forma. Restano versionate in git per il team.
+
+## Contenuti
+
+### Casistiche PMS
+
+<CardGroup cols={2}>
+  <Card title="ImmobiNet (PMS SOAP legacy)" icon="plug" href="/internal/immobinet/panoramica">
+    Cos'è ImmobiNet/Rentallab, il webservice SOAP, il bridge, Conduit via custom tools, PriceLabs Hybrid Sync, troubleshooting.
+  </Card>
+</CardGroup>
+
+### Come facciamo le cose su Conduit (know-how team)
+
+<CardGroup cols={2}>
+  <Card title="Pattern Custom Tools" icon="wrench" href="/internal/conduit-knowhow/custom-tools-pattern">
+    Come diamo a Conduit capacità che non ha di serie: custom tool creati via MCP/API che chiamano i nostri endpoint HTTP on-demand.
+  </Card>
+  <Card title="Gateway multi-tenant mcp.mattone.co" icon="server" href="/internal/conduit-knowhow/gateway-multi-tenant">
+    **Architettura di riferimento.** Un gateway, N studenti: token + Vault. Come si aggiunge un PMS nuovo.
+  </Card>
+  <Card title="cosmica-booking (precedente storico)" icon="box-archive" href="/internal/conduit-knowhow/mcp-servers-cosmica-booking">
+    Cosa gira per Cosmica e perché il modello single-tenant NON è il template per gli studenti.
+  </Card>
+  <Card title="Custom tool: troubleshooting" icon="triangle-exclamation" href="/internal/troubleshooting">
+    La classe di bug "silenzioso e sbagliato", il pattern guardrail a 6 porte, la diagnosi via MCP, i casi studio e lo stato della flotta.
+  </Card>
+  <Card title="KB e Workflow: regole" icon="shield" href="/internal/conduit-knowhow/kb-e-workflow-regole">
+    Scoping per-listing, no cross-contamination IT/DXB, editing via MCP, sync Notion→Conduit.
+  </Card>
+</CardGroup>
