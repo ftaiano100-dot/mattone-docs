@@ -5,3 +5,8 @@
 # Draft content
 drafts/
 *.draft.mdx
+
+# Internal team know-how — versioned in the repo but NOT published on docs.mattone.co.
+# Not referenced in docs.json nav either; .mintignore keeps it out of the build entirely
+# (pages merely absent from nav would still be reachable by direct URL).
+internal/
