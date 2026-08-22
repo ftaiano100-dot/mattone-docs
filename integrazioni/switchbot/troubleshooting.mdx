@@ -1,59 +1,142 @@
 ---
-title: "Troubleshooting SwitchBot: errore 161 e device offline"
+title: "Troubleshooting SwitchBot: codici errore e albero diagnostico"
 sidebarTitle: "Troubleshooting"
-description: "Come risolvere l'errore 161 di SwitchBot e altri problemi comuni: Hub Mini offline, account member, Cloud Service disabilitato e serratura fuori portata."
+description: "La mappa dei codici SwitchBot (161, 171, 190, 401...), perché battery 0% quasi mai significa batteria scarica, e l'albero diagnostico per capire in due minuti se il problema è l'hub, la serratura, il Cloud Service, la batteria o le credenziali."
 ---
 
-Il problema più frequente con SwitchBot è il codice errore 161 (device offline), che viene spesso scambiato per un problema di batteria scarica. Prima di sostituire le batterie o modificare qualsiasi configurazione, leggi sempre i log: il codice di errore esatto ti dice subito dove si trova il problema reale.
+Quasi tutti i problemi SwitchBot vengono diagnosticati male, e sempre nello stesso modo: **"la serratura è offline e la batteria è a 0%"**. Nella maggior parte dei casi entrambe le affermazioni sono sbagliate, e mandano la persona sul posto a cambiare batterie che non serviva cambiare.
 
-## Caso reale: SwitchBot 161 (20/08)
+Prima di toccare qualsiasi cosa: leggi il **codice** che l'API ha restituito. Il codice dice esattamente dove sta il problema.
+
+## La mappa dei codici (fonte ufficiale)
+
+Dalla documentazione [OpenWonderLabs/SwitchBotAPI](https://github.com/OpenWonderLabs/SwitchBotAPI) — verificata il 22/08/2026:
+
+| Codice | Significato ufficiale | Dove sta il problema |
+|---|---|---|
+| `100` | success | Nessun problema di comunicazione |
+| `151` | device type error | Nostro: tipo device sbagliato |
+| `152` | device not found | Nostro: `deviceId` non appartiene a queste credenziali |
+| `160` | command is not supported | Nostro: comando non valido per quel device |
+| `161` | **device offline** | **La SERRATURA** non è raggiungibile. L'hub sta rispondendo |
+| `171` | **hub device is offline** | **L'HUB** non è raggiungibile: rete o corrente in casa |
+| `190` | device internal error / comando malformato | Stati non sincronizzati: si sblocca aprendo una volta dall'app |
+| HTTP `401` | Unauthorized | Nostro: Token/Secret non validi |
 
 <Warning>
-  **Esempio da un caso reale del team Mattone.**
+**`161` non è "hub offline".** È l'errore opposto: il cloud SwitchBot *è arrivato* fino all'hub, ed è l'hub che non riesce a parlare con la serratura. Se l'hub fosse davvero giù, il codice sarebbe `171`.
 
-  L'app SwitchBot mostrava la serratura come "scarica". I log della piattaforma mostravano codice **161 (device offline)**. Il problema era l'Hub Mini offline, non la batteria scarica.
-
-  Senza i log avremmo cambiato le batterie a vuoto, senza risolvere nulla. La connessione dell'Hub Mini al WiFi 2.4GHz era caduta; riavviando l'Hub Mini il problema si è risolto in meno di due minuti.
-
-  **Log prima di tutto, sempre.**
+Confondere i due manda a riavviare il router quando il problema è la distanza fra hub e serratura — e viceversa. Sono due guasti con rimedi opposti.
 </Warning>
 
-## Tabella sintomi, cause e soluzioni
+## `battery: 0` quasi mai significa batteria scarica
 
-| Sintomo | Causa probabile | Soluzione |
+Questa è la trappola che è costata più tempo di tutte.
+
+<Steps>
+  <Step title="Lo schema ufficiale della Smart Lock Pro non contiene onlineStatus">
+    I campi documentati sono `deviceId, deviceType, hubDeviceId, battery, version, lockState, doorState, calibrate`. Il campo `onlineStatus` è documentato **solo** per il Robot Vacuum S1 (API v1.0). Sulla serratura è un campo extra, non contrattuale: è la vista del cloud sul collegamento Bluetooth con la serratura.
+  </Step>
+  <Step title="Quando il device è davvero irraggiungibile, l'API non restituisce un body">
+    Restituisce un **codice d'errore** (`161` o `171`) con `body: {}`. Non ti dà battery, lockState o doorState: non li conosce.
+  </Step>
+  <Step title="Quindi un 100 con onlineStatus offline è uno snapshot vecchio">
+    Se leggi `statusCode: 100` e dentro il body trovi `onlineStatus: "offline"`, il cloud ti sta servendo **l'ultimo stato noto**. In quello snapshot `battery: 0` vuol dire *"non ho un valore aggiornato"*, non *"batteria scarica"*.
+  </Step>
+</Steps>
+
+La lettura della batteria via cloud è peraltro un difetto noto e mai risolto di SwitchBot ([issue #304](https://github.com/OpenWonderLabs/SwitchBotAPI/issues/304), aperta da anni: valori fermi o incoerenti con l'app).
+
+<Check>
+**La batteria è una diagnosi legittima in un solo caso:** il device risponde `100` con uno stato **fresco** (`onlineStatus: "online"`, o device che non espone quel campo) **e** il valore di batteria è basso. In tutti gli altri casi la batteria non c'entra e va esclusa dalle ipotesi.
+</Check>
+
+## Albero diagnostico
+
+Tre domande in ordine. Ognuna si risponde con una chiamata **in sola lettura**: nessun comando viene inviato alla serratura.
+
+<Steps>
+  <Step title="Il device esiste per queste credenziali? Il Cloud Service è attivo?">
+    `GET /v1.1/devices` — cerca il `deviceId` nella lista.
+
+    - **Non c'è** → `152` / device rimosso o account sbagliato → **problema nostro**, non del cliente.
+    - **C'è ma `enableCloudService: false`** → il device non è pilotabile via API. Il cliente deve riattivare "Servizi cloud" nell'app.
+    - **C'è e `enableCloudService: true`** → prosegui. Annota il suo `hubDeviceId`.
+  </Step>
+  <Step title="La serratura risponde?">
+    `GET /v1.1/devices/<lock>/status`
+
+    - `100` con stato **fresco** → la serratura è viva. Se la batteria è bassa, *ora* è una diagnosi legittima.
+    - `100` con `onlineStatus: "offline"`, oppure `161` → la serratura non è raggiungibile. Prosegui: non sai ancora di chi è la colpa.
+    - `401` / `429` / nessuna risposta → **non è un guasto della serratura**: è un problema nostro o un transitorio. Fermati qui e non dire nulla al cliente sullo stato della porta.
+  </Step>
+  <Step title="L'hub risponde?">
+    `GET /v1.1/devices/<hub>/status`
+
+    - `171` (o `161` sull'hub) → **HUB OFFLINE**: il guasto è a monte della serratura, in casa del cliente.
+    - `100` → **l'hub c'è, la serratura no**: il guasto è nel collegamento hub↔serratura.
+
+    <Note>
+    Gli Hub (Hub Mini compreso) **non hanno una sezione "Device Status"** nella documentazione: rispondono `100` con un body vuoto. L'hub quindi non si giudica dal contenuto della risposta, ma dall'**assenza** di `171`/`161`.
+    </Note>
+  </Step>
+</Steps>
+
+## Cosa chiedere al cliente, caso per caso
+
+Chiedere le cose giuste evita il giro di messaggi da tre giorni. Una domanda per ipotesi, non un elenco generico.
+
+| Verdetto | Cosa sta succedendo | Cosa chiedere / far fare a chi è sul posto |
 |---|---|---|
-| Errore 161 (device offline) | Hub Mini offline, ha perso la connessione WiFi | Verifica il LED dell'Hub Mini (deve essere BLU fisso); riavvia l'Hub Mini; verifica che il WiFi 2.4GHz sia disponibile e stabile |
-| Non apre ma nessun errore esplicito | Account member invece di owner usato per il token | Chiedi allo studente di generare un nuovo token dall'account OWNER della Home SwitchBot; aggiorna il Vault |
-| Token non valido (errore 401) | Token rigenerato dallo studente o Developer Mode disabilitata | Chiedi allo studente di riabilitare Developer Mode e rigenerare il token; aggiorna il Vault con il nuovo token |
-| Cloud Service non attivo | Cloud Service disabilitato nell'app SwitchBot | App SwitchBot → Smart Lock → Cloud Service → Attiva; attendi 1–2 minuti e ritesta |
-| Hub Mini offline (LED giallo o rosso) | WiFi 2.4GHz non disponibile o Hub Mini senza corrente | Verifica che il router trasmetta su 2.4GHz; verifica l'alimentazione dell'Hub Mini; riavvia Hub Mini |
-| Serratura non risponde ai comandi (Hub online) | Serratura fisicamente fuori portata Bluetooth (>5m) dall'Hub Mini | Avvicina l'Hub Mini alla serratura; verifica che non ci siano muri spessi o ostacoli tra Hub e serratura |
+| **Hub offline** (`171`) | Rete o corrente in casa | "L'Hub Mini è attaccato alla corrente e ha il LED **blu fisso**?" · "Il WiFi di casa funziona? Prova con un altro dispositivo." · "L'Hub va su rete **2.4GHz**, non 5GHz: il router le tiene separate o le unisce?" |
+| **Hub OK, serratura no** (`161`) | Collegamento Bluetooth hub↔serratura | "Quanti metri e quanti muri ci sono fra Hub Mini e serratura?" (indicativamente sotto i 5 m e senza muri spessi) · "Nell'app, sulla serratura, i **Servizi cloud** sono attivi?" · "La Home che contiene hub e serratura è **tua** o ti è stata **condivisa** da un altro account?" |
+| **Cloud Service disattivato** | Device presente ma non pilotabile | "Apri l'app → il dispositivo → Impostazioni → attiva **Servizi cloud**. Poi aspetta 1–2 minuti." |
+| **Batteria bassa** (device raggiungibile) | Batteria vera | "Sostituisci le batterie della serratura." |
+| **`190`** | Stati non sincronizzati | "Apri e chiudi la serratura **una volta dall'app SwitchBot**, poi riprova dal link." |
+| **`401`** | Credenziali API | Niente da chiedere al cliente sulla porta: è un problema nostro. Serve rigenerare Token+Secret dall'app e aggiornare le variabili d'ambiente. |
+| **`429` / timeout** | Non lo sappiamo | Niente. Non dire al cliente che la porta è rotta: non è stato verificato. Riprova. |
+
+<Warning>
+**Il test che chiude il caso `161`.** Se il cliente riesce ad aprire dall'app ma il nostro link no, c'è un'ambiguità che nessuna lettura API risolve: l'app può aprire **anche via Bluetooth diretto** quando sei vicino alla porta, il nostro link no — passa sempre per il cloud.
+
+Chiedi un **test simultaneo**: il cliente apre dall'app **stando lontano da casa**, nello stesso minuto in cui proviamo noi.
+- Lui apre e noi prendiamo `161` → il percorso cloud funziona per il suo account e non per il nostro: quasi sempre **le nostre credenziali appartengono a un account che ha il device solo condiviso**, non posseduto. Fix: rigenerare Token+Secret dall'account **proprietario** della Home.
+- Falliscono entrambi (lui apre solo stando vicino) → è il **collegamento fisico** hub↔serratura: avvicinare l'hub, rimuovere ostacoli, rifare il pairing.
+</Warning>
+
+## Non dire mai all'ospite
+
+Tre frasi da non usare mai, perché affermano un fatto che non è stato verificato:
+
+- *"La batteria è scarica"* — a meno che il device non sia raggiungibile **e** riporti davvero un valore basso.
+- *"Il dispositivo è offline"* quando la chiamata è andata in timeout o in rate limit: in quel caso **non lo sai**.
+- *"La serratura è rotta"* quando il codice è `401`: è un problema di configurazione nostro, la serratura potrebbe essere perfettamente funzionante.
 
 <Tip>
-  Per diagnosticare rapidamente senza aprire i log della piattaforma, usa il tool `check-device-status` da Conduit, restituisce il codice risposta esatto della serratura in tempo reale, permettendoti di distinguere subito tra Hub offline (161), token non valido (401) e Cloud Service disabilitato.
-</Tip>
-
-<Tip>
-**▷ Prompt Claude Code: Debug SwitchBot (161)**  ·  incolla in Claude Code:
+**▷ Prompt Claude Code: Debug SwitchBot**  ·  incolla in Claude Code:
 </Tip>
 
 ```text
 Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
-Per prima cosa apri il repo di check-in giusto, `~/Projects/cosmica-booking`
-(baseline) o il repo di check-in dello studente, e LEGGI le pagine mattone-docs
+Per prima cosa apri il repo di check-in giusto e LEGGI le pagine mattone-docs
 /troubleshooting/metodo e /integrazioni/switchbot/troubleshooting. Poi procedi:
 
-Applica il metodo di mattone-docs /troubleshooting/metodo a questo problema
-SwitchBot: [DESCRIVI IL SINTOMO, es. "non apre dal link, rawStatus 161" per
-[SLUG]]. LEGGI rawStatus prima di concludere e mappa il codice (161 offline,
-171 hub offline, 190 re-sync, 401 token). Per il 161 isola in ordine: (1) il
-Token è dell'account OWNER o di un MEMBER? (2) range Hub-lock, (3) Cloud Service
-off. Usa il test simultaneo: il cliente apre da remoto mentre provi l'API,
-apre lui + tu 161 => problema owner/member. Proponi il fix e aggiorna la
-tabella se lo scenario è nuovo.
+Diagnostica questo problema SwitchBot: [SINTOMO] su [SLUG].
+Regole non negoziabili:
+1. NON inviare comandi alla serratura. Solo letture: GET /v1.1/devices e
+   GET /v1.1/devices/<id>/status.
+2. Esegui le tre sonde nell'ordine: device list -> status della lock ->
+   status dell'HUB (il suo hubDeviceId sta nella device list).
+3. Riporta il `statusCode` REALE di ognuna. 161 = serratura irraggiungibile,
+   171 = hub offline: non confonderli.
+4. `battery: 0` dentro un `statusCode: 100` con `onlineStatus:"offline"` e'
+   uno snapshot vecchio, NON una batteria scarica: non proporre di cambiare
+   le batterie a meno che il device non risponda con stato fresco.
+5. Concludi con UN verdetto (hub / serratura / cloud service / batteria /
+   credenziali) e con la domanda esatta da fare al cliente.
 ```
 
 <CardGroup cols={2}>
-  <Card title="SwitchBot API (docs)" icon="arrow-up-right-from-square" href="https://github.com/OpenWonderLabs/SwitchBotAPI">Codici e comandi</Card>
+  <Card title="SwitchBot API (docs)" icon="arrow-up-right-from-square" href="https://github.com/OpenWonderLabs/SwitchBotAPI">Codici, schemi per device, comandi</Card>
   <Card title="Metodo troubleshooting" icon="arrow-up-right-from-square" href="/troubleshooting/metodo">Le 5 mosse</Card>
 </CardGroup>
