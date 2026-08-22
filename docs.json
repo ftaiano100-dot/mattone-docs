@@ -39,6 +39,7 @@
             "group": "Onboarding Studente",
             "pages": [
               "onboarding/panoramica",
+              "onboarding/0-accesso-e-contratti",
               "onboarding/1-anagrafica-notion",
               "onboarding/2-pms-kross",
               "onboarding/3-conduit",
@@ -116,7 +117,8 @@
               "integrazioni/conduit/custom-tools",
               "integrazioni/conduit/workflow",
               "integrazioni/conduit/guardrail",
-              "integrazioni/conduit/troubleshooting"
+              "integrazioni/conduit/troubleshooting",
+              "integrazioni/conduit/right-sizing"
             ]
           },
           {
