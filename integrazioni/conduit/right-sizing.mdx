@@ -1,0 +1,116 @@
+---
+title: "Conduit right-sizing: staccare l'operatività senza chiudere il contratto"
+sidebarTitle: "Right-sizing (non pagano)"
+description: "Ultimo stadio del dunning Conduit: quando uno studente non paga da tempo, si riduce il numero di appartamenti attivi fino a 1 per togliergli l'operatività senza chiudere il contratto (che dura 12 mesi). Si tiene così finché non paga, poi si ripristina da backup."
+---
+
+Il right-sizing è lo **stadio finale** della procedura di mancato pagamento (dunning). Serve quando uno studente **non paga da un tot di tempo** e i passaggi soft non hanno sbloccato la situazione. Il contratto del **Servizio AI Ospiti dura 12 mesi e non si può chiudere** (durata minima vincolante), quindi non possiamo "spegnere" il rapporto. Quello che possiamo fare è **togliergli l'operatività mantenendo il contratto**: si riduce il numero di appartamenti attivi **fino a 1**, lo si tiene così **finché non paga**, e poi si **ripristina tutto da un backup**.
+
+<Note>
+  Questa pagina è la coda di [Mancato pagamento](/delivery/mancato-pagamento): lì trovi la scala completa (banner → email → sospensione al giorno 7 → holding dell'agente). Il right-sizing arriva **dopo** quegli stadi, non al posto loro.
+</Note>
+
+## Perché si fa così (contratto 12 mesi)
+
+Il contratto Servizio AI Ospiti ha **durata minima 12 mesi per Listing**, con penale in caso di interruzione anticipata. Non possiamo quindi chiudere il servizio per morosità: chiuderlo rinuncerebbe alle somme dovute. Il right-sizing risolve il paradosso:
+
+- **Contratto** → resta in piedi (nessuna disdetta, nessuna penale rinunciata, l'arretrato resta dovuto).
+- **Operatività** → si azzera nei fatti, perché l'agente resta attivo su **un solo appartamento** invece che su tutto il portafoglio dello studente.
+
+<Warning>
+  Il right-sizing è una **leva dura** su un servizio dal vivo. Si attiva **solo** dopo gli stadi precedenti del dunning e **solo dietro conferma umana di Niccolò + Francesco**. In caso di dubbio su un singolo studente, **non forzare**: segnala e attendi conferma.
+</Warning>
+
+## Trigger (quando scatta)
+
+Tutte queste condizioni devono essere vere:
+
+1. Lo studente è **passato per gli stadi precedenti** del dunning (reminder → sospensione art. 5.6 → holding dell'agente) e **continua a non pagare da un tot di tempo**.
+2. **Mancato pagamento / morosità confermata** (non un semplice ritardo tecnico: nessuna Esenzione o Sconto attivo per quel caso).
+3. **Conferma umana di Niccolò + Francesco.** Nessun automatismo esegue il right-sizing.
+
+<Info>
+  Se lo studente è **attivo e sta pagando** (o c'è un problema tecnico in corso), **non si tocca**: prima la scala soft del dunning, mai il right-sizing come scorciatoia.
+</Info>
+
+## I passi: BACKUP → riduci a 1 → hold → ripristina
+
+<Steps>
+  <Step title="1 · BACKUP di tutto ciò che c'è dentro">
+    Prima di ridurre qualsiasi cosa, fai lo **snapshot completo** del workspace Conduit dello studente, così il ripristino è fedele al 100%:
+
+    - **KB per-listing** (cartelle, `entity_ids`, articoli) di ogni appartamento
+    - **Skill** e **custom tool** per-listing (mapping tool ↔ skill)
+    - **Workflow**, **guardrail** e configurazione agente
+    - Elenco dei **listing attivi** (`list_listings`) con il loro `listing_id` e `isActive`
+
+    Questo backup è ciò da cui ripristinerai: senza, la riattivazione è un rimontaggio a mano. Salvalo (export/note) e registralo nel record billing dello studente.
+  </Step>
+
+  <Step title="2 · Riduci a 1 appartamento attivo">
+    Porta i listing dello studente a `isActive: false` **lasciandone uno solo** come riferimento. La disattivazione **non si fa via MCP** (non esiste un tool per disattivare un listing): si fa **a monte in KrossBooking** (delisting dell'unità), da dove si propaga a Conduit come `isActive: false` (in alternativa via UI Conduit).
+
+    Conduit fattura **per listing attivo**, quindi scendere a 1 listing attivo è ciò che stacca l'operatività **e** ferma l'accumulo di costo sul portafoglio.
+  </Step>
+
+  <Step title="3 · Conferma la sub con Conduit ops">
+    Il billing Conduit passa da un **ordine centralizzato Salesbricks** a livello di account partner: l'abbassamento reale della sub **non è auto-verificabile via MCP**. Scrivi a **Conduit ops** per confermare che il conteggio fatturabile scende e che **non ci sono minimi/commit** che tengono su il costo. (Conduit ha già onorato riduzioni analoghe in passato.)
+  </Step>
+
+  <Step title="4 · Hold finché non paga">
+    Lasci lo studente **a 1 appartamento** finché non regolarizza. Il contratto resta valido, l'arretrato resta dovuto: registra lo stato nel record billing così l'arretrato/la penale (art. 7) non si perde. Nel frattempo l'agente lavora solo sull'appartamento di riferimento.
+  </Step>
+
+  <Step title="5 · Ripristina dal backup (al pagamento)">
+    Appena lo studente paga, **riabiliti gli appartamenti in KrossBooking** → si ri-sincronizzano su Conduit come `isActive: true` → **ri-verifichi il mapping** KB / skill / tool per-listing usando lo snapshot dello **Step 1**. Da lì riprende la normale fatturazione per-listing. La procedura è **reversibile**: il backup garantisce che lo studente ritrovi KB, skill, tool e workflow come prima.
+  </Step>
+</Steps>
+
+<Warning>
+  **Sospensione ≠ risparmio.** Un listing messo in stato "SOSPESO" (art. 4.4) resta a **€6/Listing**, che è circa il nostro costo Conduit: è **cost-neutral**, non azzera la spesa. Se l'obiettivo è togliere operatività **e** fermare il costo, serve la **disattivazione piena** (`isActive: false`), non la sospensione.
+</Warning>
+
+## Reversibilità
+
+Il right-sizing è **completamente reversibile**: nulla viene cancellato in modo distruttivo. Il portafoglio dello studente vive nel **backup** (Step 1) e negli appartamenti disattivati (non eliminati) su KrossBooking. Riabilitare in Kross + ri-verificare il mapping dallo snapshot riporta lo studente esattamente com'era.
+
+## Chi si notifica
+
+| Destinatario | Perché |
+|---|---|
+| **Niccolò + Francesco** | Devono **confermare prima** di eseguire (leva dura). Niccolò va tenuto informato: WhatsApp `393482591897`. |
+| **Conduit ops** | **Obbligatorio** con il modello Salesbricks: confermano che la sub scende e che non ci sono minimi. |
+| **Studente** | Solo se la riduzione è concordata; altrimenti la comunicazione resta quella standard del dunning. |
+
+<Note>
+  **Nota operativa.** Registra il right-sizing nel record billing dello studente insieme al backup: è ciò che tiene tracciato l'arretrato dovuto e permette il ripristino fedele. Il right-sizing ha senso **solo** su studenti morosi/churned confermati — mai su un workspace attivo e in stagione (ridurre lì taglierebbe l'AI Ospiti su proprietà vive e azzererebbe la nostra revenue per-listing).
+</Note>
+
+<Tip>
+**▷ Prompt Claude Code: Right-sizing Conduit (studente moroso)**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa LEGGI le pagine mattone-docs /integrazioni/conduit/right-sizing e
+/delivery/mancato-pagamento (leggile davvero, non a memoria); per i dati veri usa
+l'MCP Conduit (list_workspaces, list_listings, get_billing_usage) col token partner.
+Poi procedi:
+
+Guidami nel right-sizing dello studente [NOME], ULTIMO stadio del dunning.
+PRIMA verifica i trigger: (1) è passato per reminder+sospensione+holding e non
+paga da tempo? (2) morosità confermata (nessuna Esenzione/Sconto attivo)? (3) ho
+la conferma di Niccolò+Francesco? Se anche uno solo manca, FERMATI e dimmelo.
+Se OK: (1) fai lo SNAPSHOT completo (list_listings + KB/skill/tool/workflow
+per-listing) per il ripristino e dimmi dove l'hai salvato; (2) elenca i listing
+da portare a isActive:false lasciandone 1 di riferimento, ricordandomi che la
+disattivazione si fa a monte in KrossBooking (non c'è tool MCP); (3) preparami il
+messaggio per Conduit ops per confermare l'abbassamento sub + assenza minimi;
+(4) dimmi cosa registrare nel record billing (stato hold + arretrato dovuto).
+NON eseguire disattivazioni: preparami i passi, li confermo io.
+```
+
+<CardGroup cols={2}>
+  <Card title="Mancato pagamento (la scala completa)" icon="arrow-up-right-from-square" href="/delivery/mancato-pagamento">Banner → email → sospensione → holding → right-sizing</Card>
+  <Card title="KrossBooking (dove si disattiva il listing)" icon="arrow-up-right-from-square" href="/integrazioni/kross/panoramica">Il delisting a monte propaga isActive:false a Conduit</Card>
+</CardGroup>

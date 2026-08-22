@@ -1,0 +1,52 @@
+---
+title: "Accesso studente e contratti: cosa si carica nell'Admin Panel"
+sidebarTitle: "0 · Accesso & contratti"
+description: "Quando crei l'accesso di un nuovo studente carichi contratto (e fatture) nell'Admin Panel della piattaforma. L'attivazione/onboarding è gated sul caricamento del CONTRATTO; le fatture sono opzionali."
+---
+
+Questo è il primo gesto amministrativo dell'onboarding, **prima** di collegare qualsiasi integrazione. Quando **crei l'accesso di un nuovo studente**, nell'**Admin Panel** carichi anche i suoi **documenti**: il **contratto** e (facoltativamente) le **fatture**. È un passaggio che oggi genera confusione nel team, quindi la regola è una sola e netta.
+
+<Warning>
+  **Regola unica.** Il **contratto firmato si carica nell'Admin Panel al momento della creazione dell'accesso studente**. L'attivazione/onboarding è **gated sul caricamento del contratto**: niente contratto caricato → niente attivazione. Le **fatture** si caricano **"magari"** (quando ci sono): sono utili ma **non** sono un gate.
+</Warning>
+
+## Dove e quando
+
+| | |
+|---|---|
+| **Dove** | **Admin Panel** della piattaforma (area amministrativa Mattone, non l'area studente). |
+| **Quando** | Nello **stesso momento in cui crei l'accesso** dello studente. Non è un passaggio da rimandare "a dopo". |
+| **Cosa** | **Contratto** (obbligatorio, è il gate) + **fatture** (opzionali, "magari"). |
+
+<Steps>
+  <Step title="Crea l'accesso studente nell'Admin Panel">
+    Dall'Admin Panel crei l'utenza dello studente sulla piattaforma (`app.mattone.co`). È qui che nasce lo studente come tenant.
+  </Step>
+  <Step title="Carica il contratto (gate di attivazione)">
+    Nello stesso flusso, **carica il contratto firmato** dello studente. Questo caricamento è ciò che **sblocca l'attivazione**: finché il contratto non è caricato, l'onboarding **non parte**.
+  </Step>
+  <Step title="Carica le fatture (facoltativo)">
+    Se hai già le fatture, caricale pure — tengono i documenti dello studente in ordine e a portata. Ma la loro assenza **non blocca** nulla: sono un "magari", non un gate.
+  </Step>
+</Steps>
+
+## Perché il contratto è il gate
+
+Il contratto in questione è l'**Addendum "Servizio AI Ospiti"** (Mattone.co LLC ↔ studente): regola il canone €9/Listing/mese, i Costi a Consumo, la durata minima 12 mesi e l'addebito ricorrente. Senza contratto caricato non c'è nulla che regoli il servizio, quindi **non si attiva**. Insieme alla **carta a file** (aggiunta dallo studente nella sua area billing), il contratto forma la coppia di gate che abilita il workspace Conduit.
+
+<Note>
+  Riepilogo dei **due gate** che abilitano Conduit (vedi [Onboarding · Panoramica](/onboarding/panoramica) e [Step 3 · Conduit](/onboarding/3-conduit)):
+  1. **Contratto** firmato **caricato nell'Admin Panel** (questo passo).
+  2. **Carta a file** nella piattaforma (la aggiunge lo studente).
+
+  Le **fatture** non rientrano nei gate: sono documentazione opzionale.
+</Note>
+
+<Tip>
+  Fatto questo passo, prosegui con il resto della **Fase 0** (account piattaforma, allineamento) e poi con il ramo operativo → [Step 1 · Anagrafica & Notion](/onboarding/1-anagrafica-notion).
+</Tip>
+
+<CardGroup cols={2}>
+  <Card title="Onboarding · Panoramica" icon="arrow-up-right-from-square" href="/onboarding/panoramica">Fase 0 e i due gate di attivazione</Card>
+  <Card title="Step 3 · Conduit" icon="arrow-up-right-from-square" href="/onboarding/3-conduit">Dove si verificano contratto + carta prima di attivare</Card>
+</CardGroup>
