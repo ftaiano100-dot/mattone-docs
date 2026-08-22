@@ -1,0 +1,110 @@
+---
+title: "Conduit + ImmobiNet: il path ufficiale via Custom Tools"
+sidebarTitle: "Conduit via Custom Tools"
+description: "Conduit non sincronizza ImmobiNet nativamente. Il path confermato da Raniel: Custom Tools registrati da dashboard che chiamano un bridge di estrazione on-demand, riusando il pattern cosmica-booking."
+---
+
+<Info>
+**Aggiornamento da Raniel (Conduit)**, incorporato come path ufficiale:
+> *"Yes, you'll need to use CUSTOM TOOLS and there's no booking info natively in Conduit."*
+
+Tradotto: **Conduit NON ha i dati di prenotazione di ImmobiNet nativamente.** Non esiste un import source / sync PMS per ImmobiNet. Il modo giusto è esporre i dati come **Custom Tools** che l'AI Ospiti chiama **on-demand**.
+</Info>
+
+## Il modello: on-demand, non sync
+
+Con Kross/Hostaway, Conduit importa le prenotazioni e le tiene sincronizzate. Con ImmobiNet **questo non succede**. Invece:
+
+1. Un **bridge** (il pezzo difficile) estrae i dati da ImmobiNet via SOAP e li espone come **endpoint HTTP** puliti (JSON).
+2. Ogni endpoint viene registrato in Conduit come **Custom Tool**.
+3. Quando arriva un messaggio ospite, l'AI **chiama il custom tool** passando l'identificativo (reservation_id, listing, guest) e riceve i dati freschi in quel momento. Nessuna copia locale in Conduit.
+
+```
+Messaggio ospite (Airbnb / Booking / WhatsApp)
+        │
+        ▼
+  AI Ospiti Conduit  ──chiama custom tool──▶  endpoint HTTP bridge
+        │                                          │ SOAP
+        │                                          ▼
+        │                                    ImmobiNet (rentallab)
+        ◀──────────── dati freschi (JSON) ────────┘
+```
+
+<Warning>
+**I Custom Tools di Conduit si registrano SOLO dalla dashboard Conduit** — non via API, non via MCP. Questo è diverso da Knowledge Base, Skill e Guardrail (creabili via MCP). Per la procedura di editing sicuro del workspace vedi la skill `conduit-editing-playbook`. Ogni tool va scoped al workspace/listing giusto per evitare cross-contamination.
+</Warning>
+
+## Riusiamo un pattern che abbiamo già
+
+Non partiamo da zero. In `~/Projects/cosmica-booking` ci sono già gli endpoint HTTP che Conduit chiama in produzione per Cosmica:
+
+- `src/app/api/mcp/krossbooking/route.ts`
+- `src/app/api/mcp/hostaway/route.ts`
+- `src/app/api/mcp/shelly/route.ts`
+
+più la skill operativa `~/.claude/skills/smart-checkin-mcp/SKILL.md` che descrive come Conduit interroga questi tool per check-in, disponibilità, apertura porta.
+
+**L'architettura ImmobiNet è additiva**: stesso pattern, si aggiunge una source `immobinet`. La differenza è solo che dietro l'endpoint c'è un client SOAP invece di un client REST.
+
+## I tool da esporre
+
+Mappatura tool → operazione SOAP (dettaglio in [SOAP Webservice](/internal/immobinet/soap-webservice)):
+
+| Custom Tool (esempio) | Operazione SOAP | Status fattibilità |
+|---|---|---|
+| `get_reservations` / `list_reservations` | `getPrenotazioni(dal, al, immobili?)` | ✅ |
+| `get_reservation(booking_id)` | `getPrenotazioni(prenotazioni=[id])` | ✅ |
+| `get_checkins_today` / `get_checkouts_today` | `getPrenotazioni(dal, al, periodo=arrivo\|partenza)` | ✅ |
+| `get_guest(booking_id)` | `getPrenotazioni(...) → cliente` | ✅ |
+| `list_properties` / `get_property(id)` | `getImmobili(immobili?)` | ✅ |
+| `check_availability(dal, al, persone?)` | `ricercaDisponibilita` | ✅ |
+| `get_min_stay(dal, al, immobile)` | `getListinoRegole` | ✅ |
+| `get_active_offers` | `getOfferte` | ✅ |
+| `get_cleaning_schedule(dal, al)` | `getPrenotazioni` + `getListinoPulizie` | ✅ composito |
+| `open_door` | MCP smart-home (Shelly/SwitchBot) | ✅ parallelo, non ImmobiNet |
+| `update_booking_notes` | — | ❌ gap: `editPrenotazione` tocca solo il prezzo |
+| `reschedule_booking` | — | ❌ gap: cambio date non supportato → escalation umana |
+| `check_portal_status` (OTA) | — | ❌ gap: nessun endpoint OTA status |
+
+**Copertura ~90%.** I gap sono accettabili: le note operative Conduit le tiene nel proprio DB referenziando il `booking_id`; reschedule e portal status vanno a escalation umana (stesso flow di Hostaway oggi).
+
+## Prompting dell'agente
+
+Il tool esiste ma va **detto esplicitamente** all'AI quando chiamarlo (Skills/Knowledge del workspace). Template ImmobiNet:
+
+```text
+Per ogni messaggio ospite (Airbnb o Booking):
+
+1. Identifica il listing/appartamento
+   - Airbnb: ID listing dal payload
+   - Booking: reservation_id dal subject email
+
+2. Chiama get_reservation(reservation_id) sul bridge ImmobiNet.
+
+3. Personalizza la risposta con: lingua ospite, nome, date, property.
+
+4. Per istruzioni check-in: get_property + get_cleaning_schedule
+   (verifica che l'appartamento sia pronto).
+
+5. Sblocco porta: chiama open_door del MCP smart-home (parallelo).
+
+6. Richieste su tariffe/prezzi:
+   NON aggiornare prezzi. Rispondi:
+   "Per modifiche tariffe contatta direttamente il gestore".
+```
+
+## Canali di comunicazione (contesto completo)
+
+Il custom tool ImmobiNet copre i **dati**. I **messaggi** arrivano dai canali, gestiti come sugli altri workspace Conduit:
+
+- **Airbnb** — OAuth nativo in dashboard Conduit (multi-account supportato: più account host → stesso inbox). Setup ~30 min.
+- **Booking.com** — **routing rule** built-in di Conduit (NON IMAP custom): l'email di notifica Booking arriva al workspace, Conduit estrae il `reservation_id` dal subject e instrada nell'inbox. Setup ~1 giorno.
+- **WhatsApp** — via WABA (vedi sezione [WABA](/integrazioni/waba/panoramica)).
+
+## Alternativa secondaria: Kross-proxy
+
+Il gateway `mcp.mattone.co` (repo `api-kross-mattone`) resta come **alternativa secondaria** se in futuro le proprietà venissero migrate/replicate su un PMS REST. Ma per ImmobiNet as-is, il path **primario è quello di Raniel** (custom tools sul bridge SOAP descritto qui).
+
+## Cosa blocca il go-live
+
+Il tool a valle è pronto architetturalmente. Il **collo resta l'estrazione**: il bridge deve saper leggere l'XML reale di ImmobiNet, e per farlo servono le credenziali del cliente. Vedi [Stato del bridge](/internal/immobinet/bridge-stato).

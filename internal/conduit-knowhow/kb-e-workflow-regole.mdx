@@ -1,0 +1,47 @@
+---
+title: "Conduit KB e Workflow: le regole che evitano guai"
+sidebarTitle: "KB e Workflow: regole"
+description: "Scoping per-listing, no cross-contamination IT/DXB, custom tool solo da dashboard, sync Notion→Conduit. Le regole operative per editare i workspace Conduit senza rompere nulla."
+---
+
+Regole operative per editare i workspace Conduit (Italia + Dubai) senza il failure mode ricorrente: un nodo KB generico che viene citato sul listing sbagliato, contenuto IT/DXB incrociato, o duplicati che confondono la ricerca semantica. Fonte: skill `conduit-editing-playbook` (leggila **prima** di ogni scrittura sul Conduit MCP).
+
+## Mappa dei workspace
+
+- **Italia**: `x17c3ja6bhmt90an1entwst8zx7s2dsw` — proprietà italiane sincronizzate da KrossBooking.
+- **Dubai**: `x17fbm96z0t667eh5gtr78qyc57pwg8v` — proprietà Dubai (Hostaway) **+ Casa Dora e Casa Museo** (listing italiani ospitati sul workspace Dubai per via del sync Hostaway).
+
+<Warning>
+Lo split **Casa Dora/Museo su workspace Dubai** è la fonte #1 di errori di cross-contamination. **Verifica sempre quale workspace possiede la property PRIMA di scrivere.**
+</Warning>
+
+## Checklist pre-push (prima di ogni create/update)
+
+1. **Cerca duplicati** (`search_knowledge_nodes` per keyword nel titolo). Se esiste già un nodo su quel tema → **UPDATE**, non crearne uno parallelo. Due nodi sullo stesso argomento confondono la ricerca semantica.
+2. **Definisci lo SCOPE con precisione**:
+   - Workspace-wide (tutti i listing): KB alla radice, `entity_ids: []`.
+   - Per-listing: `entity_ids` = solo quel listing. Un nodo "procedura Casa Museo" senza scope **cola** sulle risposte di altri appartamenti.
+3. **Non incrociare IT e DXB**: contenuto italiano nel workspace Italia, Dubai nel Dubai (eccetto Casa Dora/Museo, che stanno su Dubai).
+4. **Scegli il primitivo giusto** (vedi [Pattern Custom Tools](/internal/conduit-knowhow/custom-tools-pattern)): fatto statico → KB; procedura → Skill; vincolo negativo → Guardrail; azione/side-effect → Custom Tool.
+5. **Custom Tool = solo dashboard**: non è esponibile via MCP. KB/Skill/Guardrail/Agent sì.
+6. **Istruisci l'agente**: un tool o un nodo esiste ≠ l'AI lo usa. Serve la Skill che dice **quando** attivarlo (trigger keyword + step).
+
+## KB folder per-listing (non globale)
+
+Regola operativa: le folder KB vanno tenute **per-listing**. Una folder globale con dettagli specifici di un appartamento genera **leak** (l'AI cita il dettaglio sbagliato su un altro listing). Scope stretto = risposte corrette.
+
+## Sync Notion → Conduit
+
+L'anagrafica canonica degli appartamenti (Notion) alimenta la KB Conduit tramite un **bridge di trasformazione** (registro canonico per-listing). Il sync nativo Notion→Conduit è stato problematico: usiamo il bridge per mantenere la KB per-listing allineata senza incollare contenuto grezzo. Ogni appartamento = una folder KB scoped.
+
+## Workflow Conduit
+
+I workflow (schema `workflowsV2`) sono **creabili via MCP** e orchestrano sequenze (es. escalation, follow-up, dunning). A differenza dei custom tool, non richiedono la dashboard. Usali per logica multi-step ripetibile; tieni i side-effect esterni dentro i custom tool che il workflow richiama.
+
+## In sintesi
+
+- Scope stretto (per-listing) > scope largo.
+- Un tema = un nodo (niente duplicati).
+- Verifica sempre il workspace (attenzione Casa Dora/Museo su Dubai).
+- Custom Tool solo da dashboard; tutto il resto via MCP.
+- Il tool/nodo va sempre accompagnato dalla Skill che ne dice l'uso.

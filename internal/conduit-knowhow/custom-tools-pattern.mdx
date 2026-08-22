@@ -1,0 +1,63 @@
+---
+title: "Pattern Custom Tools: dare a Conduit capacità che non ha di serie"
+sidebarTitle: "Pattern Custom Tools"
+description: "Come estendiamo l'AI Conduit oltre i dati nativi: endpoint HTTP on-demand registrati come custom tool dalla dashboard. Il pattern che riusiamo per ogni PMS e ogni azione con side-effect."
+---
+
+Questo è il pattern architetturale che usiamo ogni volta che serve dare all'AI Conduit una capacità **che non ha di serie**: leggere un PMS non nativo, aprire una porta, generare un link Stripe, quotare un prezzo. Vale per ImmobiNet come per tutto il resto.
+
+## I 5 primitivi Conduit (cosa tocchiamo)
+
+| Primitivo | Cos'è | Quando | Come si edita |
+|---|---|---|---|
+| **Knowledge Node (KB)** | Doc markdown che l'AI cita via ricerca semantica | Fatti statici (WiFi, indirizzo, policy) | MCP: `create/update_knowledge_node` |
+| **Skill** | Procedura comportamentale (trigger + step, `allowed_tools`) | "Cosa fare quando X" | MCP: `create_skill`, `patch_skill` |
+| **Custom Tool** | **Endpoint HTTP** che l'AI chiama | Side-effect / dati da sistemi esterni | **Solo dashboard** — NON via MCP/API |
+| **Guardrail** | Regola dura sull'agente | Vincoli negativi ("mai sconti > 5%") | MCP: `patch_agent` (guardrails) |
+| **Agent** | Bundle di skill + guardrail + istruzioni | Modello, delay, autopilot, assegnazione skill | MCP: `patch_agent` |
+
+<Warning>
+**I Custom Tools si registrano SOLO dalla dashboard Conduit.** Non sono esponibili via MCP/API. KB, Skill, Guardrail e Agent sì (via Conduit MCP). Questa asimmetria è centrale: possiamo automatizzare KB e prompting da codice, ma il collegamento del tool HTTP è un passo manuale in dashboard.
+</Warning>
+
+## L'idea in una riga
+
+Conduit di suo conosce solo ciò che il suo PMS nativo gli sincronizza. Per tutto il resto: **scriviamo un endpoint HTTP nostro**, lo **registriamo come custom tool**, e istruiamo l'agente (via Skill/Knowledge) a **chiamarlo on-demand** quando serve. Nessuna sincronizzazione: dati/azione al momento della richiesta.
+
+```
+Messaggio ospite
+     │
+     ▼
+  Agent Conduit ──(chiama custom tool)──▶  nostro endpoint HTTP  ──▶  sistema esterno
+     │                                        (Vercel)               (PMS SOAP, Shelly,
+     ◀──────────── risposta JSON ────────────┘                        Stripe, ...)
+```
+
+## Perché "on-demand" e non "sync"
+
+- **Sempre fresco**: nessuna copia da tenere allineata; l'AI legge il dato vero quando serve.
+- **Funziona con PMS non nativi**: se Conduit non integra il PMS (es. ImmobiNet SOAP), il custom tool è l'unico modo. Confermato da Conduit stesso per ImmobiNet: nessun booking nativo → custom tools.
+- **Side-effect controllati**: apertura porta, pagamenti, upsell passano da un endpoint nostro con auth e logica, non da capacità grezze dell'AI.
+
+## Anatomia di un custom tool nostro
+
+1. **Endpoint HTTP** in un progetto Vercel (oggi `cosmica-booking`, vedi [Server MCP](/internal/conduit-knowhow/mcp-servers-cosmica-booking)). Espone tool con `name`, `description` (quando usarlo), `inputSchema`.
+2. **Auth Bearer per-workspace**: l'endpoint non deve essere indovinabile con PII ospiti; ogni workspace ha la sua chiave.
+3. **Descrizione = prompt**: la `description` del tool dice all'AI *quando* chiamarlo e *in che ordine* (es. "controlla il portale PRIMA di mandare le istruzioni di check-in").
+4. **Registrazione in dashboard Conduit**: URL + chiave → il tool compare all'agente.
+5. **Skill/Knowledge** che istruiscono esplicitamente l'agente a usarlo (Conduit non "indovina": va detto).
+
+## Esempi in produzione (Cosmica)
+
+Dai server di `cosmica-booking` che Conduit chiama oggi:
+
+- `check_portal_status(guest)` — check-in online completato? extra acquistati? (da chiamare **prima** delle istruzioni).
+- `get_upcoming_checkins(days_ahead)` — arrivi imminenti + stato portale.
+- `get_checkin_instructions(...)` — istruzioni complete, **solo dopo** portale completato.
+- `get_in_house_guests()`, `check_availability(...)`, `open_door(...)` (Shelly).
+
+Stesso schema che replichiamo per ImmobiNet: `get_reservations`, `get_guest`, `check_availability`, ecc. (vedi [ImmobiNet via Custom Tools](/internal/immobinet/conduit-custom-tools)).
+
+## Regola d'oro
+
+Il tool esiste ≠ l'AI lo usa. Sempre accompagnare il custom tool con una **Skill che dice quando chiamarlo** e, se serve, **Guardrail** su cosa non fare (es. "non aggiornare mai i prezzi"). Per lo scoping e le trappole vedi [KB e Workflow: regole](/internal/conduit-knowhow/kb-e-workflow-regole).

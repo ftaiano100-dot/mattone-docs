@@ -1,0 +1,57 @@
+---
+title: "I server MCP di cosmica-booking"
+sidebarTitle: "Server MCP cosmica-booking"
+description: "I server HTTP che Conduit chiama in produzione (Shelly / Kross / Hostaway) dentro cosmica-booking, e come si riusano per collegare un nuovo PMS come ImmobiNet."
+---
+
+Il repo `~/Projects/cosmica-booking` (Next.js 16 su Vercel, dominio `stay.cosmicarentals.com`) ospita gli endpoint che Conduit chiama come **custom tool** in produzione per Cosmica. È il **template di riferimento** per collegare qualunque nuovo PMS o azione all'AI Ospiti.
+
+## Dove stanno
+
+```
+src/app/api/mcp/
+  krossbooking/route.ts    ← portale + check-in + disponibilità (PMS Kross)
+  hostaway/route.ts        ← PMS Hostaway (Dubai + Casa Dora/Museo)
+  shelly/route.ts          ← apertura porta / stato dispositivi smart-home
+```
+
+Ogni `route.ts` definisce un array `TOOLS` con `name` / `description` / `inputSchema` e un dispatcher che esegue la logica e risponde in JSON. La skill operativa che descrive come Conduit li interroga è `~/.claude/skills/smart-checkin-mcp/SKILL.md`.
+
+## Cosa espongono (esempi reali)
+
+| Tool | Server | Scopo |
+|---|---|---|
+| `check_portal_status(guest)` | krossbooking | Check-in online completato + extra acquistati; da chiamare prima delle istruzioni |
+| `get_upcoming_checkins(days_ahead)` | krossbooking | Arrivi imminenti + stato portale |
+| `get_checkin_instructions(...)` | krossbooking | Istruzioni check-in (solo dopo portale completato) |
+| `get_in_house_guests()` | krossbooking | Ospiti attualmente in casa |
+| `check_availability(...)` | krossbooking | Disponibilità corretta (fix bug lettura nativa Conduit, 03/08/2026) |
+| `open_door(...)` / stato device | shelly | Sblocco porta / diagnostica smart-home |
+
+Il mapping property → device smart-home (`ROOM_TYPE_TO_SLUG`, fuzzy match label Shelly) vive in questi file: è il punto dove PMS e hardware si incontrano.
+
+## Come si riusa per un nuovo PMS (es. ImmobiNet)
+
+L'aggiunta è **additiva**, non invasiva:
+
+1. **Client del PMS** in `src/lib/` — per Kross/Hostaway è REST; per ImmobiNet è il client SOAP del bridge (`immobinet-bridge`, vedi [Stato del bridge](/internal/immobinet/bridge-stato)).
+2. **Nuovo route** `src/app/api/mcp/<pms>/route.ts` con lo stesso shape `TOOLS` (stessi nomi logici: `get_reservations`, `get_guest`, `check_availability`, ...).
+3. **Auth Bearer per-workspace** sull'endpoint (mai URL indovinabili con PII).
+4. **Deploy per-workspace**: Cosmica ha il suo deploy; ogni studente/PM avrà il suo quando si pubblica il suo tool.
+5. **Registrazione in dashboard Conduit** + Skill/Knowledge che istruiscono l'agente.
+
+<Note>
+Per ImmobiNet il client sotto è SOAP invece di REST, ma **da fuori l'endpoint è identico**: Conduit vede un tool HTTP che risponde JSON. Tutta la complessità SOAP (envelope, namespace, parsing XML) resta incapsulata nel bridge.
+</Note>
+
+## Standard di deploy
+
+- **Auth Bearer per-workspace** su ogni endpoint MCP.
+- **Config per-tenant da env** (credenziali PMS, chiavi), **zero segreti hardcoded**; solo `.env.example` con placeholder.
+- Il **codice** degli MCP sta nel repo codice (`cosmica-booking` / repo dedicato), **non** nei repo di documentazione.
+
+## Riferimenti
+
+- Repo motore Kross multi-tenant: `~/Projects/api-kross-mattone` (gateway `mcp.mattone.co`) — alternativa per il modello partner Kross.
+- Doc-catalog interno (zero segreti): repo `mattone-integrations-docs` (`mcp-catalog/`).
+- Skill: `smart-checkin-mcp`, `conduit-editing-playbook`, `conduit-api-reference`.
