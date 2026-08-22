@@ -125,6 +125,7 @@
             "group": "Numeri & WhatsApp (WABA)",
             "pages": [
               "integrazioni/conduit/telefonia-waba",
+              "integrazioni/conduit/numero-unico",
               "integrazioni/waba/panoramica",
               "integrazioni/waba/collegamento",
               "integrazioni/waba/troubleshooting"
