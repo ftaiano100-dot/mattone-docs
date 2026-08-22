@@ -126,6 +126,7 @@
             "pages": [
               "integrazioni/conduit/telefonia-waba",
               "integrazioni/conduit/numero-unico",
+              "integrazioni/conduit/template-whatsapp",
               "integrazioni/waba/panoramica",
               "integrazioni/waba/collegamento",
               "integrazioni/waba/troubleshooting"

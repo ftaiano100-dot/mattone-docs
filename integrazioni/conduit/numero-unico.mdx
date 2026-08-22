@@ -97,6 +97,8 @@ L'ordine non è arbitrario. Prima si mette in sicurezza ciò che è già rotto, 
 
     <Warning>
     **I template WhatsApp non sono modificabili da Conduit.** Sono Content Template Twilio già approvati: dall'API puoi solo leggerli (`GET /whatsapp-templates`) e mappare le variabili. Se il numero deve comparire nel testo del template serve un nuovo template e una nuova approvazione Meta. Nel frattempo il numero è comunque il mittente, quindi rispondere al thread arriva al posto giusto.
+
+    Quali template devono esistere in un workspace, con quale categoria e con quale testo: [Template WhatsApp, il set minimo](/integrazioni/conduit/template-whatsapp).
     </Warning>
   </Step>
 
@@ -134,7 +136,7 @@ L'ordine non è arbitrario. Prima si mette in sicurezza ciò che è già rotto, 
     Configura il trigger con `inboxTypeId: "global"` e `incomingPreference: "incoming"`: `"guest"` scarterebbe le chiamate da chi non è ancora mappato come ospite, cioè proprio quelle che non vuoi perdere.
 
     <Warning>
-    **`SEND_MESSAGE` non supporta WhatsApp a testo libero.** I tipi ammessi sono `last_message`, `ota`, `pms`, `line_oa`, `whatsapp_template` / `sms_template` (che richiedono un `contentSid` approvato), `sms`, `email`, `slack`. Per la risposta automatica alla chiamata persa usa quindi **`sms` dal numero unico**: il chiamante ha appena composto quel numero, riceve l'SMS dallo stesso numero, e non c'è nessuna finestra di 24 ore da rispettare. Aggiungi lo step `whatsapp_template` solo quando hai un template approvato per il caso "chiamata persa".
+    **`SEND_MESSAGE` non supporta WhatsApp a testo libero.** I tipi ammessi sono `last_message`, `ota`, `pms`, `line_oa`, `whatsapp_template` / `sms_template` (che richiedono un `contentSid` approvato), `sms`, `email`, `slack`. Per la risposta automatica alla chiamata persa usa quindi **`sms` dal numero unico**: il chiamante ha appena composto quel numero, riceve l'SMS dallo stesso numero, e non c'è nessuna finestra di 24 ore da rispettare. Aggiungi lo step `whatsapp_template` solo quando hai un template approvato per il caso "chiamata persa" (nel set minimo è `missed_call_callback_dxb`, vedi [Template WhatsApp](/integrazioni/conduit/template-whatsapp)).
     </Warning>
 
     Imposta `skipUnavailableChannel: true`: le chiamate con numero nascosto non hanno un recapito e lo step va saltato, non fatto fallire.
@@ -183,6 +185,6 @@ La procedura è identica; cambiano solo tre cose.
 | --- | --- |
 | Numero | Uno per workspace. Mai riusare il numero di un altro workspace in un nodo KB. |
 | Contatti interni | I riferimenti di escalation sono locali: chi risponde a Dubai non risponde in Italia. Riscrivi il nodo dei contatti interni, non copiarlo. |
-| Template WhatsApp | I `contentSid` sono per workspace. Un `contentSid` di un altro workspace non esiste qui. |
+| Template WhatsApp | I `contentSid` sono per workspace. Un `contentSid` di un altro workspace non esiste qui: i template vanno ricreati e riapprovati sul workspace dello studente, partendo dal [set minimo](/integrazioni/conduit/template-whatsapp). |
 
 Per gli studenti, i passi 3, 4, 5, 7 e 8 sono automatizzabili in fase di provisioning: sono tutte chiamate API con lo stesso payload, parametrizzato sul numero e sul canale Slack dello studente. Il passo 6 richiede oggi un passaggio in dashboard per recuperare l'id del numero.

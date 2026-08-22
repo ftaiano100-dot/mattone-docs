@@ -1,0 +1,333 @@
+---
+title: "Template WhatsApp: il set minimo"
+sidebarTitle: "Template WhatsApp (set minimo)"
+description: "I sei template WhatsApp di riferimento per ogni workspace Conduit: a cosa servono, categoria Utility o Marketing, testo con variabili, regole di approvazione Meta e checklist per un nuovo studente."
+---
+
+Fuori dalla finestra di 24 ore, WhatsApp non lascia scrivere testo libero: si può inviare **solo un template pre-approvato da Meta**. Questo significa che ogni messaggio proattivo (pre-arrivo, rilascio istruzioni di check-in, richiamata dopo una chiamata persa, alert interni al team) esiste **solo se esiste il template**. Un workspace senza template non è un workspace con meno automazioni: è un workspace che, passata la finestra, non può parlare per primo.
+
+Questa pagina fissa il **set minimo di riferimento**: i sei template attivi oggi sul workspace **Cosmica Dubai**, letti direttamente dal workspace, da usare come base per Cosmica Italia e per ogni workspace studente.
+
+<Warning>
+  **I template non sono creabili via API.** Sono Content Template Twilio approvati da Meta: dall'API Conduit puoi solo **leggerli** (`GET /whatsapp-templates`, e via MCP `list_workspace_whatsapp_templates`) e mappare le variabili quando invii. Creazione, modifica e invio in approvazione si fanno **a mano** dalla dashboard Conduit → **Templates**. Trattalo come uno step manuale dell'onboarding, come l'aggiunta dell'Admin Mattone al workspace.
+</Warning>
+
+## Il set minimo
+
+| Template | Categoria | Momento | Destinatario | Stato (Dubai) |
+| --- | --- | --- | --- | --- |
+| `prearrival_concierge_friendly_en` | Marketing | Pre-arrivo | Ospite | Approved |
+| `checkin_instructions_release` | Utility | Giorno del check-in | Ospite | Approved |
+| `property_manager_intro` | Marketing | Primo contatto / apertura canale | Ospite | Approved |
+| `missed_call_callback_dxb` | Utility | Chiamata persa | Ospite | **Received** (in attesa Meta) |
+| `team_support_request` | Utility | Durante, operativo | Team interno | Approved |
+| `internal_upsell_alert` | Marketing | Durante, commerciale | Team interno | Approved |
+
+<Note>
+  I `contentSid` sono **per workspace**: un `contentSid` di Cosmica Dubai non esiste nel workspace di uno studente. I SID riportati qui sotto servono come riferimento di lettura, non come valore da copiare in una configurazione di un altro workspace.
+</Note>
+
+## Quando si usa ciascuno
+
+Quattro dei sei template parlano all'ospite e seguono l'arco del soggiorno; due parlano al team.
+
+<Steps>
+  <Step title="Primo contatto: property_manager_intro">
+    Apre il canale WhatsApp e dice all'ospite **chi sei e per quale appartamento**. È il template che rende il numero un recapito riconoscibile invece di un numero sconosciuto: si aggancia direttamente allo standard [un numero unico, zero chiamate perse](/integrazioni/conduit/numero-unico).
+  </Step>
+  <Step title="Pre-arrivo: prearrival_concierge_friendly_en">
+    Qualche giorno prima dell'arrivo. Ha una doppia funzione: conferma che il soggiorno è seguito da qualcuno, e apre la porta agli **extra** (early check-in, transfer, parcheggio, esperienze). È il template che genera la maggior parte delle conversazioni di upsell.
+  </Step>
+  <Step title="Giorno del check-in: checkin_instructions_release">
+    Rilascia il link con istruzioni di accesso, codici porta e Wi-Fi. È il template più transazionale del set e il più critico: se non parte, l'ospite arriva davanti a una porta chiusa.
+  </Step>
+  <Step title="Chiamata persa: missed_call_callback_dxb">
+    Si attiva sul trigger `CALL_MISSED`. Chiude il buco descritto nello standard numero unico: una chiamata senza risposta non produce un errore, produce silenzio. Questo template trasforma il silenzio in un messaggio che dice all'ospite che lo stiamo richiamando e che può scrivere lì.
+
+    <Note>
+      Finché questo template non è **Approved**, il workflow di chiamata persa deve rispondere via **SMS dallo stesso numero** (`SEND_MESSAGE` di tipo `sms`): il chiamante ha appena composto quel numero, non c'è nessuna finestra di 24 ore da rispettare. Lo step `whatsapp_template` si aggiunge quando l'approvazione arriva.
+    </Note>
+  </Step>
+  <Step title="Durante, operativo: team_support_request">
+    Non parla all'ospite. Serve all'agente per **chiedere aiuto a una persona del team** su una proprietà (fattura da emettere, verifica sul posto, problema da confermare). È il template dell'escalation strutturata.
+  </Step>
+  <Step title="Durante, commerciale: internal_upsell_alert">
+    Neanche questo parla all'ospite: avvisa il team che **un ospite ha chiesto un extra** vendibile (jet ski, transfer, late check-out) e passa il contesto necessario per chiudere. È l'anello tra l'AI che intercetta la richiesta e la persona che la monetizza.
+  </Step>
+</Steps>
+
+## Utility o Marketing: perché la categoria conta
+
+La categoria non è un'etichetta descrittiva: determina **se il template viene approvato e quanto costa ogni invio**.
+
+<CardGroup cols={2}>
+  <Card title="Utility" icon="receipt">
+    **Notifica transazionale**: riguarda una transazione già in corso (una prenotazione, una chiamata, un ticket). Approvazione più facile, costo per conversazione più basso, tolleranza maggiore di Meta.
+  </Card>
+  <Card title="Marketing" icon="megaphone">
+    **Promozionale**: propone, invita, offre, saluta senza un fatto transazionale a monte. Approvazione più severa, costo più alto, soggetto ai limiti di frequenza per utente.
+  </Card>
+</CardGroup>
+
+<Warning>
+  **Sbagliare categoria costa due volte.** Un template promozionale dichiarato Utility viene **rifiutato** da Meta (o riclassificato d'ufficio dopo l'approvazione). Un template puramente transazionale dichiarato Marketing viene approvato ma **fatturato di più a ogni invio**, per sempre, su tutto il volume. La categoria si sceglie una volta e ci si convive.
+</Warning>
+
+Come si decide, in pratica:
+
+- Il messaggio riguarda **un fatto già avvenuto** (una prenotazione confermata, una chiamata ricevuta, un pagamento)? → **Utility**.
+- Il messaggio **propone qualcosa** che l'ospite non ha chiesto (extra, esperienze, saluto di benvenuto commerciale)? → **Marketing**.
+- Nel dubbio, guarda il **verbo principale**: "ecco", "confermiamo", "ti richiamiamo" → Utility. "vuoi", "ti va", "scopri" → Marketing.
+
+Questo spiega la classificazione del set: `checkin_instructions_release` e `missed_call_callback_dxb` sono Utility (rilascio istruzioni di una prenotazione esistente, risposta a una chiamata reale), mentre `prearrival_concierge_friendly_en` e `property_manager_intro` sono Marketing perché aprono e propongono.
+
+<Note>
+  `team_support_request` è Utility e `internal_upsell_alert` è Marketing pur andando **entrambi a numeri interni**. La categoria segue il contenuto, non il destinatario: il primo chiede un'azione su un caso aperto, il secondo segnala un'opportunità commerciale.
+</Note>
+
+## I sei template, testo e variabili
+
+Testi letti dal workspace Cosmica Dubai. I valori di esempio riportati sono quelli **realmente registrati** sul template: servono a Meta per capire il contesto in fase di approvazione.
+
+### prearrival_concierge_friendly_en
+
+**Categoria:** Marketing · **Content SID:** `HXb861baf5c521c9831ee57fb7a259dd4b` · **Lingua:** en · **Stato:** Approved
+
+```text
+Hi {{1}}, Cosmica Dubai here 🌴 Getting ready for your {{2}} stay at {{3}}.
+Would you like help with early check-in, transfer, parking or experiences (desert safari/yacht-jet-ski/car rental)?
+Let me know here.
+```
+
+| Variabile | Contenuto | Esempio registrato |
+| --- | --- | --- |
+| `{{1}}` | Nome ospite | `Paul` |
+| `{{2}}` | Data di arrivo | `15 Oct` |
+| `{{3}}` | Nome appartamento | `Paramount 5405` |
+
+### checkin_instructions_release
+
+**Categoria:** Utility · **Content SID:** `HX6193bc91562e8611e40085f6e417ab7c` · **Lingua:** en · **Stato:** Approved
+
+```text
+All set, {{1}}. Instructions for {{2}} on {{3}}:
+{{4}}
+Keep this link for door codes, access and Wi-Fi.
+```
+
+| Variabile | Contenuto | Esempio registrato |
+| --- | --- | --- |
+| `{{1}}` | Nome ospite | `Paul` |
+| `{{2}}` | Nome appartamento | `Paramount 5405` |
+| `{{3}}` | Data di check-in | `Fri, 11 Oct` |
+| `{{4}}` | Link istruzioni / guest portal | `https://…/instructions/INS987` |
+
+<Note>
+  Il template **non contiene** codici porta o password Wi-Fi: contiene il **link** che li espone. È la scelta corretta: il contenuto sensibile resta dietro un link revocabile e aggiornabile, e il testo del template non va rifatto approvare quando cambia un codice.
+</Note>
+
+### property_manager_intro
+
+**Categoria:** Marketing · **Content SID:** `HX6089ce542c5aa496858519fe96524e20` · **Lingua:** en · **Stato:** Approved
+
+```text
+Hi {{1}}, I’m {{2}} from Cosmica Dubai for {{3}}. This is our WhatsApp for quick help during your stay.
+```
+
+| Variabile | Contenuto | Esempio registrato |
+| --- | --- | --- |
+| `{{1}}` | Nome ospite | `Paul` |
+| `{{2}}` | Nome del referente | `Rebecca` |
+| `{{3}}` | Nome appartamento | `Paramount 5405` |
+
+<Warning>
+  **Il nome del referente deve essere una variabile, non testo fisso.** Un nome di persona cablato nel corpo del template resta lì anche quando quella persona non lavora più con noi, e cambiarlo significa rifare l'approvazione. Qui `{{2}}` è fatto bene: controlla che resti così a ogni giro di revisione.
+</Warning>
+
+### missed_call_callback_dxb
+
+**Categoria:** Utility · **Content SID:** `HX5c52d97bd9131b43bf7c24985639e9d3` · **Lingua:** en · **Stato:** Received (in attesa di approvazione Meta)
+
+```text
+Hi {{1}}, we saw your call and we're sorry we missed it.
+
+We're calling you back shortly — at no cost to you. If it's urgent, just reply to this message and we'll help you right here.
+```
+
+| Variabile | Contenuto | Esempio registrato |
+| --- | --- | --- |
+| `{{1}}` | Nome del chiamante | `Mark` |
+
+Nota di costruzione: il testo **non contiene alcun numero di telefono**, e non deve contenerlo. Il mittente del messaggio è già il numero unico, quindi "rispondi a questo messaggio" arriva nel posto giusto. Scrivere un numero nel corpo è, oltre che inutile, uno dei motivi ricorrenti di rifiuto per i template Utility.
+
+### team_support_request
+
+**Categoria:** Utility · **Content SID:** `HXb349d335895dc36510ce93d95ce395c1` · **Lingua:** en · **Stato:** Approved · **Destinatario:** team interno
+
+```text
+Hello {{1}},
+
+We need your support regarding a property.
+
+🏠 *Property:* {{2}}
+📝 *Task or context:* {{3}}
+🔗 *More details:* {{4}}
+
+Can you please confirm if you’re available to help with this?
+
+Thank you for your quick response.
+(This is an internal operations message.)
+```
+
+| Variabile | Contenuto | Esempio registrato |
+| --- | --- | --- |
+| `{{1}}` | Nome del membro del team | `Mattia` |
+| `{{2}}` | Nome appartamento | `Paramount 5405` |
+| `{{3}}` | Task o contesto | `Send invoice` |
+| `{{4}}` | Dettagli aggiuntivi | `client is asking for invoice to his company` |
+
+La riga finale `(This is an internal operations message.)` è deliberata: dichiara la natura transazionale del messaggio e sostiene la categoria Utility.
+
+### internal_upsell_alert
+
+**Categoria:** Marketing · **Content SID:** `HXff157e3cfc918d6c0bf514ef54fe4fcb` · **Lingua:** en · **Stato:** Approved · **Destinatario:** team interno
+
+```text
+Hi team,
+
+an upsell opportunity has been identified.
+
+👤 *Guest:* {{1}}
+🏠 *Property:* {{2}}
+💬 *Requested Service:* {{3}}
+🔗 *Review Conversation:* {{5}}
+📱 *Contact Number:* {{4}}
+
+Please confirm availability and reach out to finalize.
+```
+
+| Variabile | Contenuto | Esempio registrato |
+| --- | --- | --- |
+| `{{1}}` | Nome ospite | `Paul` |
+| `{{2}}` | Nome appartamento | `Paramount 5405` |
+| `{{3}}` | Servizio richiesto | `Jet ski rental` |
+| `{{4}}` | Numero di contatto dell'ospite | `+39…` |
+| `{{5}}` | Link alla conversazione | `conversation link` |
+
+<Warning>
+  **Attenzione all'ordine delle variabili in questo template.** Nel corpo `{{5}}` compare **prima** di `{{4}}`. Chi mappa le variabili leggendo il testo dall'alto verso il basso finisce per mettere il numero di telefono dove va il link e viceversa. Mappa sempre **per indice**, mai per posizione nel testo. Quando crei un template nuovo, tieni gli indici in ordine crescente per non riprodurre questa trappola.
+</Warning>
+
+## Regole per farli approvare al primo colpo
+
+Meta rifiuta per motivi quasi sempre banali. Queste sono le regole che evitano il giro di rifiuto e riscrittura, che costa giorni.
+
+<AccordionGroup>
+  <Accordion title="Niente header, footer e bottoni se non servono davvero">
+    Ogni componente aggiuntivo è una superficie in più da far approvare e un motivo in più di rifiuto. Tutti e sei i template del set minimo sono `twilio/text`: **solo corpo**, nessun header, nessun footer, nessun bottone. Aggiungi un bottone solo quando esiste un motivo funzionale preciso, non per estetica.
+  </Accordion>
+  <Accordion title="Mai un numero di telefono nel corpo">
+    Il mittente **è già** il numero. Scrivere "chiamaci al +39…" dentro il corpo è ridondante, viene letto come promozionale e invecchia male: se il numero cambia devi rifare l'approvazione di ogni template che lo contiene. Usa "rispondi a questo messaggio" o "scrivici qui".
+  </Accordion>
+  <Accordion title="Un valore di esempio realistico per ogni variabile">
+    Meta valuta il template **con** i valori di esempio. `{{1}}` = `Paul` e `{{3}}` = `Paramount 5405` fanno capire il contesto; `{{1}}` = `test`, `xxx` o un campo vuoto fanno sospettare abuso e portano al rifiuto. Compila gli esempi con dati verosimili, mai con placeholder.
+  </Accordion>
+  <Accordion title="Niente linguaggio promozionale nei template Utility">
+    In un Utility non scrivere "offerta", "sconto", "prenota ora", "scopri". Il messaggio deve limitarsi al fatto: cosa è successo e cosa succede adesso. Se il testo che vuoi scrivere è per sua natura promozionale, non forzare la categoria: dichiaralo Marketing.
+  </Accordion>
+  <Accordion title="Niente dati sensibili nel corpo, mettici un link">
+    Codici porta, password Wi-Fi, riferimenti di pagamento non vanno nel testo del template: vanno dietro un link (guest portal, pagina istruzioni). Così il contenuto resta aggiornabile senza rifare l'approvazione, ed è revocabile.
+  </Accordion>
+  <Accordion title="Nomi di persona e di brand sempre come variabili">
+    Referente, nome dell'appartamento, città: tutto ciò che può cambiare va in variabile. Il testo fisso è la parte che invecchia e che ti obbliga a un nuovo giro di approvazione.
+  </Accordion>
+  <Accordion title="Emoji e grassetto: usali con misura">
+    Gli emoji come etichette di campo (🏠 Property, 📝 Task) sono accettati e rendono leggibili i messaggi interni. Evita invece emoji decorativi a raffica e testo tutto in maiuscolo: sono segnali classici di spam.
+  </Accordion>
+  <Accordion title="Un template per lingua, con la lingua giusta dichiarata">
+    I sei del set minimo sono `en`. Se il pubblico dello studente è italiano, serve la **versione italiana**, creata e approvata separatamente. Non tradurre a mano al momento dell'invio: fuori dalla finestra si invia il template, non testo libero.
+  </Accordion>
+</AccordionGroup>
+
+## Come si creano e si sincronizzano
+
+<Steps>
+  <Step title="Dashboard Conduit → Templates → Create">
+    La creazione è **solo da interfaccia**. Compila nome (snake_case, descrittivo del momento d'uso, non del contenuto), categoria, lingua, corpo con le variabili e **i valori di esempio** per ognuna.
+  </Step>
+  <Step title="Sync">
+    Il pulsante **Sync** allinea l'elenco dei template del workspace con quelli registrati su Twilio/Meta e aggiorna gli stati. Fallo dopo ogni creazione e ogni volta che verifichi se un'approvazione è arrivata.
+  </Step>
+  <Step title="Attendi l'approvazione Meta">
+    Lo stato passa da **Received** (inviato, in attesa) ad **Approved** o **Rejected**. In caso di rifiuto, il campo `rejection_reason` dice il motivo: correggi e reinvia, non duplicare.
+  </Step>
+  <Step title="Verifica via API cosa c'è davvero nel workspace">
+    Non fidarti dell'elenco a memoria. La lettura è read-only ed è il modo corretto di fare l'inventario:
+
+    ```bash
+    curl -s "https://api.conduit.ai/v1/workspaces/$WS/whatsapp-templates" \
+      -H "Authorization: Bearer $CONDUIT_TOKEN"
+    ```
+
+    Via MCP Conduit, lo stesso inventario si ottiene con `list_workspace_whatsapp_templates`, che restituisce corpo, variabili, categoria, stato e `contentSid` di ogni template.
+  </Step>
+  <Step title="Collega il template dove serve">
+    Un template esiste per essere usato: aggancialo allo step `SEND_MESSAGE` di tipo `whatsapp_template` del workflow corrispondente, passando il `contentSid` e la mappa delle variabili. Un template approvato e non collegato a nulla è lavoro sprecato.
+  </Step>
+</Steps>
+
+<Warning>
+  **Il template non è modificabile dopo l'approvazione.** Cambiare il testo significa creare un **nuovo** template e rifare l'approvazione, e i `contentSid` cablati nei workflow vanno aggiornati di conseguenza. Scrivi il corpo pensando che debba durare: tutto ciò che cambia va in variabile o dietro un link.
+</Warning>
+
+## Checklist: template minimi per un nuovo studente
+
+Non tutti e sei servono a tutti. Questa è la ripartizione tra obbligatori e opzionali.
+
+### Sempre, senza eccezioni
+
+<CardGroup cols={2}>
+  <Card title="checkin_instructions_release" icon="key" horizontal>
+    **Utility.** Senza questo l'ospite può arrivare senza istruzioni di accesso. È il template a impatto operativo più alto del set.
+  </Card>
+  <Card title="prearrival_concierge_friendly_en" icon="plane-arrival" horizontal>
+    **Marketing.** Apre la conversazione prima dell'arrivo e abilita tutto l'upsell a valle. Senza, la finestra di 24 ore si apre solo se scrive l'ospite.
+  </Card>
+</CardGroup>
+
+Questi due sono il **minimo assoluto** perché coprono i due momenti in cui è il sistema a dover parlare per primo. Vanno creati nella lingua del pubblico dello studente (per l'Italia: versione `it`).
+
+### Fortemente consigliati
+
+| Template | Quando è di fatto obbligatorio |
+| --- | --- |
+| `missed_call_callback_dxb` | Appena il workspace ha **telefonia attiva**. Con il numero unico attivo e nessun template chiamata persa, ogni chiamata non risposta è silenzio. Nel frattempo copri il caso con SMS. |
+| `team_support_request` | Appena lo studente ha **più di una persona** che tocca le proprietà (co-host, cleaner, manutentore). Con studente unico operatore, l'escalation diretta basta. |
+
+### Opzionali, in base al modello
+
+| Template | Serve se |
+| --- | --- |
+| `property_manager_intro` | Lo studente si presenta con un brand proprio e vuole un primo contatto formale. Se il pre-arrivo già identifica chi sei, è ridondante. |
+| `internal_upsell_alert` | Esiste un **listino extra** vendibile e qualcuno che li evade. Senza servizi da vendere, l'alert genera solo rumore. |
+
+<Note>
+  **Ordine di creazione consigliato in onboarding:** i due obbligatori subito, insieme alla KB e ai workflow che li useranno; gli altri quando si attivano telefonia, team e listino extra. L'approvazione Meta non è istantanea, quindi crea i template **prima** del go-live, non il giorno in cui servono.
+</Note>
+
+## Pagine collegate
+
+<CardGroup cols={2}>
+  <Card title="Numero unico, zero chiamate perse" icon="phone" href="/integrazioni/conduit/numero-unico">
+    Lo standard su cui poggiano `missed_call_callback_dxb` e `property_manager_intro`: un solo numero per WhatsApp, SMS e voce.
+  </Card>
+  <Card title="Telefonia & WABA" icon="comment" href="/integrazioni/conduit/telefonia-waba">
+    Come si ottiene il numero e come si attiva il canale WhatsApp Business. Senza WABA non c'è nessun template da inviare.
+  </Card>
+  <Card title="Workflow Conduit" icon="diagram-project" href="/integrazioni/conduit/workflow">
+    Dove i template vengono effettivamente agganciati: step `SEND_MESSAGE` di tipo `whatsapp_template`.
+  </Card>
+  <Card title="Extra e upsell" icon="cart-shopping" href="/casistiche/extra-upsell">
+    Il flusso commerciale che `prearrival_concierge_friendly_en` apre e `internal_upsell_alert` chiude.
+  </Card>
+</CardGroup>
