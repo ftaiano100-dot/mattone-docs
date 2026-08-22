@@ -41,15 +41,15 @@ Messaggio ospite
 
 ## Anatomia di un custom tool nostro
 
-1. **Endpoint HTTP** in un progetto Vercel (oggi `cosmica-booking`, vedi [Server MCP](/internal/conduit-knowhow/mcp-servers-cosmica-booking)). Espone tool con `name`, `description` (quando usarlo), `inputSchema`.
-2. **Auth Bearer per-workspace**: l'endpoint non deve essere indovinabile con PII ospiti; ogni workspace ha la sua chiave.
+1. **Endpoint HTTP** sul **gateway multi-tenant** `mcp.mattone.co` (`api/mcp/<capability>.js`, vedi [Gateway multi-tenant](/internal/conduit-knowhow/gateway-multi-tenant)). Espone tool con `name`, `description` (quando usarlo), `inputSchema`.
+2. **Identificazione del tenant per costruzione**: header `X-Student-Token`; le credenziali del sistema esterno vivono nel Vault Supabase, mai nella dashboard Conduit e mai in una env var per-cliente. L'endpoint non deve essere indovinabile con PII ospiti.
 3. **Descrizione = prompt**: la `description` del tool dice all'AI *quando* chiamarlo e *in che ordine* (es. "controlla il portale PRIMA di mandare le istruzioni di check-in").
 4. **Registrazione in dashboard Conduit**: URL + chiave → il tool compare all'agente.
 5. **Skill/Knowledge** che istruiscono esplicitamente l'agente a usarlo (Conduit non "indovina": va detto).
 
-## Esempi in produzione (Cosmica)
+## Esempi in produzione
 
-Dai server di `cosmica-booking` che Conduit chiama oggi:
+Tool che Conduit chiama oggi (stessi nomi sul gateway per gli studenti e su `cosmica-booking` per Cosmica: i nomi si tengono **identici** apposta, così Skill e prompting sono portabili tra PMS):
 
 - `check_portal_status(guest)` — check-in online completato? extra acquistati? (da chiamare **prima** delle istruzioni).
 - `get_upcoming_checkins(days_ahead)` — arrivi imminenti + stato portale.

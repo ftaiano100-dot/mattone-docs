@@ -24,8 +24,9 @@ Il WSDL pubblico è `https://rentallab.immobinet.it/webservice.wsdl` ed è un **
 
 | Integrazione | Verdetto | Path ufficiale |
 |---|---|---|
-| **Conduit AI (AI Ospiti)** | ✅ Fattibile | **Custom Tools Conduit** che chiamano un bridge di estrazione on-demand. Path confermato da Raniel (Conduit). Vedi [Conduit via Custom Tools](/internal/immobinet/conduit-custom-tools) |
-| **Direct Booking Site** | ✅ Fattibile al 100% | Tutti i metodi read + write prenotazioni esistono. Pattern `cosmica-booking` + adapter ImmobiNet |
+| **Conduit AI (AI Ospiti)** | ✅ Fattibile | **Custom Tools Conduit** on-demand, serviti dal **gateway multi-tenant `mcp.mattone.co`** (una capability `immobinet` in più, non un deploy per cliente). Path confermato da Raniel (Conduit). Vedi [Conduit via Custom Tools](/internal/immobinet/conduit-custom-tools) |
+| **Prenotazioni Airbnb / Booking** | ✅ Indirette, gratis | ImmobiNet fa da **channel manager**: le prenotazioni OTA atterrano in ImmobiNet e il layer di estrazione le cattura di conseguenza. Il canale è su `metadata/portale`. Vedi [Airbnb e Booking indiretti](/internal/immobinet/conduit-custom-tools#airbnb-e-booking-arrivano-indirettamente-via-immobinet) |
+| **Direct Booking Site** | ✅ Fattibile al 100% | Tutti i metodi read + write prenotazioni esistono. Qui `cosmica-booking` **resta il template corretto**: il sito diretto è per definizione single-tenant (un brand, un dominio per PM) |
 | **PriceLabs (revenue)** | ⚠️ Solo indiretto | Nessun write su prezzi via SOAP. Soluzione **Hybrid Sync**: iCal in lettura + Direct Connect alle OTA in scrittura. Vedi [PriceLabs Hybrid Sync](/internal/immobinet/pricelabs-hybrid-sync) |
 
 <Warning>
@@ -35,20 +36,28 @@ Il WSDL pubblico è `https://rentallab.immobinet.it/webservice.wsdl` ed è un **
 ## Come si incastrano i pezzi
 
 ```
-                 ImmobiNet (SOAP/XML, rentallab.immobinet.it)
-                        │
-        ┌───────────────┼────────────────────────┐
-        │ estrazione    │ iCal (read)            │
-        ▼               ▼                         ▼
-  immobinet-bridge  PriceLabs Hybrid Sync   Direct Booking Site
-  (SOAP→REST)       (write prezzi → OTA)    (setPrenotazione + Stripe)
+   Airbnb ─┐
+  Booking ─┼─▶  ImmobiNet (SOAP/XML, rentallab.immobinet.it)  ◀─ ImmobiNet fa da channel manager:
+  Diretto ─┘                    │                                le prenotazioni OTA atterrano QUI
+                                │
+        ┌───────────────────────┼────────────────────────┐
+        │ estrazione SOAP       │ iCal (read)            │
+        ▼                       ▼                        ▼
+  mattone-mcp-gateway    PriceLabs Hybrid Sync    Direct Booking Site
+  api/mcp/immobinet.js   (write prezzi → OTA)     (setPrenotazione + Stripe)
+  (1 deploy, N studenti,
+   creds dal Vault)
         │
-        ▼ endpoint HTTP (get_reservations / get_guest / get_checkin)
+        ▼ POST /api/mcp/immobinet + header X-Student-Token
   Custom Tools Conduit (registrati da DASHBOARD, non via MCP/API)
         │
         ▼
   AI Ospiti interroga on-demand
 ```
+
+<Note>
+Il client SOAP scritto in `immobinet-bridge` **non sparisce**: è la fonte da cui si porta il parser dentro il gateway. Cambia il runtime (un gateway multi-tenant invece di un deploy per cliente), non il lavoro già fatto sull'XML.
+</Note>
 
 I tre lavori (Conduit, Direct Booking, PriceLabs) sono **paralleli e indipendenti**: si possono avviare separatamente, tutti condividono lo stesso layer di estrazione SOAP.
 

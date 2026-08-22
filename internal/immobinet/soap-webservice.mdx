@@ -48,6 +48,36 @@ Username + password in chiaro nel body (mitigato solo da HTTPS). **Nessun token/
 - **`al` è inclusa**: nel range `dal`/`al`, l'ultimo giorno è compreso (diverso dallo standard ISO/Booking che esclude l'ultimo giorno).
 - **Disponibilità = stringa binaria** giornaliera: es. `"1110011"` = 7 giorni, primi 3 liberi, 2 occupati, 2 liberi.
 
+## `portale`: il canale è una dimensione di prima classe
+
+ImmobiNet **è anche un channel manager**, e lo si legge nello schema: `portale` non è un campo accessorio della prenotazione, è un asse che attraversa disponibilità, regole, aperture e offerte. La documentazione inline del WSDL lo definisce *"'portale', is the reference code of the portal"*.
+
+| Dove compare | Forma | A cosa serve |
+|---|---|---|
+| `Prenotazione` → `metadata/portale` | `xsd:string`, `minOccurs="0"` | **da quale canale arriva la prenotazione** (Airbnb, Booking, sito diretto) |
+| `ricercaDisponibilita(..., portale?)` | input opzionale | prezzi/disponibilità per canale |
+| `getListinoRegole(..., portale?)` | input opzionale | min/max stay diversi per canale |
+| `getListinoAperture(..., portale?)` | input opzionale | apertura/chiusura di un canale su un periodo |
+| `getOfferte` → `portale`; PUSH `Offerta` → `portale`, `old[portale]` | output / evento | promozioni mirate per canale |
+
+Struttura completa del metadata, dallo schema live (`webservices-deps/webservicemodagenzia/schema.xsd`, letto il 2026-08-22):
+
+```xml
+<xsd:complexType name="PrenotazioneMetadata">
+  <xsd:element name="rif"     type="xsd:string" minOccurs="0"/>  <!-- "Arbitrary reference to the booking" -->
+  <xsd:element name="ip"      type="xsd:string" minOccurs="0"/>
+  <xsd:element name="server"  type="xsd:string" minOccurs="0"/>
+  <xsd:element name="listino" type="xsd:string" minOccurs="0"/>
+  <xsd:element name="portale" type="xsd:string" minOccurs="0"/>
+</xsd:complexType>
+```
+
+<Warning>
+**Doppiamente opzionale.** Sia `metadata` (dentro `Prenotazione`) sia `portale` (dentro `metadata`) hanno `minOccurs="0"`: una prenotazione può arrivare senza indicazione di canale. E `portale` è una **stringa libera senza enumerazione** — i valori reali usati da una specifica agenzia si scoprono solo alla prima risposta vera. Non hardcodare `"airbnb"` / `"booking"` prima di averli visti.
+</Warning>
+
+Conseguenza pratica: le prenotazioni **Airbnb e Booking.com si ottengono indirettamente**, perché confluiscono in ImmobiNet e vengono lette da `getPrenotazioni` come tutte le altre. Vedi [Airbnb e Booking indiretti](/internal/immobinet/conduit-custom-tools#airbnb-e-booking-arrivano-indirettamente-via-immobinet).
+
 ## Le 17 operazioni
 
 ### ModAgenzia (core) — 11 operazioni
@@ -125,3 +155,15 @@ https://rentallab.immobinet.it/bundle/webservicemodagenziapulizie/service
 ```
 
 SOAPAction (pattern): `http://www.immobinet.it/wsdl/<Bundle>/<operazione>`, es. `.../WebserviceModAgenziaBundle/getPrenotazioni`.
+
+**Gli XSD dei tipi non sono nel WSDL** — il WSDL li importa. È qui che vivono `Prenotazione`, `PrenotazioneMetadata`, `cliente`, `PrenotazionePrezzo` (tutti scaricabili senza autenticazione, verificato 2026-08-22):
+
+```
+https://rentallab.immobinet.it/webservices-deps/webservicemodagenzia/schema.xsd
+https://rentallab.immobinet.it/webservices-deps/webservicecore/schema.xsd
+https://rentallab.immobinet.it/webservices-deps/webserviceimmobile/schema.xsd
+```
+
+<Note>
+Una domanda aperta di un'analisi precedente era: *"ci passi gli XSD di `Immobile`, `Prenotazione`, `Disponibilita`? Quello pubblico del WSDL root non basta"*. **Risolta**: gli XSD sono pubblici agli URL sopra, non serve chiederli al supporto. Il WSDL root (1,1 KB) è solo un aggregatore di `wsdl:import`; i tipi stanno due livelli sotto.
+</Note>

@@ -1,57 +1,57 @@
 ---
-title: "I server MCP di cosmica-booking"
-sidebarTitle: "Server MCP cosmica-booking"
-description: "I server HTTP che Conduit chiama in produzione (Shelly / Kross / Hostaway) dentro cosmica-booking, e come si riusano per collegare un nuovo PMS come ImmobiNet."
+title: "I server MCP di cosmica-booking (precedente storico, single-tenant)"
+sidebarTitle: "cosmica-booking (storico)"
+description: "Gli endpoint che Conduit chiama per Cosmica dentro cosmica-booking. È il precedente da cui è nato il gateway, NON il template per un nuovo PMS: un deploy per cliente non scala."
 ---
 
-Il repo `~/Projects/cosmica-booking` (Next.js 16 su Vercel, dominio `stay.cosmicarentals.com`) ospita gli endpoint che Conduit chiama come **custom tool** in produzione per Cosmica. È il **template di riferimento** per collegare qualunque nuovo PMS o azione all'AI Ospiti.
+<Warning>
+**Questa pagina NON è più l'architettura di riferimento.**
 
-## Dove stanno
+Per collegare un nuovo PMS o una nuova capability all'AI Ospiti, il modello corretto è il **gateway multi-tenant** `mcp.mattone.co`: [Gateway multi-tenant](/internal/conduit-knowhow/gateway-multi-tenant).
+
+`cosmica-booking` resta qui come **precedente storico** e come descrizione di **cosa gira oggi per Cosmica** (che è un tenant singolo e ci resta). Non copiarlo per uno studente nuovo.
+</Warning>
+
+## Cosa è, davvero
+
+Il repo `~/Projects/cosmica-booking` (Next.js su Vercel, dominio `stay.cosmicarentals.com`) ospita gli endpoint che Conduit chiama come custom tool **per Cosmica**:
 
 ```
 src/app/api/mcp/
-  krossbooking/route.ts    ← portale + check-in + disponibilità (PMS Kross)
+  krossbooking/route.ts    ← portale + check-in + disponibilità (Kross, chiave OWN Cosmica)
   hostaway/route.ts        ← PMS Hostaway (Dubai + Casa Dora/Museo)
   shelly/route.ts          ← apertura porta / stato dispositivi smart-home
 ```
 
-Ogni `route.ts` definisce un array `TOOLS` con `name` / `description` / `inputSchema` e un dispatcher che esegue la logica e risponde in JSON. La skill operativa che descrive come Conduit li interroga è `~/.claude/skills/smart-checkin-mcp/SKILL.md`.
+Ogni `route.ts` definisce un array `TOOLS` (`name` / `description` / `inputSchema`) e un dispatcher che risponde JSON. La skill operativa che descrive come Conduit li interroga è `smart-checkin-mcp`.
 
-## Cosa espongono (esempi reali)
+## Perché non è il template per gli studenti
 
-| Tool | Server | Scopo |
+Il difetto è strutturale, non stilistico:
+
+| | `cosmica-booking` | Gateway `mcp.mattone.co` |
 |---|---|---|
-| `check_portal_status(guest)` | krossbooking | Check-in online completato + extra acquistati; da chiamare prima delle istruzioni |
-| `get_upcoming_checkins(days_ahead)` | krossbooking | Arrivi imminenti + stato portale |
-| `get_checkin_instructions(...)` | krossbooking | Istruzioni check-in (solo dopo portale completato) |
-| `get_in_house_guests()` | krossbooking | Ospiti attualmente in casa |
-| `check_availability(...)` | krossbooking | Disponibilità corretta (fix bug lettura nativa Conduit, 03/08/2026) |
-| `open_door(...)` / stato device | shelly | Sblocco porta / diagnostica smart-home |
+| Tenant per deploy | **1** | **N** |
+| Credenziali PMS | env var del progetto | Vault Supabase, per-tenant |
+| Nuovo cliente | nuovo deploy + nuovo dominio + nuove env | riga DB + secret nel Vault |
+| Identificazione tenant | implicita (è il deploy) | header `X-Student-Token` |
+| Sospensione per morosità | da costruire ogni volta | `isTenantSuspended` centralizzata |
 
-Il mapping property → device smart-home (`ROOM_TYPE_TO_SLUG`, fuzzy match label Shelly) vive in questi file: è il punto dove PMS e hardware si incontrano.
+Replicare questo pattern per-studente significa moltiplicare deploy, domini e superficie di segreti. Il gateway esiste esattamente per non farlo.
 
-## Come si riusa per un nuovo PMS (es. ImmobiNet)
+<Warning>
+**Precedente di sicurezza da non ripetere.** Gli endpoint `/api/mcp/*` di `cosmica-booking` sono nati **senza auth guard**: chi conosce l'URL ottiene PII ospiti (nome, email, telefono, portal URL, chi è in casa). Tollerabile-ish per un singolo workspace interno; **replicarlo per-studente esporrebbe i dati ospiti di ogni PM su un URL indovinabile**. Nel modello multi-tenant l'identificazione del tenant è obbligatoria per costruzione (`X-Student-Token`), e questo è uno dei motivi per cui esiste.
+</Warning>
 
-L'aggiunta è **additiva**, non invasiva:
+## Cosa resta valido di questo repo
 
-1. **Client del PMS** in `src/lib/` — per Kross/Hostaway è REST; per ImmobiNet è il client SOAP del bridge (`immobinet-bridge`, vedi [Stato del bridge](/internal/immobinet/bridge-stato)).
-2. **Nuovo route** `src/app/api/mcp/<pms>/route.ts` con lo stesso shape `TOOLS` (stessi nomi logici: `get_reservations`, `get_guest`, `check_availability`, ...).
-3. **Auth Bearer per-workspace** sull'endpoint (mai URL indovinabili con PII).
-4. **Deploy per-workspace**: Cosmica ha il suo deploy; ogni studente/PM avrà il suo quando si pubblica il suo tool.
-5. **Registrazione in dashboard Conduit** + Skill/Knowledge che istruiscono l'agente.
+Due cose, e vanno tenute distinte dal layer tool-Conduit:
 
-<Note>
-Per ImmobiNet il client sotto è SOAP invece di REST, ma **da fuori l'endpoint è identico**: Conduit vede un tool HTTP che risponde JSON. Tutta la complessità SOAP (envelope, namespace, parsing XML) resta incapsulata nel bridge.
-</Note>
-
-## Standard di deploy
-
-- **Auth Bearer per-workspace** su ogni endpoint MCP.
-- **Config per-tenant da env** (credenziali PMS, chiavi), **zero segreti hardcoded**; solo `.env.example` con placeholder.
-- Il **codice** degli MCP sta nel repo codice (`cosmica-booking` / repo dedicato), **non** nei repo di documentazione.
+1. **La logica di dominio.** La logica "ricca" Kross del gateway (`lib/kross-mcp.js`) è un **port fedele** di quella di `cosmica-booking`, parametrizzata su una funzione `call(action, body)` legata al token dello studente invece che su una chiave hard-coded. Il comportamento dei tool è lo stesso; a cambiare è **da dove arrivano le credenziali**.
+2. **Il template del Direct Booking site.** Per il **sito di prenotazione diretta** di un PM, `cosmica-booking` resta il template canonico da forkare: lì il modello single-tenant è corretto (un sito, un brand, un dominio per PM). Questo non è in discussione, e non va confuso col layer dei tool Conduit.
 
 ## Riferimenti
 
-- Repo motore Kross multi-tenant: `~/Projects/api-kross-mattone` (gateway `mcp.mattone.co`) — alternativa per il modello partner Kross.
-- Doc-catalog interno (zero segreti): repo `mattone-integrations-docs` (`mcp-catalog/`).
+- [Gateway multi-tenant](/internal/conduit-knowhow/gateway-multi-tenant) — architettura corrente.
+- [Pattern Custom Tools](/internal/conduit-knowhow/custom-tools-pattern) — come si dà a Conduit una capacità che non ha di serie.
 - Skill: `smart-checkin-mcp`, `conduit-editing-playbook`, `conduit-api-reference`.

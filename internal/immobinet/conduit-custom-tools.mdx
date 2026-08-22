@@ -1,7 +1,7 @@
 ---
 title: "Conduit + ImmobiNet: il path ufficiale via Custom Tools"
 sidebarTitle: "Conduit via Custom Tools"
-description: "Conduit non sincronizza ImmobiNet nativamente. Il path confermato da Raniel: Custom Tools registrati da dashboard che chiamano un bridge di estrazione on-demand, riusando il pattern cosmica-booking."
+description: "Conduit non sincronizza ImmobiNet nativamente. Il path confermato da Raniel: Custom Tools registrati da dashboard, serviti dal gateway multi-tenant mcp.mattone.co. Include come Airbnb e Booking arrivano indirettamente via ImmobiNet."
 ---
 
 <Info>
@@ -34,17 +34,71 @@ Messaggio ospite (Airbnb / Booking / WhatsApp)
 **I Custom Tools di Conduit si registrano SOLO dalla dashboard Conduit** — non via API, non via MCP. Questo è diverso da Knowledge Base, Skill e Guardrail (creabili via MCP). Per la procedura di editing sicuro del workspace vedi la skill `conduit-editing-playbook`. Ogni tool va scoped al workspace/listing giusto per evitare cross-contamination.
 </Warning>
 
-## Riusiamo un pattern che abbiamo già
+## Dove vive l'endpoint: dentro il gateway multi-tenant
 
-Non partiamo da zero. In `~/Projects/cosmica-booking` ci sono già gli endpoint HTTP che Conduit chiama in produzione per Cosmica:
+<Warning>
+**Correzione rispetto a versioni precedenti di questa pagina.** Il template NON è più "un deploy di `cosmica-booking` per cliente". L'architettura di riferimento è il **gateway multi-tenant `mcp.mattone.co`**: un solo deploy, N studenti, credenziali per-tenant nel Vault Supabase risolte via header `X-Student-Token`. Vedi [Gateway multi-tenant](/internal/conduit-knowhow/gateway-multi-tenant).
+</Warning>
 
-- `src/app/api/mcp/krossbooking/route.ts`
-- `src/app/api/mcp/hostaway/route.ts`
-- `src/app/api/mcp/shelly/route.ts`
+ImmobiNet diventa quindi **una capability in più sul gateway**, esattamente come `krossbooking`, `shelly` e `stripe`:
 
-più la skill operativa `~/.claude/skills/smart-checkin-mcp/SKILL.md` che descrive come Conduit interroga questi tool per check-in, disponibilità, apertura porta.
+```
+Workspace Conduit studente Jesolo
+        │  custom tool → POST https://mcp.mattone.co/api/mcp/immobinet
+        │               X-Student-Token: <pms_integrations.id>
+        ▼
+  mattone-mcp-gateway ──▶ Vault Supabase: immobinet_creds_<token>
+        │                  { username, password, endpoint }
+        ▼ SOAP
+  ImmobiNet / rentallab
+```
 
-**L'architettura ImmobiNet è additiva**: stesso pattern, si aggiunge una source `immobinet`. La differenza è solo che dietro l'endpoint c'è un client SOAP invece di un client REST.
+### La forma corretta, letta dal codice reale
+
+Il template più pulito da copiare è **`api/mcp/shelly.js`** (config-object, non terna + apikey come Kross). Quattro file:
+
+| File nel gateway | Cosa fa | Da dove viene |
+|---|---|---|
+| `lib/vault.js` → `resolveImmobinetCreds(token)` | Legge il secret `immobinet_creds_<token>` con `get_vault_secret` | Nuova funzione, 6 righe, stessa forma di `resolveShellyConfig` |
+| `lib/immobinet.js` | Client SOAP (envelope + namespace + parsing) | **Port** di `immobinet-bridge/src/lib/immobinet-soap.ts` |
+| `lib/immobinet-mcp.js` | `IMMOBINET_TOOLS` + `handleImmobinetTool(cfg, name, args)` | Stessa firma di `lib/shelly-mcp.js`; mapper da `immobinet-bridge/src/lib/mappers.ts` |
+| `api/mcp/immobinet.js` | Handler JSON-RPC | Copia di `api/mcp/shelly.js` con due import cambiati |
+
+<Warning>
+**Il pezzo che va cambiato portando il client SOAP.** In `immobinet-bridge` il client legge le credenziali da `process.env` dentro `getConfig()`, e `requireAuth` confronta contro un unico `BRIDGE_API_KEY` globale. È **single-tenant per costruzione** — il commento nel codice lo ammette: *"If we ever go multi-tenant on the same deploy, swap the global env lookup for a per-workspace map"*.
+
+Portandolo nel gateway, **le credenziali vanno passate come parametro** (`soapCall(cfg, {...})`), mai lette dall'ambiente. È l'unica modifica sostanziale: tutto il resto (envelope, prefissi namespace, escaping) si porta così com'è.
+</Warning>
+
+### Perché il port e non "il bridge dietro il gateway"
+
+Le due opzioni sono state valutate sul codice, non in astratto:
+
+| | Bridge dietro il gateway | **Port dentro il gateway (scelta)** |
+|---|---|---|
+| Deploy da mantenere | 2 (gateway + bridge) | 1 |
+| Tenant per deploy del bridge | 1 (creds da env) → N deploy | N |
+| Per renderlo multi-tenant | il gateway dovrebbe **inoltrare le credenziali** al bridge a ogni richiesta: un secondo hop che trasporta password in chiaro tra due servizi | nessun hop: le credenziali restano nel processo che le ha lette dal Vault |
+| Codice davvero riusato | tutto il repo | `immobinet-soap.ts` + `mappers.ts` + `conduit-types.ts` (le parti che contano) |
+
+Il valore reale di `immobinet-bridge` sono **il client SOAP e i mapper**, non il suo essere un deploy separato. Il repo resta la fonte da cui si porta il parser (e il posto dove si finisce di scriverlo quando arrivano le credenziali), ma il **runtime** è il gateway.
+
+### Cosa si eredita gratis
+
+Nessuna di queste cose va riscritta per ImmobiNet: sono nel gateway.
+
+- **Isolamento tenant** e credenziali fuori da Conduit.
+- **Un solo deploy**: nuovo PM ImmobiNet = riga in `pms_integrations` + secret nel Vault.
+- **Dunning**: `isTenantSuspended(token)` gira in `tools/call` prima di eseguire. La RPC matcha su `pms_integrations.id` senza filtro sul provider, quindi ci si aspetta che valga anche per una riga ImmobiNet — **da confermare sull'RPC prima di dichiararlo**.
+- **Errori come contenuto** (`isError: true`) invece di 500: l'agente li legge e li spiega.
+
+<Warning>
+**Self-test obbligatorio, e non con `tools/list`.** Il ramo `tools/list` del gateway risponde senza leggere il token e senza toccare il Vault: **passa anche per un tenant le cui credenziali non sono risolvibili**. Per dichiarare `connected` uno studente ImmobiNet serve un `tools/call` read-only (es. `list_properties`) sul gateway reale con il suo token vero.
+</Warning>
+
+<Note>
+La skill operativa `smart-checkin-mcp` descrive come Conduit interroga questi tool per check-in, disponibilità e apertura porta: vale identica, perché **i nomi dei tool si tengono uguali a quelli Kross**. È quello che rende Skill e prompting portabili quando uno studente cambia PMS.
+</Note>
 
 ## I tool da esporre
 
@@ -64,7 +118,8 @@ Mappatura tool → operazione SOAP (dettaglio in [SOAP Webservice](/internal/imm
 | `open_door` | MCP smart-home (Shelly/SwitchBot) | ✅ parallelo, non ImmobiNet |
 | `update_booking_notes` | — | ❌ gap: `editPrenotazione` tocca solo il prezzo |
 | `reschedule_booking` | — | ❌ gap: cambio date non supportato → escalation umana |
-| `check_portal_status` (OTA) | — | ❌ gap: nessun endpoint OTA status |
+| `get_booking_channel(booking_id)` | `getPrenotazioni(...)` → `metadata.portale` | ⚠️ campo opzionale, valori non enumerati (vedi sotto) |
+| `check_portal_status` (stato sync OTA) | — | ❌ gap: nessun endpoint che dica se la sync col portale è sana |
 
 **Copertura ~90%.** I gap sono accettabili: le note operative Conduit le tiene nel proprio DB referenziando il `booking_id`; reschedule e portal status vanno a escalation umana (stesso flow di Hostaway oggi).
 
@@ -93,17 +148,85 @@ Per ogni messaggio ospite (Airbnb o Booking):
    "Per modifiche tariffe contatta direttamente il gestore".
 ```
 
-## Canali di comunicazione (contesto completo)
+## Airbnb e Booking arrivano INDIRETTAMENTE, via ImmobiNet
 
-Il custom tool ImmobiNet copre i **dati**. I **messaggi** arrivano dai canali, gestiti come sugli altri workspace Conduit:
+Questo è il punto che sblocca il caso d'uso e che va capito bene: **non serve un'integrazione OTA separata per avere le prenotazioni OTA.**
+
+ImmobiNet funge da **channel manager**: distribuisce disponibilità e prezzi ai portali e **riceve indietro le prenotazioni**. Quindi una prenotazione Airbnb o Booking.com **atterra in ImmobiNet** come una qualsiasi `Prenotazione`, e il nostro layer di estrazione la cattura di conseguenza. Non la leggiamo da Airbnb: la leggiamo da ImmobiNet, che l'ha già ricevuta.
+
+```
+Airbnb ─┐
+Booking ─┼──▶  ImmobiNet (channel manager)  ──SOAP──▶  gateway  ──▶  AI Ospiti Conduit
+Sito diretto ─┘        │
+                       └─ ogni prenotazione porta metadata/portale = da quale canale viene
+```
+
+### Il campo che dice da dove viene: `metadata/portale`
+
+Verificato leggendo lo **schema XSD live** il 2026-08-22 (`webservices-deps/webservicemodagenzia/schema.xsd`), non dedotto:
+
+```xml
+<xsd:complexType name="Prenotazione">
+  ...
+  <xsd:element name="metadata" type="imm:PrenotazioneMetadata" maxOccurs="1" minOccurs="0"/>
+  ...
+</xsd:complexType>
+
+<xsd:complexType name="PrenotazioneMetadata">
+  <xsd:element name="rif"      type="xsd:string" minOccurs="0"/>  <!-- riferimento arbitrario alla prenotazione -->
+  <xsd:element name="ip"       type="xsd:string" minOccurs="0"/>
+  <xsd:element name="server"   type="xsd:string" minOccurs="0"/>
+  <xsd:element name="listino"  type="xsd:string" minOccurs="0"/>
+  <xsd:element name="portale"  type="xsd:string" minOccurs="0"/>  <!-- ← il canale -->
+</xsd:complexType>
+```
+
+La documentazione inline del WSDL definisce il campo così: *"'portale', is the reference code of the portal"*.
+
+`portale` **non è un campo isolato della prenotazione**: è una dimensione di prima classe di tutto il modello ImmobiNet. Compare come filtro/attributo anche su:
+
+| Dove | Operazione / evento | Significato |
+|---|---|---|
+| Ricerca disponibilità | `ricercaDisponibilita(..., portale?)` | prezzi e disponibilità **per canale** |
+| Regole soggiorno | `getListinoRegole(..., portale?)` | min/max stay diversi per canale |
+| Aperture/chiusure | `getListinoAperture(..., portale?)` | apri/chiudi un canale su un periodo |
+| Offerte | `getOfferte` → `portale`; evento PUSH `Offerta` porta `portale` e `old[portale]` | promo mirate per canale |
+
+Un PMS che modella prezzi, regole, aperture e offerte **per portale** è, per costruzione, un channel manager. È la conferma strutturale che le OTA passano di lì.
+
+### Come si riflette per noi, in pratica
+
+1. **Nuova prenotazione OTA** → arriva in ImmobiNet → l'evento PUSH `ModAgenzia/Prenotazione` con `_type=inserted` notifica il cambiamento. Il PUSH è **una notifica di invalidazione, non trasporto dati**: si rilegge con `getPrenotazioni`. Se il PUSH non è configurabile senza intervento Rentallab, il fallback è polling `getPrenotazioni(ultima-modifica=<last_sync>)`.
+2. **Il tool `get_reservation` la restituisce** identica a una diretta, con `metadata.portale` a dire da dove viene.
+3. **L'agente Conduit può differenziare il tono e le regole per canale** (commissioni, policy di cancellazione, cosa può promettere) usando quel campo.
+
+<Warning>
+**Tre caveat onesti, tutti verificati sullo schema e non ancora su una risposta reale.**
+
+1. **`metadata` e `portale` sono entrambi `minOccurs="0"`**: doppiamente opzionali. Una prenotazione può arrivare **senza** l'indicazione del canale. Il codice non deve assumerne la presenza.
+2. **Nessuna enumerazione nello schema**: `portale` è `xsd:string` libero. **Non sappiamo quali valori reali usi questa agenzia** (`booking`, `BDC`, `airbnb`, un codice numerico...). Si scopre alla prima risposta vera, non prima. Non hardcodare valori attesi.
+3. **Che il channel manager sia attivo per QUESTA agenzia va confermato col cliente.** Lo schema dimostra che ImmobiNet *sa* fare da channel manager; non dimostra che Alberto abbia i portali collegati. È una domanda da fare, non da assumere.
+</Warning>
+
+<Note>
+**Segnale di fallback se `portale` arriva vuoto** (inferenza, non verificata): `cliente/email` è un campo **obbligatorio** (`minOccurs="1"`) e le OTA usano alias riconoscibili (`@guest.airbnb.com`, `@guest.booking.com`). Il dominio dell'email è quindi un discriminante di riserva. Da validare sui dati reali prima di farci affidamento.
+</Note>
+
+### Conseguenza sul lavoro da fare
+
+Va richiesto al cliente/supporto Rentallab un **codice `portale` dedicato al sito diretto**, così i report e le automazioni non confondono le prenotazioni dirette con quelle Booking/Airbnb, e il tool `setPrenotazione` del [Direct Booking](/internal/immobinet/panoramica) lo valorizza in `metadata.portale`.
+
+## Canali di comunicazione (i messaggi, non i dati)
+
+Attenzione a non confondere i due piani: sopra si parlava delle **prenotazioni** (dati, via ImmobiNet). I **messaggi** dell'ospite non passano da ImmobiNet: Conduit possiede i propri canali, come su ogni altro workspace.
 
 - **Airbnb** — OAuth nativo in dashboard Conduit (multi-account supportato: più account host → stesso inbox). Setup ~30 min.
 - **Booking.com** — **routing rule** built-in di Conduit (NON IMAP custom): l'email di notifica Booking arriva al workspace, Conduit estrae il `reservation_id` dal subject e instrada nell'inbox. Setup ~1 giorno.
 - **WhatsApp** — via WABA (vedi sezione [WABA](/integrazioni/waba/panoramica)).
 
-## Alternativa secondaria: Kross-proxy
-
-Il gateway `mcp.mattone.co` (repo `api-kross-mattone`) resta come **alternativa secondaria** se in futuro le proprietà venissero migrate/replicate su un PMS REST. Ma per ImmobiNet as-is, il path **primario è quello di Raniel** (custom tools sul bridge SOAP descritto qui).
+<Tip>
+**Il punto di giunzione tra i due piani** è il `reservation_id` che Conduit estrae dal subject Booking: va fatto combaciare con l'identificativo lato ImmobiNet. Il candidato è `metadata.rif` ("riferimento arbitrario alla prenotazione"), che è il posto naturale dove un channel manager scrive il codice OTA. **Da verificare sulla prima risposta reale** — se `rif` non contiene il codice OTA, il match va fatto su cognome + date.
+</Tip>
 
 ## Cosa blocca il go-live
 

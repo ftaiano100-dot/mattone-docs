@@ -26,7 +26,7 @@ La memoria progetto citava il vecchio percorso `~/Desktop/immobinet-bridge` con 
 | `src/lib/immobinet-soap.ts` | Client SOAP hand-rolled (fetch + fast-xml-parser, no strong-soap) | Envelope + auth **fatti**; parser risposte **stub** |
 | `src/lib/mappers.ts` | Funzioni pure: ImmobiNet raw → shape Conduit | Struttura pronta; `mapStatus` provvisorio |
 | `src/lib/conduit-types.ts` | Schema canonico Conduit (Contact, Reservation, Listing) | Fatto |
-| `src/lib/auth.ts` | Validazione Bearer token (Conduit → bridge) | Fatto |
+| `src/lib/auth.ts` | Validazione Bearer token (Conduit → bridge) | Fatto, ma **single-tenant**: confronto contro un unico `BRIDGE_API_KEY` globale. Sostituito dall'`X-Student-Token` del gateway |
 | `src/app/v1/{reservations,listings,contacts}/route.ts` | Endpoint REST in shape Conduit `{data, next_cursor, has_more}` | Fatto (wiring); dipendono dal parser |
 | `docs/ARCHITECTURE.md`, `docs/CONDUIT-SCHEMA.md` | Doc interna repo | Fatto |
 
@@ -80,6 +80,17 @@ Non è un esperimento marginale: è un caso serio da completare, a fronte di ~2 
 
 ## Handover a valle
 
-1. Deploy del bridge su Vercel (account `ftaiano100-dot`), env var per cliente: `IMMOBINET_USERNAME`, `IMMOBINET_PASSWORD`, `IMMOBINET_ENDPOINT_URL`, `BRIDGE_API_KEY` (mai in git; solo `.env.example` con placeholder).
-2. Passare URL + `BRIDGE_API_KEY` per registrare gli endpoint come **Custom Tools nella dashboard Conduit** (vedi [Conduit via Custom Tools](/internal/immobinet/conduit-custom-tools)).
-3. Prompting dell'agente + Knowledge per istruirlo a chiamare i tool on-demand.
+<Warning>
+**Aggiornamento architetturale.** L'handover NON è più "deploy del bridge su Vercel con le env var del cliente". Quel modello è **single-tenant per costruzione** e si moltiplica per ogni PM. Il runtime di destinazione è il **gateway multi-tenant `mcp.mattone.co`**: vedi [Gateway multi-tenant](/internal/conduit-knowhow/gateway-multi-tenant) e [come ImmobiNet ci si innesta](/internal/immobinet/conduit-custom-tools).
+</Warning>
+
+1. **Finire il parser qui**, in `immobinet-bridge`, dove c'è già l'envelope corretto: è il posto giusto per iterare sull'XML reale appena arrivano le credenziali.
+2. **Portare client + mapper nel gateway** come `lib/immobinet.js` e `lib/immobinet-mcp.js`, **cambiando `getConfig()`**: le credenziali vanno passate come parametro, non lette da `process.env` (è ciò che rende il modulo multi-tenant).
+3. **Credenziali nel Vault Supabase** come secret `immobinet_creds_<token>`, non in env var per-cliente. Nuovo studente = riga in `pms_integrations` + secret, **zero deploy**.
+4. Registrare `https://mcp.mattone.co/api/mcp/immobinet` + header `X-Student-Token` come **Custom Tools nella dashboard Conduit** (passo manuale: i custom tool non sono creabili via MCP/API).
+5. **Self-test runtime** con un `tools/call` read-only prima di dichiarare `connected` — `tools/list` non prova nulla, risponde senza toccare il Vault.
+6. Prompting dell'agente + Knowledge per istruirlo a chiamare i tool on-demand.
+
+<Note>
+Il repo `immobinet-bridge` resta utile e non va buttato: è dove vive il lavoro sul SOAP (envelope, namespace, parser, mapper, `conduit-types.ts`). Cambia **dove gira**, non **cosa contiene**.
+</Note>
