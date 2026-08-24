@@ -1,0 +1,80 @@
+---
+title: "Chiedere a Conduit: numeri di telefono, email e nome dell'agente"
+sidebarTitle: "Richieste a Conduit"
+description: "A chi scrivere in Conduit per ottenere un numero di telefono, attivare WhatsApp Business o la voce su un workspace, e cosa mettere nella richiesta perché non torni indietro."
+---
+
+Numero di telefono, attivazione WhatsApp Business (WABA), agente vocale e nome con cui l'agente si presenta **non sono configurabili da noi**: né dall'API, né dall'MCP, né dalla dashboard. Sono operazioni che esegue l'operatore Conduit. Questa pagina dice **a chi chiederle** e **cosa scrivere**, perché una richiesta incompleta costa un giro di email e due giorni.
+
+## A chi si scrive
+
+| Persona | Ruolo | Contatto | Per cosa |
+|---|---|---|---|
+| **Flor Danielle** | Executive Assistant | `flordanielle@conduit.ai` — +63 961 005 0150 | **Numeri di telefono**: assegnazione, provisioning, cambio numero su un workspace |
+| **Raniel** | Team tecnico | `raniel@conduit.ai` | Attivazione WABA e agente vocale, bug, knowledge base, scoping listing |
+| **Punn** | Team tecnico | `Punn@conduit.ai` | In copia sulle attivazioni voce/WABA |
+
+<Note>
+Per i **numeri** il riferimento è **Flor**. Per l'**attivazione** di voce e WhatsApp si scrive a **Raniel** mettendo **Punn** in copia. Se non sai in quale dei due casi sei: se la domanda è "ci date un numero?" è Flor, se è "accendetelo su questo workspace" è Raniel.
+</Note>
+
+## Cosa mettere nella richiesta
+
+Conduit lavora per **workspace**, non per cliente. Una richiesta senza `workspace_id` torna indietro. Il minimo indispensabile:
+
+- **Workspace name** — il nome leggibile (es. `Host Manager`)
+- **Workspace ID** — l'identificativo tecnico, quello che conta davvero
+- **Cosa serve** — numero nuovo / WABA / agente vocale / cambio numero
+- **Paese del numero**, se ne stai chiedendo uno nuovo
+- **Nome dell'agente**: come deve presentarsi al telefono e in chat
+
+Il `workspace_id` si recupera dall'MCP Conduit con lo strumento di elenco workspace, oppure dalla dashboard.
+
+## Il nome dell'agente
+
+Il nome con cui l'agente si presenta è **parte della richiesta**, non una configurazione successiva. Se non lo specifichi, il workspace parte con il default e cambiarlo dopo è un secondo giro. Decidilo prima di scrivere.
+
+## Modello di richiesta
+
+```
+Oggetto: Voice + WABA activation for workspace <NOME> (partner Mattone)
+
+Hi Conduit team,
+
+We'd like to activate the voice agent + WhatsApp Business API (WABA)
+for one of our partner workspaces:
+
+━━━ Workspace details ━━━
+• Workspace name: <NOME LEGGIBILE>
+• Workspace ID: <ID TECNICO>
+• Agent name (how it should introduce itself): <NOME AGENTE>
+• Phone number: <esistente da migrare / nuovo, paese richiesto>
+
+Thanks,
+<firma>
+```
+
+Destinatari: `raniel@conduit.ai`, in copia `Punn@conduit.ai`. Se la richiesta riguarda **solo** l'assegnazione di un numero, il destinatario è `flordanielle@conduit.ai`.
+
+## Tempi e cosa NON dare per scontato
+
+- **I template WhatsApp vanno approvati da Meta**, non da Conduit: l'attivazione del numero non basta. Un numero attivo con i template ancora *pending* non può iniziare conversazioni, può solo rispondere entro la finestra di 24 ore.
+- **Cambiare numero invalida i template già approvati**: sono approvati per WABA, non in assoluto. Dopo una migrazione vanno rifatti.
+- Il numero è **per workspace**: non si condivide tra clienti diversi.
+
+## Prima di scrivere, controlla
+
+<Steps>
+<Step title="Recupera il workspace_id">
+Senza quello la richiesta non è lavorabile.
+</Step>
+<Step title="Decidi il nome dell'agente">
+Va nella stessa email, non dopo.
+</Step>
+<Step title="Scegli il destinatario">
+Numero → Flor. Attivazione → Raniel + Punn in copia.
+</Step>
+<Step title="Verifica lo stato dei template">
+Se stai migrando un numero, i template esistenti non seguono: metti in conto il tempo di ri-approvazione Meta.
+</Step>
+</Steps>
