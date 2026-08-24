@@ -37,22 +37,31 @@ Li approva **Meta**, non Conduit. Un numero attivo con i template ancora *pendin
 </Step>
 </Steps>
 
-## Due numeri, mai uno: WhatsApp e voce restano separati
+## Un numero solo, e non ci sta l'agente sopra
 
-Il numero che diamo agli ospiti su WhatsApp **non deve mai coincidere** con quello del voice agent. Sono due numeri distinti, collegati da un **forwarding** — è così che l'abbiamo sempre fatto e c'è un motivo preciso.
+La formula "WhatsApp diverso da voice" gira da un po' ed è sbagliata: fa pensare a **due numeri**, mentre il confine vero è fra il **numero** e l'**agente**. I pezzi sono tre:
 
-**Perché due:**
+| | Cos'è | Dove sta |
+|---|---|---|
+| **Voice agent** | l'AI che risponde alla chiamata | sul **numero americano** (Retell) |
+| **Voice number** | il numero italiano come linea telefonica: **squilla** | è il numero che diamo all'ospite |
+| **WhatsApp number** | **lo stesso identico numero**, con la WABA registrata sopra | è sempre lui, solo uno step dopo |
 
-- **Resistenza al ban.** Se il numero frontale WhatsApp viene bannato — succede, è successo — lo sostituisci senza perdere la voce. Il voice agent continua a funzionare e ci si può sempre appoggiare a quello mentre si rimette in piedi WhatsApp.
-- **Il numero frontale è sacrificabile, il voice agent no.** Tenendoli separati, un ban costa il cambio di un numero, non lo spegnimento del canale telefonico.
+Voice number e WhatsApp number **sono lo stesso numero**. Non sono due cose da separare: sono due passaggi sulla stessa linea.
 
-## Il forwarding va tolto per prendere i codici WABA
+Quindi la regola, detta bene:
 
 <Note>
-Quando serve **ricevere i codici di verifica WABA** sul numero, il forwarding va **disattivato temporaneamente**: altrimenti la chiamata o l'SMS di verifica viene deviata sull'altro numero e il codice non arriva mai. Preso il codice, si riattiva.
+**Il numero è uno e fa due cose: squilla e porta WhatsApp. Quello che non ci sta sopra è l'agente AI.**
+L'agente vive sul numero americano; le chiamate al numero italiano gli arrivano **per inoltro**.
 </Note>
 
-È il tipo di dettaglio che fa perdere mezza giornata la prima volta e zero minuti tutte le volte successive.
+**E la capacità di squillare non è un residuo da spegnere: è come ricevi il codice di verifica WhatsApp.** Serve un numero che squilli davvero per completare la registrazione WABA.
+
+### Perché l'agente sta su un altro numero
+
+- **Resistenza al ban.** Se il numero frontale viene bannato da WhatsApp — succede, è successo — lo sostituisci e l'agente vocale non si accorge di niente. Il numero frontale è sacrificabile, l'agente no.
+- **Un solo numero da comunicare.** L'ospite ne riceve uno: ci scrive su WhatsApp e ci telefona. Che la chiamata finisca su un altro continente non lo riguarda.
 
 ## Cosa NON dare per scontato
 
