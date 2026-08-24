@@ -1,80 +1,85 @@
 ---
-title: "Chiedere a Conduit: numeri di telefono, email e nome dell'agente"
-sidebarTitle: "Richieste a Conduit"
-description: "A chi scrivere in Conduit per ottenere un numero di telefono, attivare WhatsApp Business o la voce su un workspace, e cosa mettere nella richiesta perché non torni indietro."
+title: "Numeri, WABA e voce: cosa chiediamo a Conduit e cosa facciamo da soli"
+sidebarTitle: "Numeri e WABA"
+description: "A Conduit si chiede solo il numero, e lo chiede a Flor. La WhatsApp Business API ce la facciamo da soli col nostro Business Manager. E il numero WhatsApp non coincide mai con quello del voice agent."
 ---
 
-Numero di telefono, attivazione WhatsApp Business (WABA), agente vocale e nome con cui l'agente si presenta **non sono configurabili da noi**: né dall'API, né dall'MCP, né dalla dashboard. Sono operazioni che esegue l'operatore Conduit. Questa pagina dice **a chi chiederle** e **cosa scrivere**, perché una richiesta incompleta costa un giro di email e due giorni.
+C'è una sola cosa che chiediamo a Conduit: **il numero**. Tutto il resto — WhatsApp Business API, template, voce — lo gestiamo noi. Questa pagina esiste perché la prima volta l'abbiamo fatto al contrario.
 
-## A chi si scrive
+## Il numero: si chiede a Flor, e fa tutto lei
 
-| Persona | Ruolo | Contatto | Per cosa |
-|---|---|---|---|
-| **Flor Danielle** | Executive Assistant | `flordanielle@conduit.ai` — +63 961 005 0150 | **Numeri di telefono**: assegnazione, provisioning, cambio numero su un workspace |
-| **Raniel** | Team tecnico | `raniel@conduit.ai` | Attivazione WABA e agente vocale, bug, knowledge base, scoping listing |
-| **Punn** | Team tecnico | `Punn@conduit.ai` | In copia sulle attivazioni voce/WABA |
+| Persona | Ruolo | Contatto |
+|---|---|---|
+| **Flor Danielle** | Executive Assistant Conduit | `flordanielle@conduit.ai` · +63 961 005 0150 |
+| Raniel | Team tecnico | `raniel@conduit.ai` — **solo in copia**, se serve spingere per l'aggancio al workspace |
+
+Flor si occupa del numero **dall'inizio alla fine**: lo procura e lo mette sul workspace. Non serve aprire un secondo canale con il team tecnico. Al massimo si mette **Raniel in copia** perché il numero venga agganciato al workspace, ma l'interlocutore resta lei.
+
+Nella richiesta servono: **workspace name**, **workspace ID**, **paese del numero** e il **nome con cui l'agente si presenta**. Senza `workspace_id` la richiesta torna indietro; il nome dell'agente va deciso prima, altrimenti è un secondo giro.
+
+## La WABA NON si chiede a Conduit
+
+<Warning>
+**Non chiedere a Conduit di attivare la WhatsApp Business API.** Noi abbiamo un **Business Manager nostro**: una volta che il numero è dentro, la registrazione WABA la facciamo da soli. Delegarla significa perdere il controllo su un asset che è nostro e allungare i tempi senza motivo.
+</Warning>
+
+L'ordine corretto è:
+
+<Steps>
+<Step title="Chiedi il numero a Flor">
+Lei lo procura e lo aggancia al workspace.
+</Step>
+<Step title="Registra la WABA dal nostro Business Manager">
+Da noi, non da Conduit. Il numero è già disponibile, serve solo completare la verifica.
+</Step>
+<Step title="Manda i template in approvazione">
+Li approva **Meta**, non Conduit. Un numero attivo con i template ancora *pending* può solo **rispondere** entro la finestra di 24 ore: non può iniziare conversazioni.
+</Step>
+</Steps>
+
+## Due numeri, mai uno: WhatsApp e voce restano separati
+
+Il numero che diamo agli ospiti su WhatsApp **non deve mai coincidere** con quello del voice agent. Sono due numeri distinti, collegati da un **forwarding** — è così che l'abbiamo sempre fatto e c'è un motivo preciso.
+
+**Perché due:**
+
+- **Resistenza al ban.** Se il numero frontale WhatsApp viene bannato — succede, è successo — lo sostituisci senza perdere la voce. Il voice agent continua a funzionare e ci si può sempre appoggiare a quello mentre si rimette in piedi WhatsApp.
+- **Il numero frontale è sacrificabile, il voice agent no.** Tenendoli separati, un ban costa il cambio di un numero, non lo spegnimento del canale telefonico.
+
+## Il forwarding va tolto per prendere i codici WABA
 
 <Note>
-Per i **numeri** il riferimento è **Flor**. Per l'**attivazione** di voce e WhatsApp si scrive a **Raniel** mettendo **Punn** in copia. Se non sai in quale dei due casi sei: se la domanda è "ci date un numero?" è Flor, se è "accendetelo su questo workspace" è Raniel.
+Quando serve **ricevere i codici di verifica WABA** sul numero, il forwarding va **disattivato temporaneamente**: altrimenti la chiamata o l'SMS di verifica viene deviata sull'altro numero e il codice non arriva mai. Preso il codice, si riattiva.
 </Note>
 
-## Cosa mettere nella richiesta
+È il tipo di dettaglio che fa perdere mezza giornata la prima volta e zero minuti tutte le volte successive.
 
-Conduit lavora per **workspace**, non per cliente. Una richiesta senza `workspace_id` torna indietro. Il minimo indispensabile:
+## Cosa NON dare per scontato
 
-- **Workspace name** — il nome leggibile (es. `Host Manager`)
-- **Workspace ID** — l'identificativo tecnico, quello che conta davvero
-- **Cosa serve** — numero nuovo / WABA / agente vocale / cambio numero
-- **Paese del numero**, se ne stai chiedendo uno nuovo
-- **Nome dell'agente**: come deve presentarsi al telefono e in chat
+- **I template WhatsApp li approva Meta.** L'attivazione del numero non basta.
+- **Cambiare numero invalida i template già approvati**: sono approvati per WABA, non in assoluto. Dopo una migrazione vanno rifatti da capo.
+- **Il numero è per workspace**: non si condivide tra clienti diversi.
 
-Il `workspace_id` si recupera dall'MCP Conduit con lo strumento di elenco workspace, oppure dalla dashboard.
-
-## Il nome dell'agente
-
-Il nome con cui l'agente si presenta è **parte della richiesta**, non una configurazione successiva. Se non lo specifichi, il workspace parte con il default e cambiarlo dopo è un secondo giro. Decidilo prima di scrivere.
-
-## Modello di richiesta
+## Modello di richiesta a Flor
 
 ```
-Oggetto: Voice + WABA activation for workspace <NOME> (partner Mattone)
+Oggetto: Phone number request — workspace <NOME> (partner Mattone)
 
-Hi Conduit team,
+Hi Flor,
 
-We'd like to activate the voice agent + WhatsApp Business API (WABA)
-for one of our partner workspaces:
+We'd like a phone number provisioned and attached to one of our
+partner workspaces:
 
-━━━ Workspace details ━━━
 • Workspace name: <NOME LEGGIBILE>
-• Workspace ID: <ID TECNICO>
+• Workspace ID:   <ID TECNICO>
+• Country:        <PAESE DEL NUMERO>
 • Agent name (how it should introduce itself): <NOME AGENTE>
-• Phone number: <esistente da migrare / nuovo, paese richiesto>
+
+We'll handle the WhatsApp Business API registration ourselves
+from our own Business Manager — we only need the number in place.
 
 Thanks,
 <firma>
 ```
 
-Destinatari: `raniel@conduit.ai`, in copia `Punn@conduit.ai`. Se la richiesta riguarda **solo** l'assegnazione di un numero, il destinatario è `flordanielle@conduit.ai`.
-
-## Tempi e cosa NON dare per scontato
-
-- **I template WhatsApp vanno approvati da Meta**, non da Conduit: l'attivazione del numero non basta. Un numero attivo con i template ancora *pending* non può iniziare conversazioni, può solo rispondere entro la finestra di 24 ore.
-- **Cambiare numero invalida i template già approvati**: sono approvati per WABA, non in assoluto. Dopo una migrazione vanno rifatti.
-- Il numero è **per workspace**: non si condivide tra clienti diversi.
-
-## Prima di scrivere, controlla
-
-<Steps>
-<Step title="Recupera il workspace_id">
-Senza quello la richiesta non è lavorabile.
-</Step>
-<Step title="Decidi il nome dell'agente">
-Va nella stessa email, non dopo.
-</Step>
-<Step title="Scegli il destinatario">
-Numero → Flor. Attivazione → Raniel + Punn in copia.
-</Step>
-<Step title="Verifica lo stato dei template">
-Se stai migrando un numero, i template esistenti non seguono: metti in conto il tempo di ri-approvazione Meta.
-</Step>
-</Steps>
+A: `flordanielle@conduit.ai` — in copia `raniel@conduit.ai` solo se serve sollecitare l'aggancio al workspace.
