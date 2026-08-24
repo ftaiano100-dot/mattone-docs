@@ -46,6 +46,73 @@ Il contratto in questione è l'**Addendum "Servizio AI Ospiti"** (Mattone.co LLC
   Fatto questo passo, prosegui con il resto della **Fase 0** (account piattaforma, allineamento) e poi con il ramo operativo → [Step 1 · Anagrafica & Notion](/onboarding/1-anagrafica-notion).
 </Tip>
 
+## Il percorso esatto nell'Admin Panel
+
+Il riquadro non è in cima: sta **in fondo alla riga dello studente**, ed è il motivo per cui non si trova.
+
+**Admin Panel → tab "Utenti" → clicca sulla riga dello studente per aprirla → scorri fino a "Contratto Programma" → *Carica PDF contratto*.**
+
+L'ordine dei blocchi dall'alto è: Accesso Tool → Codice Membro → PMS API Keys → Mattoni sbloccati → **Contratto Programma** → Credenziali. Chi si ferma a "Mattoni sbloccati" non lo vede.
+
+<Warning>
+  **"Amministrazione" (`/documenti`) NON è il posto giusto.** Quella è la vista **dello studente**, in **sola lettura**: lì i contratti si guardano, non si caricano. Serve `is_admin = true`: il ruolo `special_role: 'boss'` **non basta**.
+</Warning>
+
+## Caricare il contratto NON sblocca da solo
+
+Questo è il punto che fa perdere più tempo. I meccanismi sono **due e distinti**, e vanno capiti separati.
+
+| | Cosa fa | Quando conta |
+|---|---|---|
+| **"Invia credenziali"** | crea l'accesso e lo manda allo studente | **solo alla PRIMA attivazione** |
+| **Program Contract Gate** | tiene la piattaforma in **sola lettura** con banner "Firma il contratto" | per lo studente **già dentro** |
+
+Quindi:
+
+- **Studente nuovo** → carichi il contratto (il pulsante "Invia credenziali" si sblocca) → **premi "Invia credenziali"**. Finché non lo premi, lo studente non entra. Il caricamento da solo non attiva nessuno.
+- **Studente già dentro** → il contratto caricato lo riporta in scrittura da solo, senza premere niente.
+
+<Note>
+  Il gate sull'invio credenziali vale **solo alla prima attivazione**: se a uno le credenziali sono già state inviate una volta, **i re-invii passano anche senza contratto**.
+</Note>
+
+## Se hai caricato il contratto e lo studente è ancora bloccato
+
+Nel 99% dei casi è **`gate_override = 'force_locked'`** sul profilo: un blocco messo a mano.
+
+<Warning>
+  **`force_locked` vince su tutto.** Viene letto **prima** del contratto e **prima** dell'interruttore generale del gate: quindi né caricare il PDF né avere il gate automatico spento lo tolgono. Finché c'è quel valore, lo studente resta in sola lettura.
+</Warning>
+
+I tre stati possibili di `gate_override`:
+
+| Valore | Effetto |
+|---|---|
+| *(vuoto)* | decide l'automatico — è lo stato normale |
+| `force_open` | mai bloccato, qualunque cosa succeda (valvola per demo e casi limite) |
+| `force_locked` | **bloccato a mano, a prescindere dal contratto** |
+
+**Procedura quando uno resta bloccato:**
+
+<Steps>
+<Step title="Verifica che il contratto sia davvero caricato">
+Riquadro verde "Contratto caricato" nella riga dello studente.
+</Step>
+<Step title="Controlla il gate_override sul profilo">
+Se vale `force_locked`, è quello che blocca — non il contratto.
+</Step>
+<Step title="Togli il force_locked (svuota il campo)">
+Da lì in poi decide l'automatico: contratto presente → aperto.
+</Step>
+<Step title="Solo se non è mai stato attivato: premi 'Invia credenziali'">
+Se `credentials_sent_at` è vuoto, lo studente non ha mai ricevuto l'accesso: sbloccarlo non basta, va anche attivato.
+</Step>
+</Steps>
+
+<Tip>
+  Il caso reale del **24/08/2026**: due contratti caricati correttamente alle 14:06 e 14:07, e i due studenti **ancora bloccati** — perché avevano entrambi `force_locked`. Uno è tornato operativo togliendo l'override; l'altro ha avuto bisogno anche dell'invio credenziali, perché non era mai stato attivato.
+</Tip>
+
 <CardGroup cols={2}>
   <Card title="Onboarding · Panoramica" icon="arrow-up-right-from-square" href="/onboarding/panoramica">Fase 0 e i due gate di attivazione</Card>
   <Card title="Step 3 · Conduit" icon="arrow-up-right-from-square" href="/onboarding/3-conduit">Dove si verificano contratto + carta prima di attivare</Card>
