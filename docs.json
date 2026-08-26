@@ -68,9 +68,15 @@
               "delivery/problemi-ricorrenti-conduit",
               "delivery/personalizzazione-studente",
               "delivery/mancato-pagamento",
-              "delivery/token-conduit-coach",
+              "delivery/token-conduit-coach"
+            ]
+          },
+          {
+            "group": "Marketing Clienti",
+            "pages": [
               "delivery/marketing-onboarding",
-              "delivery/marketing-template-ads"
+              "delivery/marketing-template-ads",
+              "integrazioni/ghl/setup-agenzia-landing"
             ]
           },
           {
@@ -101,7 +107,6 @@
               "integrazioni/kross/rate-limit-trappole",
               "integrazioni/kross/troubleshooting",
               "integrazioni/ghl/panoramica",
-              "integrazioni/ghl/setup-agenzia-landing",
               "integrazioni/ghl/pit-location",
               "integrazioni/ghl/lead-valore",
               "integrazioni/ghl/rebilling",
