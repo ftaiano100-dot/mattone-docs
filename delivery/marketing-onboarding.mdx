@@ -77,16 +77,44 @@ Ogni volta che nell'Admin Overview un cliente attiva "Marketing con Ole", parte 
     Ole per ogni nuovo cliente:
     1. Su GitHub → clicca "Use this template" sul template repo → nome nuovo repo `nomeagenzia`
     2. Modifica **solo** `lib/config.ts` (dal web GitHub, no terminale):
-       - Nome agenzia, città, agente
-       - Colore accent (hex)
-       - Numeri stats (n. immobili, anni, rating)
-       - 2-3 testimonianze reali
-       - Contatti (telefono, email)
-       - **Sostituisce `ghlFormEmbedHtml`** con l'iframe del form GHL cliente creato al passo 6
+       - `nomeAgenzia`, `città`, `nomeAgente`
+       - **`coloreAccent`** + `coloreAccentHover` (hex del brand cliente — cambiano bottoni e titoli evidenziati; il resto rimane bianco/blu)
+       - Numeri stats reali (`ourImmobili`, `anniEsperienza`, `ratingMedio`, `ratingReviews`)
+       - Testimonianze (min 3, max 6)
+       - Case study opzionale (nome cliente, tipologia immobile, risultato)
+       - **`ghlFormEmbedHtml`** ← iframe del form GHL cliente (dal passo 6 GHL)
+       - **`bookingEmbedHtml`** ← iframe calendario GHL/Calendly per la TYP (dal passo 6 GHL, tab Calendars)
+       - `instagramUrl` + `pdfLeadMagnetUrl` opzionali (se compilati appare sezione follow-up sulla TYP)
+       - Contatti (`telefono`, `email`)
     3. Va su https://vercel.com/new → import repo appena creato → Deploy
-    4. Landing live su `nomeagenzia.vercel.app` in ~90 sec
+    4. **Disattiva Vercel Authentication**: Project Settings → Deployment Protection → Vercel Auth OFF (altrimenti la landing è privata)
+    5. Landing live su `nomeagenzia.vercel.app` in ~90 sec
+    6. TYP live su `nomeagenzia.vercel.app/grazie` — questa URL va incollata nel Redirect URL del form GHL (passo 8 della guida GHL)
 
-    Lo stile e le sezioni (hero, stats, metodo, testimonianze, form, footer) restano identici per tutte le agenzie — coerenza di brand Mattone + velocità di rollout.
+    ### Cosa include il template
+
+    **Landing (`/`)** — stile brandato Mattone (bianco + accent viola del cliente, Plus Jakarta Sans):
+    - Hero con headline "Stai perdendo fino al 50%..." + CTA rotondo
+    - Sezione problema (5 pain point affitto tradizionale)
+    - Sezione benefit (6 card "cosa ottieni con noi")
+    - Sezione dark "Servizio all-inclusive" (8 checklist)
+    - Testimonianze (3-6 card con rating)
+    - Case study opzionale
+    - Form GHL embed inline
+    - FAQ accordion (4 domande)
+    - Footer minimal
+
+    **Thank You Page (`/grazie`)** — stessa palette:
+    - Hero grazie + 🎉
+    - "Cosa succede ora" (3 step 01/02/03: email conferma → analisi → chiamata)
+    - **Booking embed** GHL/Calendly per prenotare subito (skippare la queue) — 20-30% conversion extra
+    - Prova sociale (testimonianze mini + rating)
+    - Social/PDF opzionali (Instagram + lead magnet)
+    - Contatti veloci (dark)
+
+    Lo stile e le sezioni restano identici per tutte le agenzie — coerenza di brand Mattone + velocità di rollout.
+
+    Guida step-by-step completa GHL (form, embed, PIT, redirect, booking): [Setup landing agenzia — GHL](/integrazioni/ghl/setup-agenzia-landing).
   </Step>
 </Steps>
 
