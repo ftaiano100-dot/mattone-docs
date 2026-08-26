@@ -99,21 +99,37 @@ Questa è la procedura tecnica che Ole segue per ogni nuovo cliente marketing, d
     Sinteticamente:
     1. Su GitHub: template repo `mattone-landing-template` → **Use this template** → nuovo repo `nomeagenzia`
     2. Modifica `lib/config.ts` sul web GitHub:
-       - Nome, città, agente, colore accent
-       - Numeri stats reali
-       - Testimonianze reali
+       - `nomeAgenzia`, `città`, `nomeAgente`
+       - `coloreAccent` + `coloreAccentHover` (hex del brand cliente)
+       - Numeri stats reali (`ourImmobili`, `anniEsperienza`, `ratingMedio`)
+       - Testimonianze reali (min 3)
        - **Incolla il codice iframe form GHL** del passo 4 in `ghlFormEmbedHtml`
+       - **Incolla il codice iframe booking GHL/Calendly** in `bookingEmbedHtml` (per la thank you page — vedi §"Booking embed sulla TYP" sotto)
        - Contatti telefono/email
     3. https://vercel.com/new → import repo → Deploy
     4. Live su `nomeagenzia.vercel.app` in ~90 sec
   </Step>
 
-  <Step title="8. Aggiorna il redirect del form GHL">
-    Torna al form GHL (passo 3) → **Actions on submit** → **Redirect URL**
+  <Step title="8. ⚠️ Imposta il Redirect URL del form GHL sulla TYP">
+    **QUESTO PASSO È OBBLIGATORIO** — senza, il cliente vede la thank you page nativa di GHL invece della nostra `/grazie` brandata (con upsell booking, prova sociale, contatti).
 
-    Cambia il valore in: `https://nomeagenzia.vercel.app/grazie` (URL vero della landing appena deployata)
+    Torna al form GHL (passo 3) → **Actions on submit** → **Redirect URL** (o **After Submit URL**)
 
-    Salva. Ora chi invia il form dalla landing viene reindirizzato alla thank you page.
+    Imposta esattamente:
+
+    ```
+    https://nomeagenzia.vercel.app/grazie
+    ```
+
+    Sostituisci `nomeagenzia` con lo slug reale del progetto Vercel (es. `dimoraplus.vercel.app/grazie`).
+
+    <Warning>
+    Ricordati **`/grazie`** in fondo — è la thank you page del template. Se metti solo il dominio nudo, l'utente torna sulla stessa landing e sembra che il form non abbia fatto nulla.
+    </Warning>
+
+    Salva il form GHL (GHL a volte non salva al primo click — verifica sempre che il valore rimanga dopo il salvataggio).
+
+    Da ora chi invia il form sulla landing atterra sulla nostra thank you page brandata `/grazie` (hero grazie, 3 step "cosa succede ora", booking embed per prenotare subito, prova sociale, contatti veloci).
   </Step>
 
   <Step title="9. Test end-to-end">
@@ -125,6 +141,24 @@ Questa è la procedura tecnica che Ole segue per ogni nuovo cliente marketing, d
     - Cancella il contatto di test da GHL
   </Step>
 </Steps>
+
+## Booking embed sulla TYP (thank you page)
+
+La landing template ha una **thank you page brandata su `/grazie`** che (oltre a ringraziare) può ospitare un **calendario booking** per far prenotare la call SUBITO al lead — senza aspettare il richiamo del team. Doppia opportunità di conversione: se il lead è caldo, si prenota da solo.
+
+### Come funziona
+1. Ole crea il **calendario** GHL della location cliente (o Calendly cliente): tipo "Consulenza gratuita 15 min"
+2. Prende il **codice iframe embed** del calendario (in GHL: **Calendars** → apri calendario → tab **Integrate**)
+3. Lo incolla nella config del template landing (`lib/config.ts` → campo `bookingEmbedHtml`)
+4. Deploy Vercel → la sezione "💡 Vuoi saltare la fila?" sulla TYP mostra il calendario inline
+
+### Se il campo è vuoto
+Il template mostra un **placeholder graficato** con avviso "⚠️ QUI VA MESSO IL BOOKING EMBED" + istruzioni per Ole. È sicuro deployare la landing anche senza booking configurato — non rompe nulla, si vede solo il fallback fino a quando Ole non incolla l'iframe.
+
+### Perché è importante
+Il flusso è: **ad → landing → form → TYP con booking**. Nel 20-30% dei casi il lead prenota subito la call su TYP, saltando la queue di richiamo del team. Meno friction = più conversioni.
+
+---
 
 ## Snapshot GHL master — cosa contiene
 
