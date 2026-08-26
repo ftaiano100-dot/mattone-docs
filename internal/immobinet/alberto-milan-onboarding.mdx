@@ -1,0 +1,147 @@
+---
+title: "Alberto Milan — onboarding ImmobiNet"
+sidebarTitle: "Alberto Milan (ImmobiNet)"
+description: "Piano di onboarding per Alberto Milan: cliente con 100+ immobili su ImmobiNet che non vuole cambiare PMS. Sblocco = ~900€/mese Conduit + ritenzione. Playbook completo, blocker attuali, next step."
+---
+
+Alberto Milan è il primo cliente reale su cui si testa il flusso ImmobiNet → Conduit end-to-end. Vale perché ha volume vero (100+ immobili) e perché il playbook che ne esce serve poi a tutti gli altri property manager su ImmobiNet.
+
+## Perché conta
+
+Sbloccare Alberto = **~900€/mese di Conduit** (9€/listing × 100 apt) + ritenzione di un cliente premium che altrimenti perderemmo perché non vuole cambiare PMS. Vale chiuderlo con priorità.
+
+## Situazione (26/08/2026)
+
+| Area | Stato |
+|---|---|
+| **PMS** | ImmobiNet (motore Rentallab) — SOAP/XML only, non nativo in Conduit |
+| **Volume** | 100+ immobili gestiti |
+| **Credenziali ImmobiNet cliente** | ❌ non ancora ricevute — vero collo di bottiglia |
+| **Gateway multi-tenant `mcp.mattone.co`** | ✅ esiste e funziona (usato per Kross/Shelly) |
+| **Custom tool ImmobiNet nel gateway** | ⏳ da scrivere (4 file, ~1 gg) |
+| **Workspace Conduit Alberto** | ⏳ da provisionare |
+| **PR mattone-docs `internal/immobinet/*`** | ⏳ #2 aperta, da mergiare |
+| **Owner tecnico onboarding** | Mattia (handoff completato con briefing Francesco 26/08) |
+
+## Perché ImmobiNet non si aggancia da sé
+
+ImmobiNet (motore Rentallab) parla **solo SOAP/XML** — per questo non entra nelle integrazioni PMS moderne di Conduit. Fatti chiave:
+
+- **Endpoint**: `https://rentallab.immobinet.it/bundle/webservicemodagenzia/service` (verificato 26/08: 401 con fault body → auth check funziona)
+- **Auth**: `username + password` in chiaro nel body. Niente WSSE, niente token.
+- **WSDL pubblico**: `https://rentallab.immobinet.it/webservice.wsdl` — non servono credenziali per ottenerlo. Gli XSD dei tipi stanno su `webservices-deps/<bundle>/schema.xsd`. Non serve chiedere nulla al supporto ImmobiNet per lo schema.
+- **Operazioni disponibili**: `getPrenotazioni`, `getImmobili`, `getDisponibilita`, `ricercaDisponibilita`, `getListino` + `set/edit/delPrenotazione` (scrittura → fuori scope per il primo giro).
+- **PUSH notification**: ImmobiNet **le HA** — evento `ModAgenzia/Prenotazione` con `_type` in `inserted|modified|removed`. La nostra doc vecchia diceva il contrario, va corretta.
+- **ImmobiNet fa anche channel manager**: le prenotazioni portano il campo `portale` → Airbnb/Booking ci passano dentro. Campo opzionale e stringa libera: **non hardcodare valori attesi**.
+
+## Architettura decisa (aggiornata rispetto a maggio 2026)
+
+Conduit **non ha booking nativo** per ImmobiNet (confermato da Raniel), MA i canali Airbnb/Booking/WhatsApp sono nativi e indipendenti dal PMS: le **conversazioni arrivano già da sole**. Quello che manca è il **contesto** — quale prenotazione, quale appartamento.
+
+Flusso:
+```
+Ospite (Airbnb/Booking/WA)
+    ▼
+Canali nativi Conduit
+    ▼
+Agente Conduit chiama un CUSTOM TOOL
+    ▼
+POST mcp.mattone.co/api/mcp/immobinet
+   (header X-Student-Token)
+    ▼
+Gateway risolve credenziali dal Vault per quel tenant
+    ▼
+SOAP ImmobiNet
+```
+
+Due cose che **non sapevamo prima di oggi**:
+
+1. **Un custom tool NON è "registra un URL"**: è **codice** che gira nella sandbox Conduit (JS runtime Bun senza npm, o Python con `requests`/`httpx`/`lxml`). Ritorna `{message, rawData}`. Si crea via API (`create_custom_tool`), non serve la dashboard. Vedi [pattern custom tools](/internal/conduit-knowhow/custom-tools-pattern) per i vincoli aggiornati del payload (`parameters[].description` obbligatoria).
+2. **Senza PMS nativo, Conduit non ha nemmeno il registro listing** (`list_listings` è vuoto) → non sa che gli appartamenti esistono. Il tool deve restituire **anche l'identità dell'appartamento**, e il prompting deve obbligare a chiamarlo **prima** di dire qualsiasi cosa specifica di un immobile. Altrimenti si ricade nel bug "AI risponde sull'apt sbagliato" — qui sarebbe la norma, non l'eccezione.
+
+## Il codice va nel gateway `mattone-mcp-gateway`
+
+Tutto dentro `~/Projects/mattone-mcp-gateway` (che sta live su `mcp.mattone.co`), che è già multi-tenant, già in uso reale per Kross partner e Shelly. Eredita gratis:
+- Isolamento tenant
+- Vault per le credenziali per-cliente
+- Dunning (`isTenantSuspended`) 
+- Retry logic
+- Un solo deploy
+
+File da creare (template pulito da copiare: `api/mcp/shelly.js`):
+- `lib/immobinet.js` — SOAP client
+- `lib/immobinet-mcp.js` — implementazione dei tool
+- `api/mcp/immobinet.js` — endpoint MCP
+- `resolveImmobinetCreds()` in `lib/vault.js`
+
+<Warning>
+**Il vecchio repo `immobinet-bridge` va ARCHIVIATO, non evoluto.** È single-tenant per costruzione (credenziali da `process.env`) e i mapper sono scritti su uno schema **immaginato**. Errori silenziosi trovati confrontandoli con l'XSD vero il 26/08:
+
+- **Prezzi ×100** → `PrenotazionePrezzo.prezzo` è in **CENTESIMI** (5,12€ = 512). Importi 100 volte gonfiati, senza errore visibile.
+- `arrivo` / `partenza` sono **attributi di `<periodo>`**, non elementi → date sempre vuote.
+- `stato` / `confermata` / `eliminata` sono **attributi di `<prenotazione>`**.
+- `mapStatus()` usa il vocabolario di **KrossBooking**, non di ImmobiNet.
+- Ospiti persi: `prenotazione-persone` ha `adulti/ragazzi/bambini` come attributi.
+
+Si salvano dal vecchio bridge solo: `authXml`, `soapCall`, `findFault`, le costanti namespace e il rilevamento del SOAP Fault **prima** dello status HTTP (giusto: ImmobiNet risponde 401 CON fault body).
+</Warning>
+
+## I 3 tool minimi (fase 1)
+
+| Tool | SOAP op | Copre |
+|---|---|---|
+| `lookup-reservation` | `getPrenotazioni` (finestra ±30gg, match su email/telefono/cognome/codice) | **~80% del valore** — la conversation ha email/telefono ospite, questo trova la prenotazione |
+| `check-availability` | `ricercaDisponibilita` | Domande "hai libero dal X al Y?" |
+| `list-properties` | `getImmobili` (cache lunga) | Risolve nome↔codice immobile per il grounding |
+
+## Il vero collo di bottiglia: le credenziali del cliente
+
+Auth vuole solo **username + password** → **"Scenario A"** (le stesse del login web) si testa in 30 secondi con una `getImmobili`. Se non bastano → ticket a ImmobiNet support per credenziali webservice dedicate (1-3 gg).
+
+### Passi operativi ordinati
+
+<Steps>
+  <Step title="1. Recuperare le credenziali (Niccolò → Alberto)">
+    Chiedere ad Alberto le credenziali ImmobiNet del suo account (username + password del login web). Se non funzionano lato SOAP, aprire ticket ImmobiNet per credenziali webservice.
+  </Step>
+  <Step title="2. Test grezzo + fixture">
+    Una `getImmobili` reale contro il suo account → **salvare l'XML grezzo come FIXTURE** nel gateway. I mapper si scrivono **sui DATI reali, non sullo schema immaginato** — è esattamente l'errore che ha bruciato il vecchio bridge a maggio. ~0,5 gg.
+  </Step>
+  <Step title="3. Gateway — 4 file">
+    Scrivere `lib/immobinet.js`, `lib/immobinet-mcp.js`, `api/mcp/immobinet.js`, `resolveImmobinetCreds()`. Copiare `api/mcp/shelly.js` come template. ~1 gg.
+  </Step>
+  <Step title="4. Provisioning Vault">
+    Secret `immobinet_creds_<student_token>` in Vault. ⚠️ **La RPC canonica oggi è cablata su `provider='krossbooking'`** → serve una gemella per ImmobiNet, o un path per-nome generico. Da chiarire con Fra prima di scrivere.
+  </Step>
+  <Step title="5. Creare i custom tool nel workspace Conduit del cliente">
+    Via API `create_custom_tool` (non dashboard). **Copiare il pattern di COSMICA ITALIA** (ha la guardrail `SISTEMA_OCCUPATO`), **NON** quello di HostManager360. Vedi anche [pattern custom tools](/internal/conduit-knowhow/custom-tools-pattern) per i vincoli del payload aggiornati (`parameters[].description` obbligatoria).
+  </Step>
+  <Step title="6. Prompting + KB scopata per immobile">
+    Skill che dicono all'agente di chiamare `lookup-reservation` **prima** di rispondere su un apt specifico. KB per-immobile per evitare risposte cross-property. Vedi [KB e Workflow — regole](/internal/conduit-knowhow/kb-e-workflow-regole).
+  </Step>
+  <Step title="7. Fase 2 — PUSH ImmobiNet">
+    Configurare le PUSH notification di ImmobiNet verso `mcp.mattone.co/api/hooks/immobinet` per precaricare il contesto delle prenotazioni nuove/modificate. Riduce la latenza sulle prime risposte.
+  </Step>
+</Steps>
+
+## Cosa dire ad Alberto adesso (26/08)
+
+- Il piano è pronto lato Mattone (revisione tecnica completa fatta oggi)
+- Il grosso del lavoro è già mappato (WSDL letto, XSD verificati, endpoint testato, architettura decisa)
+- Servono le sue credenziali ImmobiNet per partire
+- ~3-4 giorni lavorativi da quando arrivano le credenziali → siamo live end-to-end
+- Non deve cambiare PMS
+
+## Riferimenti tecnici (nella stessa cartella)
+
+- [Panoramica ImmobiNet](/internal/immobinet/panoramica)
+- [SOAP webservice](/internal/immobinet/soap-webservice)
+- [Conduit custom tools per ImmobiNet](/internal/immobinet/conduit-custom-tools)
+- [Stato del bridge precedente](/internal/immobinet/bridge-stato)
+- [PriceLabs hybrid sync](/internal/immobinet/pricelabs-hybrid-sync)
+- [Troubleshooting](/internal/immobinet/troubleshooting)
+
+Cross-reference:
+- [Pattern Custom Tools](/internal/conduit-knowhow/custom-tools-pattern) — include i vincoli aggiornati del payload `create_custom_tool` (obbligatorio `parameters[].description` dal 25/08)
+- [Gateway multi-tenant](/internal/conduit-knowhow/gateway-multi-tenant)
+- [KB e Workflow — regole](/internal/conduit-knowhow/kb-e-workflow-regole)
