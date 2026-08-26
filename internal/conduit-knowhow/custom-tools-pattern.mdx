@@ -70,3 +70,29 @@ Stesso schema che replichiamo per ImmobiNet: `get_reservations`, `get_guest`, `c
 Il tool esiste ≠ l'AI lo usa. Sempre accompagnare il custom tool con una **Skill che dice quando chiamarlo** e, se serve, **Guardrail** su cosa non fare (es. "non aggiornare mai i prezzi"). Per lo scoping e le trappole vedi [KB e Workflow: regole](/internal/conduit-knowhow/kb-e-workflow-regole).
 
 E la seconda regola d'oro, che vale quanto la prima: **un tool che non gestisce gli errori mente**. Su un 429 del PMS, senza guardrail, il tool risponde "date non disponibili" o "nessuna prenotazione trovata" con `isError: false`, e l'agente lo riferisce all'ospite come un fatto. Vedi [Silenzioso e sbagliato](/internal/troubleshooting/silent-wrong) e il [pattern a 6 porte](/internal/troubleshooting/guardrail-6-porte).
+
+## Vincoli del payload `create_custom_tool` (aggiornato 25/08/2026)
+
+Conduit valida il payload con Zod prima di eseguire qualsiasi cosa. Ogni volta che aggiungiamo un nuovo custom tool al catalog o a una integrazione, il payload che spediamo a `POST /v1/custom-tools` deve rispettare questi campi — sennò 400 con `ZodError` e il provisioning fallisce senza toccare nulla.
+
+- **`parameters[<name>].description` è obbligatorio** — regressione della validazione lato Conduit (scoperta 25/08 durante l'onboarding HostManager360, tutti i tool bloccati 400). L'interfaccia interna `ToolParam` va allineata di conseguenza: `description: string` non opzionale, generato dal builder se non fornito esplicitamente (auto-derivato dal nome del param). Così ogni nuovo tool nasce già valido e non bisogna ricordarsi caso per caso.
+- **`code` deve definire `async function main(...)`** come entrypoint. Un `return {...}` diretto o una `function main` senza `async` sono rifiutati con *"Tool code must define the JavaScript entrypoint function named main"* — l'errore arriva dopo Zod, quindi facile da confondere con un problema del business logic.
+- **`enable_globally: true`** rende il tool automaticamente disponibile a tutti gli agent del workspace. È la strada canonica, perché **`POST /v1/agents/{id}/tools` risponde 404** — non esiste un endpoint di attach esplicito, non provare a chiamarlo.
+- **`workspace_id` è obbligatorio in query** (`?workspace_id=...`) su `list_custom_tools`, `get_custom_tool`, `list_agents`. Senza, la risposta è 400 Zod "workspace_id required".
+
+### Regola operativa
+
+Chi tocca il layer che costruisce il payload verso Conduit (in Mattone: `src/lib/conduit-catalog.ts` + il builder in `admin/kross/provision`) è responsabile di **enforce questi vincoli nel builder**, non nel catalog. Il catalog resta dichiarativo; il builder trasforma. Se cambia un vincolo Conduit, fixi in un punto solo e tutti i tool ne beneficiano.
+
+### Come lo abbiamo scoperto
+
+Durante l'onboarding HostManager360 il route `POST /api/admin/kross/provision` restituiva 6 tool `[failed]` con lo stesso errore:
+
+```json
+{"success":false,"error":{"issues":[{
+  "code":"invalid_type","expected":"string","received":"undefined",
+  "path":["parameters","date_from","description"],
+  "message":"Required"}],"name":"ZodError"}}
+```
+
+Test live diretto su Conduit API ha confermato che è la mancanza di `description` sui parametri a bloccare, non altro: stesso payload con `description` aggiunta passa Zod immediatamente. Story completa in [HostManager360 onboarding](/internal/troubleshooting/hostmanager360-onboarding).
