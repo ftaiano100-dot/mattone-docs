@@ -1,0 +1,140 @@
+---
+title: "PIT GHL — processo Ole per collegare il cliente alla dashboard"
+sidebarTitle: "Collegare PIT cliente (Ole)"
+description: "Procedura operativa per Ole: prendere il PIT (Private Integration Token) dalla location GHL cliente e collegarlo alla dashboard Mattone, così il cliente vede i lead della sua landing direttamente in app.mattone.co."
+---
+
+Ogni volta che attivi Marketing per un nuovo cliente, dopo aver setuppato snapshot + form + landing, l'ultimo passo è **collegare il suo GHL alla dashboard Mattone**. Da quel momento il cliente vede i propri lead in `app.mattone.co` senza doversi loggare su GHL.
+
+## Perché serve
+
+- Il cliente non sa usare GHL (interfaccia complessa)
+- Il cliente vuole vedere lead + statistiche marketing dentro un'unica dashboard (Mattone)
+- Facilita il follow-up e la conversione dei lead dal team del cliente
+- Ci permette di aggregare metriche di marketing (CPL, CR, revenue attribution) lato Mattone
+
+## Cosa serve prima di iniziare
+
+- [ ] Snapshot GHL duplicato nella location del cliente ✅
+- [ ] Form GHL "Landing - Valutazione Immobile" creato ✅
+- [ ] Landing Vercel già deployata (`nomeagenzia.vercel.app`) ✅
+- [ ] Cliente ha completato registrazione su `app.mattone.co` e ha accesso alla sua area
+
+Se manca qualcosa vedi [Setup landing agenzia — GHL](/integrazioni/ghl/setup-agenzia-landing) per rimediare prima.
+
+## Procedura passo-passo
+
+<Steps>
+  <Step title="1. Crea il PIT sulla location del cliente">
+    Entri nella location GHL del cliente → **Settings** (icona ingranaggio in basso a sinistra) → **My Staff** → tab **Private Integrations** (in alto a destra) → **+ Create New Integration**.
+
+    Compila così:
+    - **Name**: `Mattone Dashboard`
+    - **Scopes** (spunta minimo questi):
+      - `contacts.readonly`
+      - `contacts.write`
+      - `opportunities.readonly`
+      - `locations.readonly`
+      - `calendars.readonly` (se vuoi mostrare anche i booking sulla dashboard)
+
+    Click **Create**. Appare il token una sola volta — **copialo subito** in un blocco note temporaneo, non si può rileggere dopo.
+
+    <Warning>
+    Se dimentichi di copiare il token e chiudi la modale, devi cancellare il PIT e crearne un altro. Non ci sono API per rileggerlo.
+    </Warning>
+  </Step>
+
+  <Step title="2. Copia il Location ID">
+    Sempre nella location cliente → **Settings** → **Business Profile** → in alto trovi **Location ID** (formato `LKB1XXXXXXXXXXXXXX` o simile).
+
+    Copialo insieme al token.
+
+    <Note>
+    In alternativa il Location ID è visibile nell'URL della location: `https://app.gohighlevel.com/v2/location/LKB1XXXXXXXXXXXXXX/...`
+    </Note>
+  </Step>
+
+  <Step title="3. Fai loggare il cliente su Mattone">
+    Il cliente accede a **app.mattone.co** con le sue credenziali (le stesse mail/password che ha ricevuto quando è stato attivato).
+
+    Se non ricorda la password: `Password dimenticata?` sulla schermata login → arriva mail di reset via Resend.
+  </Step>
+
+  <Step title="4. Vai su /connessioni (o Marketing → Integrazione GHL)">
+    Nell'area cliente Mattone:
+    - Sidebar → **Connessioni** (o **Marketing** → tab **Integrazione GHL**)
+    - Cerca la **card GoHighLevel**
+    - Click **"Collega GHL"** (o **"Modifica"** se era già collegato)
+  </Step>
+
+  <Step title="5. Incolla PIT + Location ID">
+    Nella modale che si apre:
+    - **Token (PIT)**: incolla il token del passo 1
+    - **Location ID**: incolla il Location ID del passo 2
+    - Click **Salva**
+
+    Mattone testa immediatamente la connessione:
+    - Se **verde ✅** → connessione ok, il cliente vede lead in dashboard
+    - Se **rosso ❌** con errore → vedi §"Troubleshooting" sotto
+  </Step>
+
+  <Step title="6. Verifica lato cliente">
+    - Sidebar Mattone → **Acquisizione** (o **Marketing**)
+    - Se ci sono lead in pipeline GHL del cliente, appaiono qui
+    - Se pipeline è vuota, invia un lead di test (compila la landing con dati tuoi) e verifica che appaia in ~30 sec
+  </Step>
+</Steps>
+
+## Cosa il cliente vede dopo il collegamento
+
+Nella sua area `app.mattone.co`:
+- **Sezione Marketing**: KPI (lead ricevuti, tasso conversione, source Facebook/Google/organic)
+- **Lista lead**: nome, telefono, indirizzo immobile, stage pipeline
+- **Notifiche in tempo reale** ogni nuovo lead (email/push)
+- **Tempo risparmiato AI** e **valore aggregato**
+
+Tutto senza dover mai aprire GHL.
+
+## Chi può fare cosa
+
+<Note>
+**Ole NON può collegare il PIT per conto del cliente** dal suo account. L'endpoint `/api/integrations/ghl` è student-scoped: usa l'auth della sessione utente e salva su `pms_integrations` con `student_id = user.id`.
+
+**Come fare in pratica**:
+- **Opzione A**: fai una call con il cliente in condivisione schermo, gli dai i valori PIT + Location ID (tu li hai già presi al passo 1-2), lui li incolla in `/connessioni`. Rapido, il cliente impara.
+- **Opzione B**: se il cliente non è disponibile, chiedi al team Mattone (Nick/Fra) le sue credenziali temporanee (memorizzate in `profiles.plain_password` per gli account attivi), ti logghi come lui una sola volta e collegi tu. Cancella subito la tab quando finisci.
+
+L'endpoint admin per collegare PIT per conto dello studente sarà aggiunto in futuro (task tecnica Mattone).
+</Note>
+
+## Troubleshooting
+
+<Warning>
+**Errore "Credenziali non valide" al salvataggio** → Il token è probabilmente stato copiato incompleto (spesso GHL ci mette uno spazio o troncatura). Rifai copy dal PIT o crea un nuovo PIT.
+</Warning>
+
+<Warning>
+**Errore "Location non trovata"** → Location ID errato. Controlla di aver preso quello dalla location del cliente e non dal profilo agency GHL.
+</Warning>
+
+<Warning>
+**Lead della landing non appaiono in dashboard** → Verifica che il form GHL scriva davvero nella pipeline "Lead Nuovi Proprietari" (Actions on submit → Add to pipeline). Se il form finisce in un altro workflow, i lead esistono ma non li vediamo.
+</Warning>
+
+<Warning>
+**Scope insufficienti (401 su alcuni endpoint)** → Se hai creato il PIT senza tutti gli scope elencati sopra, **cancellalo** e creane uno nuovo con gli scope corretti. Gli scope non si possono modificare dopo la creazione.
+</Warning>
+
+## Tempo stimato
+
+- Passo 1-2 (PIT + Location ID): 3 min
+- Passo 3-5 (cliente si logga + incolla): 5 min (con call condivisa)
+- Passo 6 (verifica lead): 2 min
+
+**Totale**: ~10 min con cliente al telefono.
+
+## Riferimenti
+
+- [Setup landing agenzia — GHL](/integrazioni/ghl/setup-agenzia-landing) — la procedura completa (snapshot, form, PIT, landing, redirect)
+- [Procedura marketing end-to-end](/delivery/marketing-onboarding) — le 7 fasi dall'onboarding cliente al primo lead
+- [PIT + Location GHL](/integrazioni/ghl/pit-location) — dettaglio scope, token lifecycle, sicurezza
