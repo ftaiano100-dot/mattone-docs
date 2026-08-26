@@ -1,0 +1,171 @@
+---
+title: "Setup landing agenzia — GHL step-by-step per Ole"
+sidebarTitle: "Setup landing (GHL)"
+description: "Guida operativa per Ole: come duplicare lo snapshot GHL su un nuovo cliente, creare il form della landing, prendere l'embed code, prendere il PIT e collegarlo alla dashboard Mattone. Fase 6 dell'onboarding marketing."
+---
+
+Questa è la procedura tecnica che Ole segue per ogni nuovo cliente marketing, dopo che ha completato le fasi 1-5 dell'[onboarding marketing](/delivery/marketing-onboarding). Copre il setup GHL + form + PIT + landing.
+
+## Cosa fai come Ole per ogni nuovo cliente
+
+<Steps>
+  <Step title="1. Duplica lo snapshot GHL master">
+    Nel workspace GHL Mattone hai già lo snapshot "Master Agenzia Property Management" (creato una volta, contiene pipeline + automazioni + template messaggi).
+
+    - Vai in **Agency View** → **Snapshots** → trova "Master Agenzia Property Management"
+    - Click "Load onto Sub-Account" → seleziona la nuova location del cliente
+    - Conferma: pipeline, custom fields, automazioni, tags vengono importati
+  </Step>
+
+  <Step title="2. Verifica la pipeline">
+    Entra nella location del cliente → **Opportunities** → verifica che esista la pipeline **"Lead Nuovi Proprietari"** con le stage:
+
+    - New Lead
+    - Da chiamare
+    - Prima chiamata fatta
+    - Valutazione fissata
+    - Contratto proposto
+    - Vinto / Perso
+
+    Se la pipeline non appare o è vuota, rifai il "Load Snapshot".
+  </Step>
+
+  <Step title="3. Crea il form GHL per la landing">
+    Location cliente → **Sites** → **Forms** → **+ Add Form**
+
+    Nome: `Landing - Valutazione Immobile`
+
+    Campi (in questo ordine):
+    - **Nome e cognome** — required, single line
+    - **Telefono** — required, phone field
+    - **Email** — required, email field
+    - **Indirizzo immobile** — required, single line
+    - **Note aggiuntive** — optional, multi-line
+
+    Checkbox privacy (obbligatoria):
+    - Testo: *"Acconsento al trattamento dati come da privacy policy"*
+    - Link a privacy policy del cliente (se ha) o placeholder generico
+
+    Submit button: **"Richiedi la valutazione →"**
+
+    **Actions on submit**:
+    - Contact → aggiungi a pipeline "Lead Nuovi Proprietari" → stage "Da chiamare"
+    - Trigger workflow "Lead notification" (SMS al cliente + email interna)
+    - Redirect URL: `https://nomeagenzia.vercel.app/grazie` (metterlo dopo aver deployato la landing)
+  </Step>
+
+  <Step title="4. Prendi il codice embed del form">
+    Nella pagina del form appena creato → tab **Integrate** → **Iframe embed**
+
+    Copia il tag `<iframe src="..." ...></iframe>` completo. È quello che va nella config della landing Vercel al passo 6.
+
+    Il codice è tipo:
+    ```html
+    <iframe
+      src="https://api.leadconnectorhq.com/widget/form/xxx"
+      style="width:100%;min-height:520px;border:0;"
+      allowfullscreen
+    ></iframe>
+    ```
+  </Step>
+
+  <Step title="5. Prendi il PIT (Private Integration Token)">
+    Il PIT è un token API della location del cliente che serve alla dashboard Mattone per leggere i lead.
+
+    - Location cliente → **Settings** (in basso a sinistra)
+    - **My Staff** → **Private Integrations** (in alto a destra della lista)
+    - **+ Create New Integration**
+    - Nome: `Mattone Dashboard`
+    - Scopes: seleziona almeno
+      - `contacts.readonly`
+      - `opportunities.readonly`
+      - `locations.readonly`
+    - Click **Create**
+    - **Copia il token che appare UNA volta sola** (non si può recuperare dopo)
+
+    Vedi anche [PIT + Location GHL](/integrazioni/ghl/pit-location) per il dettaglio scope.
+  </Step>
+
+  <Step title="6. Collega il PIT alla dashboard Mattone">
+    - Vai su https://app.mattone.co/admin → scheda cliente
+    - Sezione **Marketing** → **Integrazione GHL**
+    - Incolla il PIT + Location ID (visibile in Settings → Business Profile → Location ID)
+    - Click "Salva e testa" → deve tornare verde con il conteggio contatti live
+  </Step>
+
+  <Step title="7. Prepara la landing su Vercel">
+    Vedi guida dedicata [Procedura marketing — Fase 7](/delivery/marketing-onboarding#7-landing-page-personalizzata-vercel):
+
+    Sinteticamente:
+    1. Su GitHub: template repo `mattone-landing-template` → **Use this template** → nuovo repo `nomeagenzia`
+    2. Modifica `lib/config.ts` sul web GitHub:
+       - Nome, città, agente, colore accent
+       - Numeri stats reali
+       - Testimonianze reali
+       - **Incolla il codice iframe form GHL** del passo 4 in `ghlFormEmbedHtml`
+       - Contatti telefono/email
+    3. https://vercel.com/new → import repo → Deploy
+    4. Live su `nomeagenzia.vercel.app` in ~90 sec
+  </Step>
+
+  <Step title="8. Aggiorna il redirect del form GHL">
+    Torna al form GHL (passo 3) → **Actions on submit** → **Redirect URL**
+
+    Cambia il valore in: `https://nomeagenzia.vercel.app/grazie` (URL vero della landing appena deployata)
+
+    Salva. Ora chi invia il form dalla landing viene reindirizzato alla thank you page.
+  </Step>
+
+  <Step title="9. Test end-to-end">
+    - Apri `https://nomeagenzia.vercel.app` in incognito
+    - Compila il form con dati di test (usa email tua, telefono tuo)
+    - Submit → devi essere reindirizzato a `/grazie`
+    - Verifica in GHL location cliente → pipeline "Lead Nuovi Proprietari" → deve esserci un nuovo contatto in "Da chiamare"
+    - Verifica in dashboard Mattone del cliente → il lead deve apparire nella sezione Marketing
+    - Cancella il contatto di test da GHL
+  </Step>
+</Steps>
+
+## Snapshot GHL master — cosa contiene
+
+Lo snapshot che duplichi include già:
+
+- **Pipeline** "Lead Nuovi Proprietari" con 6 stage
+- **Custom fields** contatto (indirizzo immobile, tipologia, note qualificazione)
+- **Automazione** "Lead notification": SMS al lead + notifica interna
+- **Tags** standard (source-landing, cold, qualificato, ecc.)
+- **Template messaggi** SMS/email di follow-up
+
+Se lo snapshot non esiste ancora nel tuo workspace GHL Agency → chiedi a Nick il file di export, poi importa via **Agency View → Snapshots → Import**.
+
+## Errori comuni + fix
+
+<Warning>
+**Form iframe non appare nella landing** → il codice embed copiato è tagliato. Verifica di aver preso il `<iframe>` completo, con `src` e chiusura `</iframe>`. Copia direttamente dalla tab Integrate di GHL, non da altre fonti.
+</Warning>
+
+<Warning>
+**PIT test fallisce con 401 in dashboard Mattone** → verifica che gli scope siano stati abilitati sul PIT (`contacts.readonly` è quello minimo). Se hai creato il PIT senza scope, cancellalo e creane uno nuovo — gli scope non si possono aggiungere dopo.
+</Warning>
+
+<Warning>
+**Redirect form non funziona (rimane su GHL)** → l'URL nel campo "Redirect URL" deve essere completo con `https://` all'inizio. Controlla anche che sia salvato (GHL a volte non fa save al primo click).
+</Warning>
+
+## Tempo stimato
+
+- Passo 1-2 (snapshot): 3 min
+- Passo 3 (form): 10 min
+- Passo 4 (embed): 1 min
+- Passo 5-6 (PIT): 3 min
+- Passo 7 (landing Vercel): 5 min
+- Passo 8-9 (redirect + test): 3 min
+
+**Totale**: ~25 min per un nuovo cliente end-to-end.
+
+## Riferimenti
+
+- [Procedura marketing completa](/delivery/marketing-onboarding) — flusso 7 fasi
+- [Template Ads Mattone](/delivery/marketing-template-ads) — script da lanciare dopo che la landing è live
+- [PIT + Location GHL](/integrazioni/ghl/pit-location) — approfondimento sul token
+- Template landing: [github.com/niccolosanso-ops/mattone-landing-template](https://github.com/niccolosanso-ops/mattone-landing-template)

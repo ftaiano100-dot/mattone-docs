@@ -1,0 +1,157 @@
+---
+title: "Procedura marketing — dall'onboarding cliente al primo lead"
+sidebarTitle: "Marketing (onboarding)"
+description: "Il flusso end-to-end per attivare marketing su un nuovo cliente: questionario, call Ole, setup Business Manager Meta, script ads, snapshot GHL, landing Vercel personalizzata, PIT collegato alla dashboard. 7 fasi ordinate."
+---
+
+Ogni volta che nell'Admin Overview un cliente attiva "Marketing con Ole", parte questo flusso. Serve rendere replicabile ciò che oggi Ole fa a mente, così ogni onboarding marketing è identico e non dipende da lui.
+
+## Le 7 fasi in ordine
+
+<Steps>
+  <Step title="1. Questionario Business Anamnesi">
+    Alla richiesta di attivazione, la piattaforma genera un link questionario **unico per il cliente**. Non è pubblico: contiene un token, quindi solo il cliente giusto risponde.
+
+    - **URL pattern**: `https://app.mattone.co/questionario-marketing?token=<token>`
+    - Il token viene generato dall'Overview quando Ole attiva la card "Marketing"
+    - 6 sezioni (elevator pitch, risultati, target proprietari, offerta, marketing & materiali, angoli d'attacco)
+    - Compilazione a cura del cliente (autonoma)
+    - Ole vede la risposta nella scheda cliente
+
+    Il questionario è la base di tutto il resto: le risposte guidano gli script Ads, il posizionamento, la zona di lancio.
+  </Step>
+
+  <Step title="2. Booking call con Ole">
+    Quando il cliente completa il questionario, gli arriva il link per prenotare la call con Ole:
+
+    - **URL**: `https://branded.mattone.co/widget/bookings/consulenzamarketing-mattone`
+    - Ole ha una call di ~45 min sulla base del questionario
+    - Output della call: zona/e di lancio confermate, tipologia proprietario target, tono di voce, materiali disponibili (foto/video), obiezioni prevalenti nel mercato
+  </Step>
+
+  <Step title="3. Prerequisiti — profili social pronti">
+    Prima di lanciare campagne serve che il cliente abbia completato i **Mattone 1 e 2** del percorso corso: sono i moduli che gli fanno setuppare Instagram, Facebook, Google My Business e mettere online almeno l'annuncio base.
+
+    <Note>
+    Ole tiene la checklist di verifica prerequisiti (foto profilo, bio, contatti, link, primo post, ecc.). Se manca qualcosa, la call di setup viene rimandata finché non è completato — non si lancia mai su profili vuoti.
+    </Note>
+  </Step>
+
+  <Step title="4. Business Manager Meta">
+    Il BM Meta è del **cliente**, non nostro. Il cliente lo crea (o lo ha già) e **invita Mattone come partner** con permessi editor/admin sulle campagne.
+
+    - Se il cliente non ha il BM: guida standard di creazione + verifica business (docs Meta ufficiali)
+    - Cliente invita `smma.international.business@gmail.com` (o email Meta di Ole) al BM come admin
+    - Ole verifica accesso prima di procedere
+
+    Regola: mai chiedere al cliente le credenziali del suo Meta. Solo invito via BM. Se un cliente insiste per darcele, rifiutiamo — è un rischio sicurezza e violazione ToS Meta.
+  </Step>
+
+  <Step title="5. Grafiche + script ads">
+    Le grafiche e gli script seguono i **3 template canonici Mattone** — vedi la pagina dedicata: [Template Ads Mattone](/delivery/marketing-template-ads).
+
+    - Grafiche: Ole le prepara (Canva) sulla base delle foto reali del cliente. Se il cliente non ha foto → usa immagini stock coerenti con la zona.
+    - Script: Ole personalizza i 3 template con nome agenzia, zona, hook. Sempre almeno 2 versioni per split test.
+    - Video: opzionale ma consigliato — se il cliente si sente a suo agio davanti alla telecamera (domanda del questionario), Ole gli manda brief di 30-60s da girare.
+  </Step>
+
+  <Step title="6. Setup GHL — snapshot, pipeline, form, PIT">
+    In onboarding **diamo al cliente uno snapshot GHL già pronto** che contiene la pipeline "Lead Nuovi Proprietari" e le automazioni base.
+
+    Ole per ogni cliente:
+    1. Duplica lo snapshot master nel workspace GHL del cliente
+    2. Verifica pipeline "Lead Nuovi Proprietari" attiva
+    3. Crea il **form GHL** per la landing (nome, telefono, email, indirizzo immobile, note) — nella location del cliente
+    4. Prende il **codice embed** del form (iframe) → serve per la landing
+    5. Prende il **PIT (Private Integration Token)** dalla location GHL cliente
+    6. Incolla il PIT nella dashboard Mattone del cliente (sezione Marketing → integrazioni GHL) — così il cliente vede i lead in dashboard
+
+    Guida step-by-step tecnica su GHL: [Setup landing agenzia — GHL](/integrazioni/ghl/setup-agenzia-landing).
+  </Step>
+
+  <Step title="7. Landing page personalizzata (Vercel)">
+    Ogni cliente ha la sua landing su un dominio tipo `nomeagenzia.vercel.app`, generata da un template Mattone.
+
+    **Template repo**: `github.com/niccolosanso-ops/mattone-landing-template`
+
+    Ole per ogni nuovo cliente:
+    1. Su GitHub → clicca "Use this template" sul template repo → nome nuovo repo `nomeagenzia`
+    2. Modifica **solo** `lib/config.ts` (dal web GitHub, no terminale):
+       - Nome agenzia, città, agente
+       - Colore accent (hex)
+       - Numeri stats (n. immobili, anni, rating)
+       - 2-3 testimonianze reali
+       - Contatti (telefono, email)
+       - **Sostituisce `ghlFormEmbedHtml`** con l'iframe del form GHL cliente creato al passo 6
+    3. Va su https://vercel.com/new → import repo appena creato → Deploy
+    4. Landing live su `nomeagenzia.vercel.app` in ~90 sec
+
+    Lo stile e le sezioni (hero, stats, metodo, testimonianze, form, footer) restano identici per tutte le agenzie — coerenza di brand Mattone + velocità di rollout.
+  </Step>
+</Steps>
+
+## Diagramma flusso
+
+```
+Cliente attiva Marketing in Admin Overview
+    │
+    ▼
+[FASE 1] Piattaforma genera link questionario
+    │
+    ▼
+Cliente compila Business Anamnesi (6 sezioni)
+    │
+    ▼
+[FASE 2] Link booking → call con Ole (~45 min)
+    │
+    ├── Se prerequisiti Mattone 1-2 mancano → attendi + guida
+    │
+    ▼
+[FASE 3] Prerequisiti OK
+    │
+    ▼
+[FASE 4] Cliente invita Mattone al suo BM Meta
+    │
+    ▼
+[FASE 5] Ole prepara grafiche + script (3 template canonici)
+    │
+    ▼
+[FASE 6] Ole setup GHL (snapshot + form + PIT)
+    │       └── PIT nella dashboard Mattone → cliente vede lead
+    │
+    ▼
+[FASE 7] Landing personalizzata su nomeagenzia.vercel.app
+    │
+    ▼
+Campagne live → lead entrano in pipeline GHL
+```
+
+## Chi fa cosa
+
+| Cosa | Chi |
+|---|---|
+| Compila questionario | Cliente |
+| Prenota call | Cliente |
+| Verifica prerequisiti Mattone 1-2 | Ole |
+| Crea BM Meta | Cliente |
+| Invito Mattone al BM | Cliente |
+| Grafiche + script ads | Ole |
+| Snapshot GHL duplicato | Ole |
+| Form GHL creato | Ole |
+| PIT preso e collegato in dashboard | Ole |
+| Landing Vercel creata (fork template + config) | Ole |
+| Deploy Vercel | Ole (2 click) |
+| Lancio campagne Meta | Ole |
+| Gestione lead (chiamate, follow-up) | Cliente |
+
+## Note operative
+
+- **Un cliente per città**: manteniamo esclusività territoriale (una sola agenzia per zona operativa). Se un secondo cliente della stessa città chiede attivazione, ci fermiamo prima e decidiamo caso per caso.
+- **Trial 3 mesi**: il servizio marketing ha 3 mesi di prova. Dopo, parte il pagamento ricorrente. La dashboard interna deve identificare chi ha finito il trial (vedi task billing dedicata).
+- **Priorità queue**: gli onboarding marketing entrano nella queue di Ole. Se ha già 3+ setup in corso, si comunica al cliente attesa realistica prima di partire.
+
+## Riferimenti
+
+- [Template Ads Mattone](/delivery/marketing-template-ads) — i 3 template canonici (Pain Affitto, Offerta Diretta, Presenza Territorio) + hook
+- [Setup landing agenzia — GHL](/integrazioni/ghl/setup-agenzia-landing) — step-by-step tecnico per Ole
+- [PIT + Location GHL](/integrazioni/ghl/pit-location) — come prendere e collegare il PIT
