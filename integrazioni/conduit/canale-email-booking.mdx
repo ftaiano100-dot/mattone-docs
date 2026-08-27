@@ -1,0 +1,144 @@
+---
+title: "Canale email · i messaggi Booking.com"
+sidebarTitle: "Email & Booking.com"
+description: "Booking.com non ha API messaggi: gli ospiti passano solo via email. Come collegare la casella a Conduit (Gmail OAuth o inoltro), come verificarlo davvero e perché questo step si rompe in silenzio."
+---
+
+**Booking.com non ha un'API per i messaggi.** I messaggi degli ospiti arrivano **solo via email**, alla casella registrata nell'Extranet della struttura. Se quella casella non è collegata a Conduit, l'agente **non vede nessun messaggio Booking**.
+
+<Warning>
+  **Questo è lo step che si rompe più spesso, e si rompe in silenzio.**
+
+  Le **prenotazioni** Booking continuano ad arrivare lo stesso, perché entrano dal PMS (Kross). Sono solo i **messaggi** a mancare. Quindi il cliente non vede nulla di anomalo: lui le mail le riceve nella sua casella e risponde a mano, come ha sempre fatto. Nessuno si accorge che l'AI è cieca su quel canale.
+
+  Casi reali: uno studente con **464 prenotazioni Booking in 8 mesi** e **zero** messaggi mai arrivati in Conduit. Un altro in cui il collegamento ha funzionato **7 giorni** e poi si è staccato senza che nessuno se ne accorgesse per 45 giorni.
+</Warning>
+
+## 🔑 La regola che regge tutto
+
+**L'indirizzo collegato in Conduit e l'indirizzo nell'Extranet Booking devono essere LO STESSO.**
+
+Sembra ovvio, ed è il singolo errore che manda tutto a monte. Caso reale: uno studente aveva la sua **Gmail** collegata e funzionante, poi ha collegato in Conduit il **dominio aziendale** senza mai completarne la configurazione, e nel frattempo ha staccato la Gmail. Risultato: Conduit puntava a un indirizzo mai finito, Booking scriveva a un altro, e i messaggi sono spariti per 45 giorni senza che nessuno se ne accorgesse.
+
+Quando li verifichi o li cambi, **muovili sempre in coppia**:
+
+<Steps>
+  <Step title="Decidi UN indirizzo">
+    Quello che colleghi a Conduit. Preferibilmente dedicato (`booking@`, `ota@`), non la casella personale.
+  </Step>
+  <Step title="Collegalo in Conduit">
+    Add Gmail account se è Google, altrimenti inoltro. **Verifica che risulti collegato**, non che sembri collegato.
+  </Step>
+  <Step title="Impostalo nell'Extranet Booking">
+    Nelle preferenze notifiche della struttura, come indirizzo che riceve gli avvisi dei messaggi ospite. **Anche se pensi che sia già quello**: confermalo guardando, non a memoria.
+  </Step>
+</Steps>
+
+<Warning>
+  Se cambi uno dei due senza cambiare l'altro, **il canale muore in silenzio**: le prenotazioni continuano ad arrivare dal PMS e nessuno si accorge che i messaggi non passano più.
+</Warning>
+
+## Perché riguarda soprattutto gli studenti Krossbooking
+
+Su Kross, Booking.com pesa tipicamente **20-25% delle prenotazioni**. Airbnb entra in Conduit con il suo canale nativo e funziona da subito: è questo che dà la falsa impressione che "l'AI funziona bene". Booking invece passa **solo** da questo canale email. Se lo salti, stai consegnando un agente che copre tre quarti del traffico e ignora il resto.
+
+## Come collegarlo
+
+<Steps>
+  <Step title="Scopri qual è la casella VERA di Booking">
+    Non è per forza quella che ti dice il cliente, né quella già configurata in Conduit. È l'indirizzo che il cliente ha messo **nell'Extranet Booking**, e va chiesto in modo esplicito:
+
+    > "Qual è l'indirizzo email a cui ti arrivano le notifiche di Booking? Non quello che usi per scrivere ai clienti: proprio quello dove Booking ti manda gli avvisi dei messaggi degli ospiti."
+
+    <Warning>
+      **Non dedurlo dal dominio.** Su un cliente reale il mittente configurato in Conduit era `milano1@rentalprogroup.com`, il cui dominio ha un mail server proprio, e da lì era stato concluso "non ha Google, serve l'inoltro". Falso: la casella che riceveva davvero da Booking era **una Gmail** completamente diversa. Verifica, non inferire.
+    </Warning>
+  </Step>
+
+  <Step title="Se è Gmail o Google Workspace → OAuth nativo (STRADA DA PREFERIRE)">
+    Conduit → **Settings** → **Connected Channels** → **Email** → **Add Gmail account** → login Google e concedi i permessi. L'indirizzo compare sotto *Gmail accounts*, sincronizza i messaggi in entrata e manda le risposte.
+
+    Niente inoltri, niente codici di conferma, niente DNS. Funziona sia con Google Workspace sia con una Gmail gratuita, e **convive** con un dominio già aggiunto in *Connected domains*: non devi smontare la configurazione esistente.
+  </Step>
+
+  <Step title="Se NON è Google → inoltro verso l'indirizzo di ingresso Conduit">
+    L'indirizzo di ingresso sta in Conduit → **Settings** → **Email** → dominio → sezione **"3. Receiving emails"**: è un indirizzo `...@inbound.postmarkapp.com`. Nel provider del cliente si crea una regola che inoltra lì.
+
+    Meglio se **filtrata sui mittenti `booking.com`** invece che su tutta la casella: copre `noreply@booking.com`, `no-reply@properties.booking.com` e `<numprenotazione>-xxxx@guest.booking.com`, e tiene fuori la posta privata. La copia resta comunque nella casella del cliente: non gli sparisce niente.
+  </Step>
+
+  <Step title="Controlla le preferenze notifiche nell'Extranet Booking">
+    Booking manda **due tipi di mail diversi**, e uno dei due è inservibile:
+
+    | Mittente | Contenuto | Utile? |
+    |---|---|---|
+    | `noreply@booking.com` | *"Hai ricevuto un nuovo messaggio. Per leggerlo vai nell'Extranet."* Nessun testo, nessun nome, nessun numero di prenotazione. | ❌ No, non è leggibile nemmeno da un umano |
+    | `<numpren>-xxxx@guest.booking.com` | Nome ospite, **testo del messaggio**, numero prenotazione, check-in/out, struttura. Rispondibile: Booking gira la risposta all'ospite. | ✅ Sì, è questo che Conduit trasforma in conversazione |
+
+    Se al cliente arriva il primo tipo, va cambiata la preferenza nell'Extranet perché i messaggi arrivino **col contenuto**. Il link sta dentro la mail stessa ("Modifica le tue preferenze").
+  </Step>
+</Steps>
+
+## Verifica: come si controlla DAVVERO
+
+<Warning>
+  **Non fidarti mai della spunta "Inbound email forwarding is set up".** È **auto-dichiarata**, non verificata: la mette a mano chi fa l'onboarding. I record DNS accanto mostrano "Configured" perché Conduit li interroga davvero; quella casella no. Su un cliente reale era spuntata da mesi con l'inoltro **inesistente**.
+</Warning>
+
+La verifica vera si fa sui dati, via API o MCP Conduit:
+
+1. **Elenca le conversazioni** del workspace e conta per canale.
+2. Devono esistere conversazioni **`unthreaded_email`** con mittente `booking.com` (= le mail entrano) **e** conversazioni **`booking_com`** con messaggi reali (= vengono interpretate).
+3. **Zero email in ingresso di qualunque tipo = il canale è morto**, punto. Non serve altra diagnosi.
+
+Controprova sui contatti: prendi qualche prenotazione Booking e guarda il contatto collegato. Se ha il canale `booking_com` registrato ma **`last_message_at` vuoto** su tutte, non è mai passato un messaggio.
+
+<Note>
+  **Cosa NON si vede via API:** se il collegamento è OAuth o inoltro. Gli endpoint `/v1/connections` e `/v1/integrations` non esistono (404). L'API dice **se le mail arrivano**, non **come sono collegate**: quella verifica resta in dashboard.
+</Note>
+
+## Le due trappole
+
+<AccordionGroup>
+  <Accordion title="🪤 Il codice di conferma Gmail (se scegli l'inoltro)">
+    Per attivare un inoltro, Gmail manda un **codice di conferma all'indirizzo di destinazione**. La destinazione è la casella Postmark di Conduit, quindi **il codice finisce dentro Conduit** e il cliente non lo vede: si blocca a metà procedura.
+
+    → Va fatto **in call**, con noi che leggiamo il codice in Conduit e glielo passiamo. Non si delega per iscritto.
+
+    Vale anche al contrario, come diagnosi: se in Conduit non è **mai** arrivata nessuna email, allora quel codice non è mai stato inviato, quindi **nessuno ha mai nemmeno iniziato** la procedura. Con la strada OAuth il problema non esiste.
+  </Accordion>
+
+  <Accordion title="⚠️ Casella personale = tutta la posta del cliente dentro Conduit">
+    L'OAuth **sincronizza l'intera casella**. Se lo colleghi su un indirizzo personale, dentro Conduit finisce anche la posta privata del cliente.
+
+    Successo davvero: su un workspace sono entrati Calendly, Fathom, PriceLabs, notifiche Google, corrispondenza personale e persino le nostre mail di marketing. Su un altro, l'inoltro di tutta la casella è stato **spento dopo 7 giorni** — plausibilmente proprio per questo.
+
+    **Best practice: indirizzo dedicato** (`booking@`, `ota@`), mai la casella di corrispondenza personale. È lo standard nostro: `booking@cosmicagroup.space`, `ota@gusaipropertyconsulting.it`.
+
+    <Warning>
+      **Consenso esplicito.** Collegare una casella significa che l'AI vede quella posta. Su un indirizzo dedicato è irrilevante. Su una casella personale **va detto e concordato col cliente prima di collegarla**, non nascosto in mezzo a un'istruzione tecnica.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+## Se le mail arrivano ma le conversazioni non nascono
+
+Se vedi le `unthreaded_email` da Booking ma **nessuna** conversazione `booking_com`, il collegamento è a posto e il problema è a valle:
+
+1. Verifica di essere nel caso della mail **col contenuto** (tabella sopra). Se arrivano solo gli avvisi vuoti, non c'è niente da interpretare: si torna alle preferenze dell'Extranet.
+2. Se il contenuto c'è ed è completo, è il parser di Conduit → **apri ticket** allegando l'esempio esatto: mittente, oggetto, data e testo della mail.
+
+---
+
+## Checklist finale
+
+<Card title="Il canale email è a posto quando" icon="circle-check">
+  - [ ] Sai qual è la casella **vera** dell'Extranet Booking (chiesta, non dedotta)
+  - [ ] **L'indirizzo collegato in Conduit e quello nell'Extranet sono lo STESSO** (verificato guardando entrambi)
+  - [ ] È collegata: **Add Gmail account** se Google, altrimenti inoltro all'indirizzo Postmark
+  - [ ] L'Extranet manda le notifiche **col contenuto**, non gli avvisi vuoti
+  - [ ] Se è una casella personale: consenso del cliente **esplicito**
+  - [ ] In Conduit esistono conversazioni `unthreaded_email` da `booking.com`
+  - [ ] In Conduit esistono conversazioni `booking_com` **con messaggi reali**
+  - [ ] Hai fatto un test con un ospite Booking vero
+</Card>

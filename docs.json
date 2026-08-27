@@ -90,7 +90,8 @@
               "riferimenti/credenziali",
               "riferimenti/env-accessi-team",
               "riferimenti/skill-index",
-              "riferimenti/manutenzione-docs"
+              "riferimenti/manutenzione-docs",
+              "riferimenti/conduit-richieste-numeri"
             ]
           }
         ]
@@ -109,6 +110,7 @@
               "integrazioni/kross/troubleshooting",
               "integrazioni/ghl/panoramica",
               "integrazioni/ghl/pit-location",
+              "integrazioni/ghl/collegamento",
               "integrazioni/ghl/lead-valore",
               "integrazioni/ghl/rebilling",
               "integrazioni/ghl/troubleshooting",
@@ -125,6 +127,7 @@
               "integrazioni/conduit/kb",
               "integrazioni/conduit/custom-tools",
               "integrazioni/conduit/workflow",
+              "integrazioni/conduit/canale-email-booking",
               "integrazioni/conduit/guardrail",
               "integrazioni/conduit/troubleshooting",
               "integrazioni/conduit/right-sizing"

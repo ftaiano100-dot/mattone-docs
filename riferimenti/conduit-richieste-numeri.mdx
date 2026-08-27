@@ -1,0 +1,94 @@
+---
+title: "Numeri, WABA e voce: cosa chiediamo a Conduit e cosa facciamo da soli"
+sidebarTitle: "Numeri e WABA"
+description: "A Conduit si chiede solo il numero, e lo chiede a Flor. La WhatsApp Business API ce la facciamo da soli col nostro Business Manager. Il numero e' uno e fa due cose, squilla e porta WhatsApp: quello che non ci sta sopra e' l'agente AI."
+---
+
+C'è una sola cosa che chiediamo a Conduit: **il numero**. Tutto il resto — WhatsApp Business API, template, voce — lo gestiamo noi. Questa pagina esiste perché la prima volta l'abbiamo fatto al contrario.
+
+## Il numero: si chiede a Flor, e fa tutto lei
+
+| Persona | Ruolo | Contatto |
+|---|---|---|
+| **Flor Danielle** | Executive Assistant Conduit | `flordanielle@conduit.ai` · +63 961 005 0150 |
+| Raniel | Team tecnico | `raniel@conduit.ai` — **solo in copia**, se serve spingere per l'aggancio al workspace |
+
+Flor si occupa del numero **dall'inizio alla fine**: lo procura e lo mette sul workspace. Non serve aprire un secondo canale con il team tecnico. Al massimo si mette **Raniel in copia** perché il numero venga agganciato al workspace, ma l'interlocutore resta lei.
+
+Nella richiesta servono: **workspace name**, **workspace ID**, **paese del numero** e il **nome con cui l'agente si presenta**. Senza `workspace_id` la richiesta torna indietro; il nome dell'agente va deciso prima, altrimenti è un secondo giro.
+
+## La WABA NON si chiede a Conduit
+
+<Warning>
+**Non chiedere a Conduit di attivare la WhatsApp Business API.** Noi abbiamo un **Business Manager nostro**: una volta che il numero è dentro, la registrazione WABA la facciamo da soli. Delegarla significa perdere il controllo su un asset che è nostro e allungare i tempi senza motivo.
+</Warning>
+
+L'ordine corretto è:
+
+<Steps>
+<Step title="Chiedi il numero a Flor">
+Lei lo procura e lo aggancia al workspace.
+</Step>
+<Step title="Registra la WABA dal nostro Business Manager">
+Da noi, non da Conduit. Il numero è già disponibile, serve solo completare la verifica.
+</Step>
+<Step title="Manda i template in approvazione">
+Li approva **Meta**, non Conduit. Un numero attivo con i template ancora *pending* può solo **rispondere** entro la finestra di 24 ore: non può iniziare conversazioni.
+</Step>
+</Steps>
+
+## Un numero solo, e non ci sta l'agente sopra
+
+La formula "WhatsApp diverso da voice" gira da un po' ed è sbagliata: fa pensare a **due numeri**, mentre il confine vero è fra il **numero** e l'**agente**. I pezzi sono tre:
+
+| | Cos'è | Dove sta |
+|---|---|---|
+| **Voice agent** | l'AI che risponde alla chiamata | sul **numero americano** (Retell) |
+| **Voice number** | il numero italiano come linea telefonica: **squilla** | è il numero che diamo all'ospite |
+| **WhatsApp number** | **lo stesso identico numero**, con la WABA registrata sopra | è sempre lui, solo uno step dopo |
+
+Voice number e WhatsApp number **sono lo stesso numero**. Non sono due cose da separare: sono due passaggi sulla stessa linea.
+
+Quindi la regola, detta bene:
+
+<Note>
+**Il numero è uno e fa due cose: squilla e porta WhatsApp. Quello che non ci sta sopra è l'agente AI.**
+L'agente vive sul numero americano; le chiamate al numero italiano gli arrivano **per inoltro**.
+</Note>
+
+**E la capacità di squillare non è un residuo da spegnere: è come ricevi il codice di verifica WhatsApp.** Serve un numero che squilli davvero per completare la registrazione WABA.
+
+### Perché l'agente sta su un altro numero
+
+- **Resistenza al ban.** Se il numero frontale viene bannato da WhatsApp — succede, è successo — lo sostituisci e l'agente vocale non si accorge di niente. Il numero frontale è sacrificabile, l'agente no.
+- **Un solo numero da comunicare.** L'ospite ne riceve uno: ci scrive su WhatsApp e ci telefona. Che la chiamata finisca su un altro continente non lo riguarda.
+
+## Cosa NON dare per scontato
+
+- **I template WhatsApp li approva Meta.** L'attivazione del numero non basta.
+- **Cambiare numero invalida i template già approvati**: sono approvati per WABA, non in assoluto. Dopo una migrazione vanno rifatti da capo.
+- **Il numero è per workspace**: non si condivide tra clienti diversi.
+
+## Modello di richiesta a Flor
+
+```
+Oggetto: Phone number request — workspace <NOME> (partner Mattone)
+
+Hi Flor,
+
+We'd like a phone number provisioned and attached to one of our
+partner workspaces:
+
+• Workspace name: <NOME LEGGIBILE>
+• Workspace ID:   <ID TECNICO>
+• Country:        <PAESE DEL NUMERO>
+• Agent name (how it should introduce itself): <NOME AGENTE>
+
+We'll handle the WhatsApp Business API registration ourselves
+from our own Business Manager — we only need the number in place.
+
+Thanks,
+<firma>
+```
+
+A: `flordanielle@conduit.ai` — in copia `raniel@conduit.ai` solo se serve sollecitare l'aggancio al workspace.

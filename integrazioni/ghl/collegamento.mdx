@@ -1,0 +1,192 @@
+---
+title: "Collegare il GoHighLevel di uno studente alla piattaforma Mattone"
+sidebarTitle: "Collegamento"
+description: "Procedura operativa per il team: quali due dati servono, dove si prendono in GHL, come si incollano in Connessioni, come si verifica e cosa fare quando il token smette di funzionare."
+---
+
+Questa pagina spiega, passo per passo, come far arrivare i dati del CRM GoHighLevel di uno studente dentro la piattaforma Mattone. Il collegamento richiede **due soli dati** (un token e un identificativo) e si conclude in un paio di minuti, ma va fatto **dall'account dello studente**: è l'unico modo perché la piattaforma capisca a chi appartengono quei dati.
+
+<Note>
+  **Perché è una priorità.** Molti studenti hanno GHL già attivo e il marketing già partito, ma **non hanno mai collegato il token alla piattaforma**. Il motore dei traguardi guarda solo chi ha almeno un'integrazione connessa: finché il collegamento manca, quello studente **non può guadagnare punti né sbloccare premi**, anche se sta avanzando nel corso e sta portando a casa lead veri. Ogni collegamento fatto è uno studente che rientra nel gioco.
+</Note>
+
+<Warning>
+  **Tutti i valori mostrati in questa pagina sono finti.** Dove compare qualcosa tipo `pit-xxxxxxxx-...` è un segnaposto, non una credenziale reale. Non incollare mai token o Location ID veri dentro una pagina di documentazione, un ticket o un messaggio: la doc viene letta, copiata e condivisa, un segreto scritto qui è un segreto perso.
+</Warning>
+
+## Cosa serve prima di iniziare
+
+Servono due dati, entrambi presi dentro il **sub-account GHL dello studente** (in GHL il sub-account è quella che una volta si chiamava "location"):
+
+| Dato | Che aspetto ha | Dove si prende in GHL |
+|---|---|---|
+| **Private Integration Token (PIT)** | Una stringa lunga che inizia con `pit-` | Sub-account → **Settings → Private Integrations** → **Create New Integration** |
+| **Location ID** | Una stringa di circa 20 caratteri fra lettere e numeri | Sub-account → **Settings → Business Info**. In alternativa è dentro l'indirizzo del browser, subito dopo `/location/` |
+
+Il PIT va creato con almeno questi permessi (in GHL si chiamano *scope*, cioè "cosa può leggere questo token"):
+
+- **View Contacts** (`contacts.readonly`) — serve a leggere i contatti del CRM
+- **View Opportunities** (`opportunities.readonly`) — serve a leggere i lead in pipeline e il loro valore
+- **View Locations** (`locations.readonly`) — facoltativo, serve solo a mostrare in piattaforma il **nome** del sub-account invece del solo codice
+
+Sono permessi di **sola lettura**: la piattaforma non scrive nulla dentro GHL.
+
+<Warning>
+  **Il PIT è una credenziale, trattalo come tale.** Dà accesso al CRM dello studente, e dentro quel CRM ci sono i dati dei suoi clienti e potenziali proprietari: nomi, telefoni, email, trattative. Quindi: **mai** in una chat di gruppo, **mai** in un canale Slack o WhatsApp, **mai** in un documento condiviso, **mai** in un ticket. GHL mostra il token **una sola volta**, al momento della creazione: se lo perdi non lo recuperi, va rigenerato.
+
+  Per la stessa ragione **la via preferibile è che sia lo studente a incollarlo da sé** in piattaforma, in videochiamata o in condivisione schermo con la persona del team che lo guida. Così il token non transita mai da nessuna parte: nasce nel browser dello studente e finisce direttamente nel campo della piattaforma.
+</Warning>
+
+## Chi lo fa, e da quale account
+
+Questo è il punto in cui è più facile sbagliare, quindi vale la pena dirlo in chiaro.
+
+La piattaforma **salva il collegamento sull'utente che è loggato in quel momento**. Non esiste un pannello del team con cui incollare il token "per conto di" uno studente, e non c'è una scorciatoia da amministratore: se una persona del team incolla il PIT dello studente mentre è loggata con il **proprio** account Mattone, il CRM dello studente finisce collegato all'**account del team**. Lo studente resta senza integrazione, i suoi traguardi restano bloccati, e i dati del suo CRM compaiono nella dashboard sbagliata.
+
+Quindi l'unico modo corretto è: **il collegamento si fa dall'account Mattone dello studente**. In pratica una di queste due:
+
+<CardGroup cols={2}>
+  <Card title="Via consigliata — lo studente incolla" icon="user-check">
+    Videochiamata o condivisione schermo. Lo studente crea il PIT dentro il suo GHL e lo incolla lui stesso in **Connessioni**. La persona del team guida a voce e verifica il risultato. Il token non passa da nessuno.
+  </Card>
+  <Card title="Via alternativa — sessione assistita" icon="triangle-exclamation">
+    Se lo studente non riesce a farlo da solo, si procede comunque **con lui presente e loggato con il suo account**. Non farsi mandare il token per messaggio: se è già stato mandato in chiaro, fallo rigenerare in GHL e cancella il messaggio.
+  </Card>
+</CardGroup>
+
+## La procedura
+
+<Steps>
+  <Step title="Apri il sub-account GHL corretto">
+    Nello studente, dentro GoHighLevel, controlla di essere nel **suo sub-account** e non nella vista agenzia: il nome del sub-account è visibile in alto a sinistra. Un PIT creato nel posto sbagliato leggerà i dati sbagliati.
+  </Step>
+  <Step title="Crea il Private Integration Token">
+    Vai in **Settings → Private Integrations → Create New Integration**. Dai un nome riconoscibile (per esempio `Mattone`), così fra sei mesi si capisce a cosa serviva. Attiva gli scope elencati sopra e genera.
+  </Step>
+  <Step title="Copia il token subito">
+    GHL mostra il token **una volta sola**. Copialo e tienilo negli appunti giusto il tempo di incollarlo: non salvarlo in un file, non mandarlo a nessuno. Se la finestra si chiude prima di averlo copiato, non c'è recupero: si rigenera e basta.
+  </Step>
+  <Step title="Prendi la Location ID">
+    Sempre nello stesso sub-account, vai in **Settings → Business Info** e copia la **Location ID**. In alternativa la trovi nell'indirizzo del browser subito dopo `/location/`.
+  </Step>
+  <Step title="Apri Connessioni sulla piattaforma">
+    Sulla piattaforma Mattone, **con l'account dello studente**, apri **Connessioni** e cerca la riga **GoHighLevel**. Cliccala per aprirla. Il collegamento diretto è [app.mattone.co/connessioni?open=ghl](https://app.mattone.co/connessioni?open=ghl): apre la pagina con la card GHL già espansa.
+  </Step>
+  <Step title="Incolla i due valori e connetti">
+    Incolla il token nel campo **Private Integration Token** e la Location ID nel campo **Location ID**, poi clicca **Connetti GoHighLevel**. Il pulsante resta disattivato finché entrambi i campi non sono compilati. Se serve un promemoria dei passaggi, dentro la card c'è la voce **"Come trovo token e Location ID?"** che apre una guida breve.
+  </Step>
+</Steps>
+
+## Come si verifica che sia andata bene
+
+La piattaforma **verifica prima di salvare**: quando clicchi *Connetti*, fa una chiamata di prova reale a GoHighLevel con quelle credenziali. Se la prova non riesce, **non salva niente**. Questo significa che non esiste il caso "sembra collegato ma non funziona": o passa la verifica, o resta scollegato con un messaggio d'errore.
+
+Il collegamento è riuscito quando vedi **tutte** queste cose:
+
+- Nella riga GoHighLevel di **Connessioni** il badge è verde e dice **Connesso**
+- Nel dettaglio della card compaiono **Location** (il nome del sub-account) e **Location ID**
+- La pagina **Marketing** non mostra più l'invito "Collega GoHighLevel", ma il recap dei lead
+
+<Note>
+  Se il nome della Location appare vuoto o come `—` ma il badge è verde, **il collegamento è comunque valido**: significa solo che al token manca lo scope facoltativo `locations.readonly`. Non è un errore e non blocca niente. Si può lasciare così, oppure rigenerare il token aggiungendo quello scope se si vuole il nome per esteso.
+</Note>
+
+### Se il token è sbagliato
+
+L'errore compare in rosso dentro la card, e dice cosa è successo:
+
+| Messaggio | Cosa significa davvero | Cosa fare |
+|---|---|---|
+| *Token e Location ID sono obbligatori* | Uno dei due campi è vuoto (o contiene solo spazi) | Ricompila entrambi |
+| *Token non autorizzato — controlla gli scope e che la Location ID sia corretta* | GoHighLevel ha **rifiutato** le credenziali: token errato, revocato, oppure creato senza i permessi di lettura | Rigenera il PIT con gli scope corretti, e ricontrolla di aver copiato la Location ID del sub-account giusto |
+| *GoHighLevel ha risposto 404* (o un altro numero fra 400 e 499) | Le credenziali sono formalmente accettate ma quel sub-account non esiste: quasi sempre è una Location ID copiata male o presa da un altro sub-account | Riprendi la Location ID da **Settings → Business Info** |
+| *GoHighLevel ha risposto 500* / *503* / *429*, oppure un errore di rete | Il problema è **da parte di GoHighLevel**, non delle credenziali | Aspetta qualche minuto e riprova con gli stessi valori: non rigenerare il token |
+
+<Tip>
+  La distinzione dell'ultima riga è importante e la piattaforma la rispetta anche nei controlli automatici: un errore temporaneo di GoHighLevel **non** fa passare uno studente sano allo stato "in errore". Se hai un errore `500` o `429`, il token dello studente sta benissimo, sta solo rispondendo male il server dall'altra parte.
+</Tip>
+
+## Cosa si sblocca una volta collegato
+
+**Il traguardo "CRM collegato"** — è un traguardo del Mattone 1 e vale **150 punti business**. I punti compaiono appena lo studente apre la pagina **Premi**, e in ogni caso entro il controllo automatico della notte successiva.
+
+**La sezione Marketing** smette di essere vuota e mostra, sui dati veri del CRM:
+
+- I **lead da chiamare adesso**, ordinati secondo le priorità della SOP M1.02 (nuovi lead entro l'SLA, poi la sequenza di follow-up)
+- Lo **script giusto** per lo stato di ogni lead, mentre lo si sta chiamando
+- I **lead attivi** e i **proprietari acquisiti**, letti solo dalla pipeline di acquisizione
+- **CPL, CPA e ROAS**
+
+<Note>
+  **CPL, CPA e ROAS hanno bisogno di un secondo ingrediente.** Il costo della pubblicità **non** arriva da GoHighLevel: lo studente lo dichiara a mano in piattaforma, mese per mese. Collegare il PIT porta i lead e le conversioni, cioè la metà "risultati" del conto; senza la spesa dichiarata, i rapporti costo/risultato restano vuoti. Se dopo il collegamento lo studente segnala "il ROAS è a zero", nove volte su dieci è questo, non il token.
+</Note>
+
+**Il conteggio delle integrazioni attive.** Il collegamento aggiunge lo studente all'insieme di chi ha almeno un'integrazione connessa: è la condizione che il motore dei traguardi guarda per prima. È anche la base su cui si appoggeranno i traguardi futuri misurati sul CRM.
+
+## Quando smette di funzionare
+
+Il PIT è nelle mani dello studente: può cancellare l'integrazione da GHL, rigenerare il token, o vedersi disattivare il sub-account. In tutti questi casi il token che abbiamo in piattaforma diventa carta straccia. Ecco come ce ne accorgiamo e come si ripristina.
+
+**Come ce ne accorgiamo.** Ogni notte la piattaforma ripassa tutte le integrazioni e rifà la stessa chiamata di prova del momento del collegamento. Le regole sono due, e sono deliberate:
+
+- si torna **Connesso** solo dopo una chiamata riuscita — mai per fiducia;
+- si passa a **errore** solo se il rifiuto è attribuibile a quelle credenziali. Un problema di rete o un disservizio di GoHighLevel non degradano nulla.
+
+La conseguenza pratica è utile: **se un token viene rimesso a posto, la riga si ripara da sola** al passaggio successivo, senza che nessuno debba toccarla a mano.
+
+I sintomi da cui parte una segnalazione, in ordine di frequenza:
+
+- Lo studente dice che **la sezione Marketing è tornata vuota** o mostra "GoHighLevel collegato, ma non riesco a leggere i dati"
+- Nella riga GoHighLevel di **Connessioni** il badge non è più verde
+- I dati dei lead **sono fermi**: la data di ultimo aggiornamento nella card non si muove più
+
+**Come si ripristina.** In pratica si rifà il collegamento da capo:
+
+<Steps>
+  <Step title="Controlla in GHL se l'integrazione esiste ancora">
+    Sub-account → **Settings → Private Integrations**. Se l'integrazione (quella chiamata `Mattone`) non c'è più, è stata eliminata e il token è morto: non c'è modo di recuperarlo, va rifatto. Se c'è ancora, il problema può essere negli scope.
+  </Step>
+  <Step title="Rigenera il PIT">
+    Crea una nuova Private Integration con gli scope corretti e copia il nuovo token. La Location ID **non cambia**: quella resta la stessa.
+  </Step>
+  <Step title="Scollega e ricollega in piattaforma">
+    In **Connessioni → GoHighLevel** clicca **Scollega**, poi ripeti la procedura di collegamento con il token nuovo. Anche qui vale la regola di sempre: lo fa lo studente, dal suo account.
+  </Step>
+  <Step title="Verifica">
+    Badge verde e recap Marketing di nuovo popolato. Se il badge torna verde ma il recap resta vuoto, il collegamento è a posto e il problema è altrove: vedi [Troubleshooting](/integrazioni/ghl/troubleshooting).
+  </Step>
+</Steps>
+
+<Warning>
+  **Scollegare cancella il collegamento, non i dati.** Il pulsante *Scollega* rimuove dalla piattaforma il token e l'associazione con il sub-account. Non tocca nulla dentro GoHighLevel: contatti, pipeline e opportunità dello studente restano intatti. Quello che sparisce è il recap Marketing, finché non si ricollega.
+</Warning>
+
+<Tip>
+**▷ Prompt Claude Code: Collega GHL a uno studente**  ·  incolla in Claude Code:
+</Tip>
+
+```text
+Contesto: in questa sessione di Claude Code NON hai il repo/codice caricato.
+Per prima cosa apri il repo `~/Projects/mattone-platform` (route
+/api/integrations/ghl + pagina /connessioni) e LEGGI la pagina mattone-docs
+/integrazioni/ghl/collegamento. Poi procedi:
+
+Sto affiancando lo studente [NOME] nel collegare il suo GoHighLevel alla
+Mattone Platform. Guidami passo per passo secondo mattone-docs
+/integrazioni/ghl/collegamento. Ricordami che il collegamento va fatto
+DALL'ACCOUNT DELLO STUDENTE (la piattaforma salva sull'utente loggato) e che
+il PIT non deve MAI passare da chat o messaggi: lo incolla lui.
+NON chiedermi di incollarti il token qui dentro.
+Dopo il collegamento verifica con me che: (1) il badge in Connessioni sia
+verde, (2) compaia il nome della Location, (3) la sezione Marketing mostri il
+recap. Se la verifica fallisce, aiutami a capire dal messaggio d'errore se e'
+un rifiuto delle credenziali (rigenerare il PIT) o un problema temporaneo di
+GoHighLevel (riprovare).
+```
+
+<CardGroup cols={2}>
+  <Card title="Connessioni (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni?open=ghl">Card GoHighLevel già aperta</Card>
+  <Card title="PIT & Sub-Account" icon="key" href="/integrazioni/ghl/pit-location">Creare il token e preparare il sub-account con lo Snapshot</Card>
+  <Card title="Lead & valore" icon="chart-line" href="/integrazioni/ghl/lead-valore">Cosa legge la piattaforma una volta collegata</Card>
+  <Card title="Troubleshooting" icon="wrench" href="/integrazioni/ghl/troubleshooting">Sintomo → causa → soluzione</Card>
+</CardGroup>
