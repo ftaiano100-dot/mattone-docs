@@ -1,0 +1,41 @@
+---
+title: "Studenti — scheda per workspace"
+sidebarTitle: "Studenti"
+description: "Una pagina per studente: PMS, workspace Conduit, stato dei canali, cosa è rotto e cosa è stato fatto. Interno al team."
+---
+
+Una pagina per studente. Serve a non ripartire da zero ogni volta: quando qualcosa si rompe, la storia di quel cliente è già scritta.
+
+<Warning>
+  **Niente credenziali qui dentro.** `mattone-docs` è un repo **pubblico** su GitHub: `.mintignore` tiene `internal/` fuori dal sito Mintlify, ma **non** dal repo. Token, password, API key e PIN vanno nel Vault o in `.env`, mai in queste pagine. Nomi di clienti e architettura: sì, ci sono già. Segreti: mai.
+</Warning>
+
+## Stato canale email Booking.com — sweep del 27/08/2026
+
+Booking.com non ha API messaggi: i messaggi ospite arrivano **solo via email**. Se la casella dell'Extranet non è collegata al workspace, le prenotazioni entrano lo stesso dal PMS ma i messaggi no, e **il guasto è invisibile**. Procedura completa: [Canale email · Booking.com](/integrazioni/conduit/canale-email-booking).
+
+| Studente | Workspace Conduit | PMS | Booking |
+|---|---|---|---|
+| Cosmica Italia | `x17c3ja6…s2dsw` | Kross | ✅ `booking@cosmicagroup.space` |
+| [Soliséra](/internal/studenti/solisera) | `x17af707…3fa3g` | Kross | 🔴 **mai funzionato** |
+| Domos Sardinia | `x1796zgc…6gpxm` | Kross | ✅ `ota@gusaipropertyconsulting.it` |
+| SevenHome Properties | `x178pak7…87n044` | Kross | ✅ `info@sevenhomeproperties.com` |
+| [MBA Prime Home](/internal/studenti/mba-prime) | `x1758pnc…7map1` | Kross | 🔴 **staccato dal 13/07** |
+| Penshouse Srl | `x17565c7…8g3jr` | **Guesty** | ✅ via canale `pms` (inbox unificata) |
+| The Concept Studio | `x17d3nd8…8mavn` | Airbnb diretto | — non vende su Booking |
+| Host Manager | `x176pwgc…86pp72` | — | — 100 prenotazioni su 100 da Airbnb |
+| Ambrosini Suites | `x17c4q5w…879ksf` | — | — workspace senza prenotazioni |
+
+**Non è sistemico: due su otto.** Entrambi Kross, ma la causa non è il PMS — è uno step di onboarding mai completato.
+
+## Come si verifica, per chiunque
+
+Non fidarsi della spunta *"Inbound email forwarding is set up"* in Conduit: è **auto-dichiarata**, la mette a mano chi fa l'onboarding e non prova nulla. Su Soliséra era spuntata da mesi con l'inoltro inesistente.
+
+La verifica vera si fa sui dati:
+
+1. elenca le conversazioni del workspace e conta per canale;
+2. devono esistere conversazioni `unthreaded_email` da `booking.com` **e** conversazioni `booking_com` con messaggi reali;
+3. **zero email in ingresso di qualunque tipo = il canale è morto.** Non serve altra diagnosi.
+
+Controprova sui contatti: prendi una prenotazione Booking e guarda il contatto. Canale `booking_com` registrato ma `last_message_at` vuoto su tutte = non è mai passato un messaggio.

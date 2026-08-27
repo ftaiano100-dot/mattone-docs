@@ -1,0 +1,54 @@
+---
+title: "Stato guardrail dei custom tool, flotta Conduit"
+sidebarTitle: "Stato flotta"
+description: "Workspace per workspace: quanti custom tool ci sono, quali hanno la guardrail a 6 porte e quali problemi restano aperti. Snapshot al 22/08/2026."
+---
+
+<Note>
+**Snapshot al 22/08/2026.** Aggiorna questa tabella dopo ogni audit o intervento su un workspace. La before-capture da cui si ricava è sempre `list_custom_tools` sul workspace, vedi [Diagnosi via MCP](/internal/troubleshooting/diagnosi-custom-tools).
+</Note>
+
+## Tabella
+
+| Workspace | Custom tool | Guardrail 6 porte | Note |
+|---|---|---|---|
+| **Cosmica Italia** | 10 | ✅ 9/10 | È la **specifica di riferimento**. Verificato 22/08: tutte e sei le porte, porta 4 `noresult` inclusa. Il decimo è `stripe-payment-link` (scrittura, senza guardrail). |
+| **Host Manager 360** | 6 | ✅ 6/6 | Fixato 22/08, tool Kross v2→v3. Verificato con happy path reale più branch test. Azienda distinta da Rentallab/ImmobiNet. |
+| **Soliséra** | 9 | ✅ 9/9 | Fixato 22/08 (6 Kross + 3 SwitchBot). 🔴 I 3 SwitchBot **non hanno mai funzionato** per mismatch di protocollo: vedi [caso studio](/internal/troubleshooting/caso-solisera-switchbot). La guardrail rende il fallimento onesto, non lo ripara. |
+| **SevenHome Properties** | 6 | ✅ 6/6 | Fixato 22/08, happy path verificato. |
+| **MBA Prime Home** | 6 | ✅ 6/6 | Fixato 22/08, happy path verificato. |
+| **Cosmica Dubai** | 4+ | ✅ 3/4 | Fixato 22/08 su `get-in-house`, `upcoming-checkins`, `dirham-tax`. Il quarto è il tool Stripe (scrittura, senza guardrail). |
+| **Domos Sardinia** | 0 | n/a | Nessun custom tool montato. |
+| **Ambrosini Suites** | 0 | n/a | Nessun custom tool montato. |
+| **Penshouse** | 0 | n/a | Nessun custom tool montato. |
+| **The Concept Studio** | 0 | n/a | Nessun custom tool montato. 0 listing: le mail Airbnb cadono come `unthreaded_email` in inbox `unmapped`. |
+
+<Tip>
+**Ordine di priorità in un workspace nuovo o non ancora auditato:** prima di tutto i [fallback affermativi](/internal/troubleshooting/silent-wrong) (`|| "No reservation found"`, `|| "Not found"`, `|| "No guests in-house"`, `|| "No check-ins found"`), che su un transitorio asseriscono un fatto falso all'ospite. Solo dopo il `|| "Error"` generico, che è un problema di qualità e non di verità.
+</Tip>
+
+## Punti aperti sulla flotta
+
+<AccordionGroup>
+  <Accordion title="🔴 Soliséra SwitchBot: protocollo da allineare">
+    I 3 tool restano non funzionanti. Il fix cambia body della richiesta, lettura della risposta e richiede una mappa `property` → `slug`. In alternativa si allinea il server al protocollo `tools/call`. Decisione aperta, vedi il [caso studio](/internal/troubleshooting/caso-solisera-switchbot).
+  </Accordion>
+  <Accordion title="🔴 Tool Stripe senza guardrail e fuori contratto">
+    `stripe-payment-link` (Italia) e `generate-stripe-payment-link` (Dubai) non hanno il pattern a 6 porte e su errore ritornano `{ error: ... }` **senza chiave `message`**, violando il contratto di ritorno Conduit. Su errore Stripe il fallimento è a livello di runtime del tool, non un messaggio leggibile dall'agente.
+  </Accordion>
+  <Accordion title="🔑 Token studente in chiaro nel code">
+    Gli `X-Student-Token` sono hardcoded nel `code` dei custom tool, quindi leggibili da chiunque abbia `list_custom_tools` sul workspace. La migrazione a env di workspace richiede la dashboard (Conduit MCP non setta secret). L'alternativa migliore è non mettere il segreto in Conduit affatto e passare da un metodo del nostro proxy.
+  </Accordion>
+  <Accordion title="🔴 Radice nel gateway: colpisce tutti i tenant">
+    Il caso [Botanique](/internal/troubleshooting/silent-wrong) nasce nel gateway, non nei tool: `lib/kross.js` a retry esauriti ritorna il corpo d'errore invece di lanciare, e a valle `data` mancante diventa `[]`, quindi "date non disponibili" con `isError: false`. **Nessuna guardrail lato Conduit può intercettarlo.** Fix in PR sul repo `mattone-mcp-gateway`, branch `fix/kross-retry-exhausted`.
+  </Accordion>
+  <Accordion title="Trappole operative note (non guest-facing)">
+    - `get_incomplete_portals` **ignora la finestra temporale**: con `days_ahead: 2` su MBA restituisce 49 righe con arrivi fino a gennaio 2027. Lista solleciti inutilizzabile senza filtro client-side.
+    - `lib/kross.js` legge `auth_token_expire_seconds`, campo che **non esiste** (il vero nome è `auth_token_expire`): cade sul fallback 24h invece dei 7 giorni reali, quindi ri-autentica ogni giorno senza motivo, sotto un limite di 50 token attivi per hotel.
+    - `tools/list` sul gateway **non richiede** `X-Student-Token` (espone solo il catalogo statico, nessun dato tenant). `tools/call` sì, e l'isolamento è stato verificato sano: un token fasullo produce "Terna non trovata", senza alcun fallback a un tenant di default.
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+**Gli id di workspace non stanno in questa pagina.** Recuperali al momento con `list_workspaces` sul token del workspace che ti serve. Stessa regola per token, terne e chiavi: nessun segreto nei docs, nemmeno nella parte interna.
+</Warning>

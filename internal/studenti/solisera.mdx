@@ -1,0 +1,49 @@
+---
+title: "Soliséra (Cristina)"
+sidebarTitle: "Soliséra"
+description: "Workspace Kross. Il canale email Booking non ha mai funzionato: 906 conversazioni e zero email dall'inizio. Stato, diagnosi e fix."
+---
+
+**Workspace** `x17af707pbgn8798d4kkz3w6j583fa3g` · **PMS** KrossBooking · **Referente** Cristina
+
+## 🔴 Canale email Booking — mai funzionato (aperto al 27/08/2026)
+
+Conduit Support: *"Booking.com messages have never come through to the Soliséra workspace."* Non è una regressione: non è mai stato configurato l'ingresso email.
+
+**Le prove, prese dall'API:**
+
+- **906 conversazioni** dal 02/04/2026. Canali: `airbnb` 883, `sms` 17, `whatsapp` 6. **`booking_com` 0, email 0.**
+- **464 prenotazioni Booking.com** dal 06/01 al 25/08. Campione di 12 distribuite su tutti i mesi: `last_message_at` **vuoto su 12 su 12**. Il canale `booking_com` sui contatti risulta registrato, ma non ci è mai passato un messaggio.
+
+## "Ma prima funzionava" — come possono avere ragione tutti
+
+Il team lo ha ripetuto più volte, e non sbaglia: dice una cosa diversa.
+
+- *"L'AI funzionava bene"* è **vero**, su **Airbnb**: 883 conversazioni su 906, e Airbnb è circa il 73% delle prenotazioni. Nessuno guardava il dato spezzato per canale.
+- *"Cristina riceveva i messaggi Booking"* è **vero**, nella **sua casella**, e li rispondeva **a mano**. È questo che ha reso il buco invisibile per mesi: il lavoro veniva fatto, solo non dall'AI. Nessuno vede un ospite senza risposta, quindi nessuno sospetta.
+
+**Domanda falsificabile da girare al team se ritorna il dubbio:** *"ditemi un nome di ospite e una data in cui avete visto l'AI rispondere a un ospite Booking dentro Conduit."* Se esce un caso concreto, si verifica in un minuto.
+
+**Punto cieco onesto:** le conversazioni partono dal 02/04, le prenotazioni dal 06/01 → il workspace Conduit nasce ad aprile e Kross ha fatto backfill. Se prima esisteva un altro workspace, quella storia non è visibile.
+
+## Configurazione attuale
+
+- Conduit → Email: dominio `@solisera.it`, indirizzo `cristina@solisera.it` (Default). **Gmail accounts: nessuno collegato.**
+- DNS invio (DKIM + CNAME `hostai-bounces`): **configurati**, l'invio funziona.
+- Ingresso: indirizzo Postmark presente, spunta *"Inbound email forwarding is set up"* **spuntata** — ed è **falsa**.
+- `solisera.it` → MX `aspmx.l.google.com` = **Google Workspace**.
+- Nota igiene: SPF del dominio è `include:_spf.aruba.it` mentre la posta è su Google. Residuo di migrazione, non blocca Conduit (che spedisce via Postmark con DKIM proprio), ma è disallineato.
+
+## Il fix
+
+**Gmail OAuth**, che è la strada più semplice: Conduit → *Settings* → *Connected Channels* → *Email* → **Add Gmail account** → login con `cristina@solisera.it`. Niente inoltri, niente codici, niente DNS. Convive con il dominio già inserito.
+
+<Warning>
+  **L'OAuth sincronizza tutta la casella.** Su un indirizzo personale significa che l'AI vede anche la posta privata. Va **detto e concordato con la persona prima di collegarla**. La via pulita è un indirizzo dedicato (`booking@`), che però richiede di cambiare l'email notifiche nell'Extranet Booking.
+</Warning>
+
+**Se invece si sceglie l'inoltro** (sconsigliato qui): 🪤 Gmail manda un **codice di conferma all'indirizzo di destinazione**, che è la casella Postmark di Conduit → il codice finisce **dentro Conduit** e il cliente si blocca a metà. Va fatto in call, con noi che leggiamo il codice. **È la ragione più probabile per cui la spunta è messa e l'inoltro non esiste.**
+
+## Rischio residuo, da verificare dopo il collegamento
+
+Non sappiamo in che modalità sia il loro Extranet, perché non è mai arrivata una mail. Booking manda due tipi di notifica e **una è inservibile** (l'avviso senza testo, *"vai nell'Extranet a leggerlo"*). Se arriva quella, il collegamento non basta: va cambiata la preferenza notifiche. Vedi [Canale email · Booking.com](/integrazioni/conduit/canale-email-booking).

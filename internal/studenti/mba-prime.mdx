@@ -1,0 +1,57 @@
+---
+title: "MBA Prime Home"
+sidebarTitle: "MBA Prime Home"
+description: "Workspace Kross. Il canale email ha funzionato 7 giorni a luglio e poi è stato staccato. Casella vera, diagnosi e le due strade per rimetterlo."
+---
+
+**Workspace** `x1758pnc0chagc7fp2bzftyay587map1` · **PMS** KrossBooking
+
+## 🔴 Canale email Booking — staccato dal 13/07/2026 (aperto al 27/08)
+
+Diverso da Soliséra: qui **ha funzionato**, per una settimana esatta.
+
+- 265 conversazioni dal 06/07. Email in ingresso: **123, tutte fra il 06/07 e il 13/07**. Poi silenzio.
+- Mittenti di quella settimana: `automated@airbnb.com` (54), Instagram (7), Krossbooking (6), `francesco@mattone.co` (3), Vikey, Revolut, e indirizzi `@guest.booking.com`. **Veniva sincronizzata tutta la casella.**
+- 11 prenotazioni Booking.com su 100.
+
+## 📮 La casella vera è una Gmail, non il dominio aziendale
+
+Errore in cui è facile cadere: `milano1@rentalprogroup.com` è solo il **mittente** configurato in Conduit. La casella su cui **Booking scrive** è:
+
+**`mbaprimehomesolutions@gmail.com`**
+
+Letto dai messaggi di luglio: `to:` e `workspace_mailbox` puntano entrambi lì. Quindi **Gmail OAuth vale anche qui**, e non serve nessun inoltro sul mail server di `rentalprogroup.com` (che ha MX proprio, `89.40.172.102`).
+
+<Note>
+  Che a luglio sincronizzasse **tutta** la casella è coerente con OAuth, non con un inoltro filtrato. L'ipotesi più probabile è che la Gmail fosse collegata via OAuth e sia stata **staccata** il 13/07 — plausibilmente perché Conduit si stava riempiendo di posta aziendale. Ipotesi, non verificata: lo storico delle connessioni non è esposto dall'API.
+</Note>
+
+## Stato attuale in Conduit
+
+- Connected domains: **`@rentalprogroup.com` → "Not configured"** (DNS a zero: né CNAME `hostai-bounces`, né DKIM).
+- Indirizzo: `milano1@rentalprogroup.com`.
+- **Gmail accounts: nessuno collegato.**
+- Spunta inoltro: **vuota**.
+
+→ Oggi **non hanno nessun canale email funzionante.**
+
+## Le due strade
+
+**A — configurare `@rentalprogroup.com`.** Due record DNS sul dominio, una regola di inoltro sul loro mail server, e spostare l'email notifiche nell'Extranet su `milano1@`. Nessuno dei tre passi è fatto. Due su tre non sono verificabili da fuori, e la spunta in Conduit è auto-dichiarata: si torna nel punto cieco che ha causato il problema.
+
+**B — tornare su Gmail (consigliata).** *Add Gmail account* con la casella che vogliono usare, e nell'Extranet l'indirizzo per le notifiche deve essere **esattamente quella**. Un login invece di tre interventi, niente DNS, ed è l'unica configurazione che su questo workspace **ha già dimostrato di funzionare**.
+
+Consiglio dato al cliente: una **Gmail dedicata alle sole prenotazioni**, anche nuova, così l'AI non vede Airbnb, Instagram, Revolut e il gestionale.
+
+## ⚠️ Non basta collegare: c'è anche l'Extranet
+
+Anche nella settimana in cui l'inoltro girava, **nessuna conversazione `booking_com`** è nata: le mail Booking arrivavano ma restavano `unthreaded_email` non parsate.
+
+MBA riceve **due tipi** di mail da Booking:
+
+1. `noreply@booking.com` — *"Hai ricevuto un nuovo messaggio. Per leggerlo vai nell'Extranet."* **Nessun contenuto**: non è leggibile nemmeno da una persona.
+2. `<numprenotazione>-xxxx@guest.booking.com` — nome ospite, **testo del messaggio**, numero prenotazione, check-in/out. È **questo** che Conduit trasforma in conversazione, ed è rispondibile.
+
+Il tipo 2 su MBA **esiste già** (es. Anna Kaufmann, 10/07, prenotazione 5059274558). Nelle preferenze notifiche dell'Extranet va impostato che i messaggi arrivino **col contenuto**.
+
+*Ipotesi sul mancato parsing di luglio (non verificata): il parser Booking di Conduit potrebbe essere migliorato fra luglio e agosto — l'esempio parsato su Cosmica Italia è del 27/08. Test: appena MBA torna collegato, le stesse mail dovrebbero parsare. Se non lo fanno, ticket a Conduit con l'esempio esatto.*
