@@ -118,6 +118,7 @@
               "integrazioni/conduit/kb",
               "integrazioni/conduit/custom-tools",
               "integrazioni/conduit/workflow",
+              "integrazioni/conduit/canale-email-booking",
               "integrazioni/conduit/guardrail",
               "integrazioni/conduit/troubleshooting",
               "integrazioni/conduit/right-sizing"

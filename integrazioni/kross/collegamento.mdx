@@ -4,7 +4,7 @@ sidebarTitle: "Collegamento"
 description: "Guida passo-passo per ottenere le credenziali Kross di uno studente, salvarle nel Vault e verificare che la connessione sia attiva."
 ---
 
-Per collegare l'account KrossBooking di uno studente alla piattaforma Mattone, hai bisogno di tre credenziali che lo studente recupera direttamente dal proprio portale Kross. Segui questi passaggi nell'ordine indicato: saltare o invertire uno step è la causa più frequente di errori di connessione.
+Per collegare l'account KrossBooking di uno studente alla piattaforma Mattone servono **quattro** credenziali, che lo studente recupera dal **proprio** portale Kross. Non sono chiavi che diamo noi. Segui questi passaggi nell'ordine indicato: saltare o invertire uno step è la causa più frequente di errori di connessione.
 
 ## Prerequisiti
 
@@ -12,43 +12,44 @@ Prima di iniziare, assicurati che:
 
 - L'anagrafica dello studente su Notion sia **completa e approvata**
 - Lo studente abbia accesso al proprio portale KrossBooking con permessi di amministratore
-- Lo studente ti abbia fornito, su canale sicuro, le seguenti informazioni dalla sezione **API** del portale Kross:
+- Lo studente abbia recuperato, dalla sezione **API** del portale Kross, i **quattro** valori che il form chiede:
+  - `api_key`
   - `hotel_id`, identificativo numerico della struttura
-  - `username`, nome utente API (distinto dal login web)
-  - `password`, password API associata all'utente
+  - `username`, utente API (formato `apiNNNNN`, distinto dal login web)
+  - `password`, password API dedicata (**non** la password di login dell'account)
 
 ## Step
 
 <Steps>
   <Step title="Lo studente recupera le credenziali API da Kross">
-    Lo studente accede al proprio portale KrossBooking, naviga nella sezione **API** (o **Impostazioni → Integrazioni**) e copia i tre valori: `hotel_id`, `username` e `password`. Se la sezione API non è visibile, lo studente deve contattare il supporto Kross per abilitarla.
+    Lo studente accede al proprio portale KrossBooking, naviga nella sezione **API** (o **Impostazioni → Integrazioni**) e copia i **quattro** valori: `api_key`, `hotel_id`, `username` e `password`. Se la sezione API non è visibile, lo studente deve contattare il supporto Kross per abilitarla.
   </Step>
   <Step title="Inserisci le credenziali nell'Admin di Mattone">
-    Accedi all'Admin della piattaforma Mattone. Vai in **Connessioni → Collega Kross**, inserisci i tre valori ricevuti dallo studente e salva. Il sistema cifra automaticamente le credenziali e le archivia nel Vault, non vengono mai memorizzate in chiaro.
+    **Di norma le inserisce lo studente stesso** in **/connessioni** della piattaforma: e' il percorso previsto dal prodotto. La via Admin (**Connessioni → Collega Kross**) si usa quando lo facciamo noi al posto suo, es. onboarding partner-managed. In entrambi i casi si inseriscono i quattro valori e si salva. Il sistema cifra automaticamente le credenziali e le archivia nel Vault, non vengono mai memorizzate in chiaro.
   </Step>
   <Step title="Il sistema verifica la connessione via gateway">
     Dopo il salvataggio, la piattaforma esegue automaticamente un test di connessione passando per `mcp.mattone.co`. Attendi che il risultato appaia nell'interfaccia: il processo richiede normalmente meno di 10 secondi.
   </Step>
-  <Step title="Verde: le 3 credenziali sono salvate (cred_secret_id)">
-    Stato **verde** = la connessione è attiva e le 3 credenziali sono state scritte cifrate (`cred_secret_id`) nel Vault. **Non devi creare nessuna chiave manuale**: la chiave generica partner è già nostra e il gateway la usa in automatico.
+  <Step title="Verde: le 4 credenziali sono salvate (cred_secret_id)">
+    Stato **verde** = la connessione è attiva e le 4 credenziali sono state scritte cifrate (`cred_secret_id`) nel Vault. **Non devi creare nessuna chiave manuale**: la chiave generica partner è già nostra e il gateway la usa in automatico.
   </Step>
   <Step title="🚀 Provision: monta gli strumenti dell'assistente">
     Premi **Provision** per lo studente: la piattaforma monta gli **strumenti dell'assistente** per Kross (le "custom tool") con le loro **istruzioni** (skill) nello spazio Conduit dello studente. Da qui l'assistente sa parlare con Kross.
   </Step>
-  <Step title="Fatto: l'assistente recupera le 3 credenziali da solo">
-    Quando l'assistente usa uno strumento, il nostro **ponte** `mcp.mattone.co` **recupera le 3 credenziali dal Vault mentre lavora** (chiave generica + proxy con IP autorizzato) e chiama Kross. Nessun passaggio manuale ulteriore. Verifica con una domanda reale (es. una prenotazione) che tornino **dati veri**.
+  <Step title="Fatto: l'assistente recupera le credenziali da solo">
+    Quando l'assistente usa uno strumento, il nostro **ponte** `mcp.mattone.co` **recupera le credenziali dal Vault mentre lavora** (chiave generica + proxy con IP autorizzato) e chiama Kross. Nessun passaggio manuale ulteriore. Verifica con una domanda reale (es. una prenotazione) che tornino **dati veri**.
   </Step>
 </Steps>
 
-<Note>Se il test è **rosso**, la causa quasi sempre sono le 3 credenziali (sbagliate, o `hotel_id` che non corrisponde). Rigenerale dal portale Kross e ri-salva. Dettaglio: [Troubleshooting](/integrazioni/kross/troubleshooting).</Note>
+<Note>Se il test è **rosso**, la causa quasi sempre sono le credenziali (sbagliate, o `hotel_id` che non corrisponde). Rigenerale dal portale Kross e ri-salva. Dettaglio: [Troubleshooting](/integrazioni/kross/troubleshooting).</Note>
 
 ## Procedura partner ripetibile (template)
 Questa è la strada **funzionante end-to-end** per collegare un nuovo partner Kross, provata su **HostManager360** (agente live che legge 13 ospiti reali). Replicala per il prossimo partner:
 
 <Steps>
-  <Step title="Mattia contatta Kross per la partnership">L'AM avvia la partnership con Kross e recupera l'accesso al portale partner del cliente (dove compaiono le 3 credenziali).</Step>
-  <Step title="Recupera le 3 credenziali">Dal portale partner → sezione **API**: `hotel_id`, `username` (`apiNNNNN`), `password` API del cliente.</Step>
-  <Step title="Collega Kross">Admin → *Collega Kross* → incolla le 3 credenziali → **verde** (scrive `cred_secret_id` nel Vault).</Step>
+  <Step title="Mattia contatta Kross per la partnership">L'AM avvia la partnership con Kross e recupera l'accesso al portale partner del cliente (dove compaiono le 4 credenziali).</Step>
+  <Step title="Recupera le 4 credenziali">Dal portale partner → sezione **API**: `api_key`, `hotel_id`, `username` (`apiNNNNN`), `password` API del cliente.</Step>
+  <Step title="Collega Kross">Admin → *Collega Kross* → incolla le 4 credenziali → **verde** (scrive `cred_secret_id` nel Vault).</Step>
   <Step title="Provision">🚀 monta tool + skill sul workspace Conduit dello studente.</Step>
   <Step title="Personalizza le skill policy">Sostituisci i dati Cosmica (numeri reperibili, fee, link portale/email) con quelli **dello studente** nelle skill policy.</Step>
   <Step title="KB Notion & telefonia, se servono">Se lo studente ha il registro Notion → genera la KB per-listing (bridge). Se vuole voce/WhatsApp → configura telefonia/WABA.</Step>
@@ -56,7 +57,7 @@ Questa è la strada **funzionante end-to-end** per collegare un nuovo partner Kr
 </Steps>
 
 <Warning>
-  Le credenziali Kross (`hotel_id`, `username`, `password`) devono essere inviate **esclusivamente su canale sicuro**, mai in una chat di gruppo, email, o documento condiviso. Una volta ricevute, salvale immediatamente nel Vault ed elimina qualsiasi copia temporanea. L'esposizione di queste credenziali può compromettere l'intera operatività della struttura dello studente.
+  Le credenziali Kross (`api_key`, `hotel_id`, `username`, `password`) devono essere inviate **esclusivamente su canale sicuro**, mai in una chat di gruppo, email, o documento condiviso. Una volta ricevute, salvale immediatamente nel Vault ed elimina qualsiasi copia temporanea. L'esposizione di queste credenziali può compromettere l'intera operatività della struttura dello studente.
 </Warning>
 
 ## Verifica della connessione
@@ -82,15 +83,15 @@ Poi procedi:
 
 Collega KrossBooking (modello partner) per lo studente [NOME] seguendo
 mattone-docs /integrazioni/kross/collegamento. È la strada funzionante:
-1) chiedimi le 3 credenziali del cliente (hotel_id, username apiNNNNN, password API),
+1) chiedimi le 4 credenziali del cliente (api_key, hotel_id, username apiNNNNN, password API),
 vanno cifrate nel Vault, non stamparle; la chiave generica partner è già nostra,
 NON serve creare chiavi manuali; 2) "Collega Kross" -> verde (scrive
-cred_secret_id); 3) Provision (monta tool+skill); 4) il ponte recupera le 3 credenziali
+cred_secret_id); 3) Provision (monta tool+skill); 4) il ponte recupera le credenziali
 a runtime. Alla fine fammi verificare con una domanda reale che l'agente legga
-ospiti/prenotazioni veri. Se rosso, la causa è quasi sempre nelle 3 credenziali.
+ospiti/prenotazioni veri. Se rosso, la causa è quasi sempre nelle credenziali.
 ```
 
 <CardGroup cols={2}>
-  <Card title="Collega Kross (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Inserisci le 3 credenziali (cifrate nel Vault)</Card>
+  <Card title="Collega Kross (piattaforma)" icon="arrow-up-right-from-square" href="https://app.mattone.co/connessioni">Inserisci le 4 credenziali (cifrate nel Vault)</Card>
   <Card title="Portale KrossBooking → API" icon="key">Sezione API → credenziali del cliente</Card>
 </CardGroup>

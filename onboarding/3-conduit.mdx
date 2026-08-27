@@ -67,6 +67,19 @@ Conduit è il cervello AI che risponde agli ospiti per conto dello studente. Ogn
     → Guida dettagliata: [Workflow Conduit](/integrazioni/conduit/workflow)
   </Step>
 
+  <Step title="Canale email = messaggi Booking.com (OBBLIGATORIO se vende su Booking)">
+    **Booking.com non ha API messaggi**: gli ospiti passano **solo via email**. Se la casella dell'Extranet Booking non è collegata al workspace, l'agente **non vede nessun messaggio Booking** — mentre le prenotazioni continuano ad arrivare dal PMS.
+
+    È lo step che **si rompe più spesso e in silenzio**: il cliente le mail le riceve nella sua casella e risponde a mano, quindi nessuno si accorge di niente. Su Kross, Booking è tipicamente il **20-25% delle prenotazioni**.
+
+    1. **Chiedi** qual è l'indirizzo email vero registrato nell'Extranet Booking (non dedurlo dal dominio, non dare per buono quello già in Conduit).
+    2. Se è **Gmail o Google Workspace** → *Settings → Connected Channels → Email → **Add Gmail account***. È la strada da preferire: niente inoltri, niente DNS.
+    3. Altrimenti → inoltro verso l'indirizzo `...@inbound.postmarkapp.com` che trovi in *Settings → Email → dominio → "3. Receiving emails"*.
+    4. **Verifica sui dati, non sulla spunta**: la casella "Inbound email forwarding is set up" è auto-dichiarata e non prova nulla. Devono esistere conversazioni `unthreaded_email` da `booking.com` **e** conversazioni `booking_com` con messaggi reali.
+
+    → Procedura completa, trappole e checklist: [Canale email · messaggi Booking.com](/integrazioni/conduit/canale-email-booking)
+  </Step>
+
   <Step title="Telefonia + WABA">
     Questo è un percorso separato che richiede intervento del supporto Conduit. Il tempo medio di attivazione è **circa 1 settimana** dalla richiesta. Pianificalo in anticipo: **apri il ticket Conduit presto**, appena completata la KB e i tool.
 
