@@ -139,6 +139,7 @@
               "integrazioni/conduit/telefonia-waba",
               "integrazioni/conduit/numero-unico",
               "integrazioni/conduit/template-whatsapp",
+              "integrazioni/conduit/template-whatsapp-errori",
               "integrazioni/waba/panoramica",
               "integrazioni/waba/collegamento",
               "integrazioni/waba/troubleshooting"

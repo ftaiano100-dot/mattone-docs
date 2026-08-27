@@ -59,6 +59,10 @@ Su Kross, Booking.com pesa tipicamente **20-25% delle prenotazioni**. Airbnb ent
     Conduit → **Settings** → **Connected Channels** → **Email** → **Add Gmail account** → login Google e concedi i permessi. L'indirizzo compare sotto *Gmail accounts*, sincronizza i messaggi in entrata e manda le risposte.
 
     Niente inoltri, niente codici di conferma, niente DNS. Funziona sia con Google Workspace sia con una Gmail gratuita, e **convive** con un dominio già aggiunto in *Connected domains*: non devi smontare la configurazione esistente.
+
+    <Note>
+      **Su Google Workspace serve un account vero, non un alias.** L'OAuth richiede un login: `booking@` deve essere una casella con una sua password, non un alias che rigira su un'altra. Un account vero **consuma una licenza Workspace** — è un costo piccolo ma va detto al cliente prima, non scoperto a metà procedura.
+    </Note>
   </Step>
 
   <Step title="Se NON è Google → inoltro verso l'indirizzo di ingresso Conduit">
@@ -97,6 +101,40 @@ Controprova sui contatti: prendi qualche prenotazione Booking e guarda il contat
   **Cosa NON si vede via API:** se il collegamento è OAuth o inoltro. Gli endpoint `/v1/connections` e `/v1/integrations` non esistono (404). L'API dice **se le mail arrivano**, non **come sono collegate**: quella verifica resta in dashboard.
 </Note>
 
+## Dopo averlo collegato: la verifica NON è finita
+
+Appena colleghi la casella con **Add Gmail account**, in Conduit cominciano a comparire conversazioni `unthreaded_email` nel giro di pochi minuti. È la prova che l'OAuth funziona — e **non è ancora la prova che il canale Booking funziona**.
+
+Caso reale, misurato su un workspace studente il giorno del collegamento: prima del collegamento, **906 conversazioni** in cinque mesi e **zero** email in ingresso di qualunque tipo. Dopo il collegamento, entro un'ora sono entrate le prime email. Ma erano:
+
+- notifiche automatiche del **PMS** (`noreply@krossbooking.com`),
+- la corrispondenza della **titolare** con se stessa e con noi,
+- **nessuna** email da `booking.com`.
+
+<Warning>
+  **"Arrivano email" ≠ "arrivano le email di Booking".** Le prime mail che vedi entrare sono quelle che la casella riceve di suo: PMS, newsletter, posta personale. Sono la prova che il tubo è aperto, non che ci passi l'acqua giusta.
+
+  La verifica è completa **solo** quando in Conduit esiste almeno una conversazione con mittente `booking.com` — idealmente una `<numprenotazione>-xxxx@guest.booking.com` **con il testo del messaggio dentro**.
+</Warning>
+
+Quindi il collegamento va chiuso così:
+
+<Steps>
+  <Step title="Collega la casella e verifica che entrino email (qualunque)">
+    Se dopo un'ora non è entrato **niente**, l'OAuth non ha funzionato: torna indietro, non aspettare.
+  </Step>
+  <Step title="Vai nell'Extranet Booking e controlla le preferenze notifiche">
+    Devono essere impostate per mandare le notifiche **col contenuto** e all'indirizzo che hai appena collegato. Questo è il passaggio che la gente salta perché "tanto è già collegato".
+  </Step>
+  <Step title="Aspetta (o provoca) un messaggio ospite Booking vero e ricontrolla">
+    Finché non vedi una mail da `booking.com` dentro Conduit, il canale è **collegato ma non dimostrato**. Segnalo come tale nello stato dell'onboarding, non come "fatto".
+  </Step>
+</Steps>
+
+<Note>
+  Nel frattempo si vede anche l'altra faccia della medaglia: le conversazioni che entrano hanno contatti "non mappati", perché sono mittenti che non corrispondono a nessun ospite. È il costo normale dell'OAuth su una casella non dedicata, e la ragione per cui la best practice è un indirizzo `booking@` o `ota@` dedicato.
+</Note>
+
 ## Le due trappole
 
 <AccordionGroup>
@@ -113,7 +151,13 @@ Controprova sui contatti: prendi qualche prenotazione Booking e guarda il contat
 
     Successo davvero: su un workspace sono entrati Calendly, Fathom, PriceLabs, notifiche Google, corrispondenza personale e persino le nostre mail di marketing. Su un altro, l'inoltro di tutta la casella è stato **spento dopo 7 giorni** — plausibilmente proprio per questo.
 
-    **Best practice: indirizzo dedicato** (`booking@`, `ota@`), mai la casella di corrispondenza personale. È lo standard nostro: `booking@cosmicagroup.space`, `ota@gusaipropertyconsulting.it`.
+    **Best practice: indirizzo dedicato** (`booking@`, `ota@`), mai la casella di corrispondenza personale. È lo standard nostro:
+
+    | Cliente | Indirizzo dedicato |
+    | --- | --- |
+    | Cosmica Italia | `booking@cosmicagroup.space` |
+    | Domos | `ota@gusaipropertyconsulting.it` |
+    | SevenHome | `info@sevenhomeproperties.com` |
 
     <Warning>
       **Consenso esplicito.** Collegare una casella significa che l'AI vede quella posta. Su un indirizzo dedicato è irrilevante. Su una casella personale **va detto e concordato col cliente prima di collegarla**, non nascosto in mezzo a un'istruzione tecnica.
@@ -141,4 +185,6 @@ Se vedi le `unthreaded_email` da Booking ma **nessuna** conversazione `booking_c
   - [ ] In Conduit esistono conversazioni `unthreaded_email` da `booking.com`
   - [ ] In Conduit esistono conversazioni `booking_com` **con messaggi reali**
   - [ ] Hai fatto un test con un ospite Booking vero
+
+  Finché manca l'ultima riga, lo stato corretto è **"collegato, non dimostrato"** — non "fatto".
 </Card>
