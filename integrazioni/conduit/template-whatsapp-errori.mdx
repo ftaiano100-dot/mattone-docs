@@ -1,0 +1,196 @@
+---
+title: "Template WhatsApp rifiutati: i quattro errori"
+sidebarTitle: "Template rifiutati (i 4 errori)"
+description: "Perché Meta rifiuta un template WhatsApp: variabile in apertura o chiusura, graffa mancante, duplicato di uno già approvato, variabili doppie da copia-incolla. Come si riconoscono, come si correggono e come si scrive un template che passa al primo colpo."
+---
+
+Un template WhatsApp non lo approva Conduit: lo approva **Meta**. Conduit lo raccoglie, lo manda e ti riporta l'esito. Quando l'esito è **Rejected**, il motivo è quasi sempre uno di quattro, e nessuno dei quattro riguarda il contenuto del messaggio: riguardano **come è scritto il testo**.
+
+Questa pagina è la diagnosi. Per il catalogo dei template da avere e per la scelta della categoria Utility/Marketing, vedi [Template WhatsApp: il set minimo](/integrazioni/conduit/template-whatsapp).
+
+<Note>
+  Il ciclo è: crei il template dalla dashboard Conduit → **Templates**, premi **Sync**, lo stato passa da **Pending/Received** ad **Approved** o **Rejected**. Ogni giro con Meta costa ore o giorni. I quattro errori qui sotto sono quelli che fanno buttare via un giro intero.
+</Note>
+
+## Errore 1 — Una variabile all'inizio o alla fine del messaggio
+
+È il rifiuto più frequente, ed è l'unico che Meta ti spiega chiaramente.
+
+<Warning>
+  **Messaggio d'errore di Meta:**
+
+  > `Variables can't be at the start or end of the template`
+  >
+  > `code=100`, `subCode=2388299`
+
+  Se leggi questo, non cercare altro: il tuo testo **inizia** o **finisce** con una variabile.
+</Warning>
+
+**Perché Meta lo vieta.** Una variabile è un buco: Meta non sa cosa ci finirà dentro. Se il messaggio inizia o finisce con un buco, Meta non ha nessun testo fisso su cui giudicare se quel messaggio è legittimo — potrebbe diventare qualsiasi cosa. Vuole almeno una parola vera prima e una dopo.
+
+| ❌ Rifiutato | ✅ Approvato |
+| --- | --- |
+| `{{1}}, il tuo check-in è confermato.` | `Ciao {{1}}, il tuo check-in è confermato.` |
+| `Ti auguriamo un soggiorno meraviglioso! {{3}}` | `Ti auguriamo un soggiorno meraviglioso!` |
+| `Ecco il link: {{2}}` | `Ecco il link: {{2}} A presto!` |
+
+Casi reali: un template di primo messaggio è stato rifiutato perché **dopo** "We wish you a wonderful stay!" c'era un `{{3}}` rimasto lì. Lo stesso identico errore si è ripresentato su un template di pre-arrivo di un altro workspace.
+
+<Check>
+  **Il fix è banale: aggiungi del testo dopo l'ultima variabile.** Anche solo `— a presto!` oppure `Grazie!`. Non serve riscrivere il messaggio.
+</Check>
+
+<Note>
+  Attenzione: `Ciao {{1}}, come stai?` **è corretto**, perché prima della variabile c'è la parola "Ciao". La regola guarda il **primo e l'ultimo carattere del testo**, non la prima riga.
+
+  Occhio anche agli **spazi e agli a-capo finali**: un `{{3}}` seguito solo da uno spazio conta come finale. Cancella gli spazi in fondo e guarda cosa resta davvero come ultimo elemento.
+</Note>
+
+## Errore 2 — Una graffa mancante
+
+Questo Meta **non te lo dice**. Il template torna indietro con:
+
+> `Unknown rejection reason`
+
+e nessuna indicazione. Il campo `rejection_reason` è vuoto o inutile.
+
+Caso reale: un template di alert interno rifiutato senza motivo. Nel corpo c'era scritto `{{2}` — **una sola graffa in chiusura** invece di due. Meta non riconosce la variabile, vede un carattere strano nel testo e rifiuta senza spiegare.
+
+<Warning>
+  **Se leggi "Unknown rejection reason", la prima cosa da fare è contare le graffe.** Ogni variabile deve avere **due graffe aperte e due chiuse**: `{{1}}`, `{{2}}`, `{{3}}`. Non `{1}`, non `{{2}`, non `{{3}}}`.
+
+  Va trovato a occhio, riga per riga. Non esiste un controllo automatico che te lo segnali.
+</Warning>
+
+Il modo più veloce per controllarne uno lungo: leggi il testo cercando **solo** le graffe, ignorando le parole. Devono comparire sempre a coppie, `{{` … `}}`, senza eccezioni.
+
+## Errore 3 — È il duplicato di uno che hai già
+
+Prima di creare un template nuovo, **guarda la lista di quelli che hai già approvati**. Succede regolarmente di riscrivere da zero un messaggio che esiste già, e di far partire un'approvazione inutile che magari viene pure rifiutata.
+
+Caso reale: un template di primo messaggio era **identico parola per parola** a uno già approvato nello stesso workspace — l'unica differenza era proprio la variabile finale che lo faceva rifiutare (Errore 1). Il messaggio esisteva già e funzionava: bastava usarlo.
+
+<Steps>
+  <Step title="Apri l'elenco dei template del workspace">
+    Dashboard Conduit → **Templates**, oppure via MCP con `list_workspace_whatsapp_templates`. Un workspace studente maturo ne ha facilmente **otto o dieci**: non li ricordi a memoria, vanno letti.
+  </Step>
+  <Step title="Cerca il momento, non il testo">
+    Non chiederti "esiste questo testo?", chiediti **"esiste già un template per questo momento?"** — primo messaggio, sollecito check-in, chiamata persa, alert al team. Se il momento è già coperto, quasi sempre il template giusto è quello che c'è.
+  </Step>
+  <Step title="Se serve davvero un template nuovo, dagli un nome che dice QUANDO si usa">
+    `sollecito_guest_portal_it` è un buon nome. `_prova_messaggio2` non lo è: fra tre mesi nessuno saprà a cosa serve, e sarà duplicato di nuovo.
+  </Step>
+</Steps>
+
+<Warning>
+  **Un template approvato non è modificabile.** Se il testo è sbagliato devi crearne uno nuovo e rifare l'approvazione. Ragione in più per controllare prima e scrivere una volta sola.
+</Warning>
+
+## Errore 4 — Le variabili doppie del copia-incolla
+
+Questo è il più insidioso, perché **sembra** di aver fatto la cosa giusta.
+
+Succede così:
+
+<Steps>
+  <Step title="Incolli un testo che contiene già le variabili">
+    Prendi un messaggio da un documento, da una chat o da un altro workspace. Il testo contiene già `{{1}}`, `{{2}}`, `{{3}}`, `{{4}}` scritti dentro.
+  </Step>
+  <Step title="Clicchi Add variable quattro volte">
+    Ragionamento naturale: "ci sono quattro variabili, devo dichiararle". **Sbagliato.**
+  </Step>
+  <Step title="Conduit aggiunge ALTRE quattro variabili in fondo al messaggio">
+    Quelle incollate le aveva **già riconosciute** da sole. I quattro click ne creano quattro nuove — `{{5}}`, `{{6}}`, `{{7}}`, `{{8}}` — e le appende **alla fine del testo**.
+  </Step>
+  <Step title="Sotto compaiono otto campi da compilare, e il messaggio finisce con delle variabili">
+    Vedi i campi comparire e sembra tutto a posto. Ma il tuo testo ora **termina con una variabile** — che è esattamente l'**Errore 1**. Meta lo rifiuta.
+  </Step>
+</Steps>
+
+<Check>
+  **La regola: dopo aver incollato un testo che contiene già `{{...}}`, NON premere Add variable.**
+
+  Conduit le riconosce da sé. I campi da compilare compaiono lo stesso, in automatico. Il pulsante **Add variable** serve solo quando stai scrivendo il testo da zero e vuoi inserire una variabile nel punto in cui hai il cursore.
+</Check>
+
+**Se l'hai già fatto:**
+
+1. Guarda la **fine del messaggio**: ci sono variabili appese lì che non hai scritto tu.
+2. **Cancellale dal testo**, una per una.
+3. Rileggi l'ultima riga: deve finire con **una parola**, non con `}}`.
+4. Controlla che i campi da compilare rimasti siano tanti quante le variabili nel testo, e che ogni indice compaia una volta sola.
+
+## Come si scrive un template che passa
+
+Questo è un template **vero, approvato**, di un workspace studente. Usalo come modello di forma:
+
+```text
+Ciao {{1}}, come stai?
+Qui è il team Soliséra. Abbiamo notato che non hai ancora completato il Guest Portal.
+
+Ti scriviamo qui su WhatsApp solo per ricordarti che senza completare il Guest Portal
+non potrai accedere all'alloggio. Solo al completamento riceverai le istruzioni di accesso.
+Ecco il link: {{2}}
+
+Ti consigliamo di completare questa procedura prima di arrivare all'appartamento,
+così da poter ricevere le istruzioni di accesso.
+```
+
+Perché passa:
+
+| Requisito | Come è soddisfatto qui |
+| --- | --- |
+| **Inizia con testo** | Comincia con `Ciao`, non con `{{1}}` |
+| **Finisce con testo** | Chiude con "…ricevere le istruzioni di accesso.", non con `{{2}}` |
+| **Graffe complete** | `{{1}}` e `{{2}}`: due aperte, due chiuse, su entrambe |
+| **Indici in ordine** | `{{1}}` compare prima di `{{2}}` nel testo |
+| **Niente dati sensibili nel corpo** | Le istruzioni di accesso stanno **dietro** il link, non nel messaggio |
+| **Niente numeri di telefono** | Il mittente è già il numero: "scrivici qui" basta |
+
+<Note>
+  **Valori di esempio realistici, sempre.** Meta valuta il template **con** gli esempi che gli dai. `{{1}} = Giulio` e `{{2}} = https://portal.esempio.it/abc123` fanno capire il contesto. `{{1}} = test`, `xxx`, `http` o un campo vuoto fanno sospettare abuso e portano al rifiuto. Compila gli esempi per bene: è dieci secondi di lavoro che ti risparmia un giro di approvazione.
+</Note>
+
+## La checklist prima di premere invio
+
+<Card title="Controlla questi sei punti su OGNI template, prima di mandarlo in approvazione" icon="circle-check">
+  - [ ] Il testo **inizia** con una parola, non con una variabile
+  - [ ] Il testo **finisce** con una parola, non con una variabile (togli gli spazi in fondo e guarda)
+  - [ ] Ogni variabile ha **due graffe** da entrambi i lati: `{{1}}`, mai `{1}` o `{{1}`
+  - [ ] Il numero di variabili nel testo **coincide** con il numero di campi da compilare sotto
+  - [ ] Non esiste già un template per lo stesso momento (hai guardato la lista, non ti sei fidato della memoria)
+  - [ ] Ogni variabile ha un **valore di esempio verosimile**, non `test` o vuoto
+</Card>
+
+## Dopo l'approvazione: la trappola del cambio numero
+
+<Warning>
+  **I `contentSid` muoiono quando cambia il numero WABA.**
+
+  Ogni template approvato ha un identificativo (`contentSid`, quello che comincia per `HX…`) che i workflow usano per inviarlo. Se il workspace cambia il numero WhatsApp Business, i template vengono **ri-registrati sul numero nuovo** e i vecchi `contentSid` smettono di funzionare.
+
+  I workflow però continuano a puntare a quelli vecchi. Non danno errore visibile: **falliscono in silenzio** e il messaggio non parte. L'ospite non riceve il sollecito, il team non riceve l'alert, e nessuno se ne accorge.
+</Warning>
+
+Come si trova: via MCP Conduit, `get_workflow_resource_references` elenca le risorse citate dai workflow con un campo `available`. **Un `contentSid` con `available: false` è un template morto cablato in un workflow.**
+
+<Check>
+  **Regola operativa: ogni volta che cambia il numero WABA di un workspace, ricontrolla i template agganciati ai workflow.** Non è un controllo opzionale: è la manutenzione obbligatoria di quel cambio.
+</Check>
+
+## Pagine collegate
+
+<CardGroup cols={2}>
+  <Card title="Template WhatsApp: il set minimo" icon="list-check" href="/integrazioni/conduit/template-whatsapp">
+    Quali template servono, categoria Utility o Marketing, testi di riferimento e checklist per un nuovo studente.
+  </Card>
+  <Card title="Telefonia & WABA" icon="comment" href="/integrazioni/conduit/telefonia-waba">
+    Come si ottiene il numero e si attiva WhatsApp Business. Se cambia il numero, torna alla trappola dei `contentSid`.
+  </Card>
+  <Card title="Workflow Conduit" icon="diagram-project" href="/integrazioni/conduit/workflow">
+    Dove i template vengono agganciati: step `SEND_MESSAGE` di tipo `whatsapp_template`.
+  </Card>
+  <Card title="Il metodo di diagnosi" icon="magnifying-glass" href="/troubleshooting/metodo">
+    Come si isola un guasto senza tirare a indovinare.
+  </Card>
+</CardGroup>
