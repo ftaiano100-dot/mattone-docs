@@ -1,0 +1,161 @@
+---
+title: "Onboarding Conduit — nuovo cliente"
+sidebarTitle: "Onboarding Conduit"
+description: "Procedura ripetibile end-to-end per portare un nuovo cliente da contratto firmato ad agente Conduit live con KB per-listing."
+---
+
+Procedura testata su **Cosmica → Soliséra → The Concept Studio (Andrés) → HostManager360 (Gabriele)**. Ogni step ha uno stato binario (fatto / non fatto): niente "sembra ok".
+
+## Prerequisiti (Fase 0)
+<Steps>
+  <Step title="Contratto firmato + primo pagamento">
+    Subscription Stripe attiva (`sub_...`), price `€9/apt/mese`, customer collegato all'email del cliente. Verifica su Stripe dashboard e salva `sub_id` + `price_id`.
+  </Step>
+  <Step title="Account Mattone piattaforma">
+    Cliente ha login su `app.mattone.co` con `tools_access` corretto. Se ci sono collaboratori (`collab1@`, `collab2@`), stessa cosa.
+  </Step>
+  <Step title="Notion — inviti + template">
+    Notion collegabile via OAuth con almeno un database di appartamenti + i template canonici (`House Manuals ITA/ENG` o equivalente). Se il cliente ha un template proprio (es. Andrés) preparati alla patch canonical (§ Troubleshooting).
+  </Step>
+  <Step title="Krossbooking creds valide">
+    Il cliente ha attivato il **partner Kross** e ci ha girato user + password aggiornate. Le testiamo sul provisioning; se `error`, sblocca prima di procedere (senza Kross non ci sono listings su Conduit).
+  </Step>
+</Steps>
+
+## Setup piattaforma Mattone
+<Steps>
+  <Step title="1. Allowlist KB Bridge (BETA)">
+    Aggiungi l'email del cliente in `src/lib/access.ts` → `BETA_EMAILS`. Un commento sopra la riga con: data, contratto, workspace Conduit, apts, sub Stripe.
+    Branch `feat/beta-<nome>`, PR, merge, deploy 1-2 min.
+  </Step>
+  <Step title="2. Row conduit_workspace_config">
+    UPSERT su `conduit_workspace_config` con: `workspace_id`, `workspace_name`, `workspace_slug`, `student_id`, `plan_limit_usd`, `alert_threshold_pct`, `billing_mode: partner_markup`, `notes` con contesto.
+  </Step>
+  <Step title="3. Verifica Notion connesso">
+    Su Supabase: `pms_integrations` deve avere una riga `provider='notion'` con `status='connected'` per lo `student_id`.
+  </Step>
+</Steps>
+
+## Setup Conduit (workspace + tools + agent)
+<Steps>
+  <Step title="4. Workspace Conduit">
+    Se non esiste, creazione manuale su Conduit (invito Flor se serve un numero italiano dedicato).
+    Recupera `workspace_id` (`x1...`) via `GET /v1/workspaces`.
+  </Step>
+  <Step title="5. 6 Custom Tools Krossbooking">
+    Script `hostmanager-provision.mjs` (o clone per cliente): crea 6 tool via `POST /v1/custom-tools` con `enable_globally=true` così tutti gli agent del workspace li vedono.
+    Tools: `check-availability`, `check-portal-status`, `get-checkin-instructions`, `get-reservation-status`, `get-in-house-guests`, `get-incomplete-portals`.
+    <Warning>Bug validation Zod: ogni parametro DEVE avere `description`. Il catalog Mattone li genera; se bypassi Mattone, aggiungi description auto.</Warning>
+  </Step>
+  <Step title="6. Guest Agent config">
+    `operation_mode: copilot`, `enabled: true`, `response_language` (IT o EN a seconda del target ospiti), 21+ guardrails standard (identità host, no in-persona, no sconti, ecc.), trigger `Guest inbox messages`.
+    Attacca le 3 skill standard (`skill_ids`). Se il cliente ha upsell/late-checkin autonomo, attacca anche `payment-link-generator`.
+  </Step>
+  <Step title="7. Francesco@mattone.co admin sul workspace">
+    Assicura che almeno un membro Mattone abbia ruolo Admin, per debug/patch senza dipendere dal cliente.
+  </Step>
+</Steps>
+
+## Sync listings + mapping registry
+<Steps>
+  <Step title="8. Verifica listings sync">
+    `GET /v1/listings?workspace_id=X` deve tornare **N listings = N appartamenti attivi Kross**. Se 0 → Kross auth failed o partner non collegato. Sblocca prima.
+  </Step>
+  <Step title="9. Popola apartment_registry">
+    Una riga per apt su `apartment_registry` con: `student_id`, `notion_page_id`, `conduit_listing_id`, `krossbooking_room_type_id`, `name`.
+    <Note>Se le righe esistono già (create dal sync automatico Conduit) fai UPDATE separati invece di UPSERT (evita "no unique constraint matching" su combinazione notion+conduit).</Note>
+  </Step>
+</Steps>
+
+## KB Bridge (Notion → Conduit)
+<Steps>
+  <Step title="10. Dry-run preview">
+    `POST /api/conduit/sync-knowledge` con `{commit: false}`, cookie auth del cliente. Aspettati:
+    - `apartments: N` (= listings attivi)
+    - `unresolvedApartments: 0` (se non 0 → registry non completo)
+    - `incompleteTemplates: 0` (se > 0 → vedi § Troubleshooting)
+  </Step>
+  <Step title="11. Fix template validation (se serve)">
+    Il validator richiede 5 sezioni canonical per apt: WiFi (rete + password), Orari check-in/out, Come raggiungere, Regole della casa, Prima di partire.
+    Se il cliente usa template Cosmica standard → passa senza patch.
+    Se usa template proprio (Andrés) → patch canonical automatica (vedi § Troubleshooting: "Template non canonico").
+  </Step>
+  <Step title="12. Commit finale">
+    `POST /api/conduit/sync-knowledge` con `{commit: true}` (`--max-time 800`). Aspettati:
+    - `created: N * ~30-40` (nodi totali)
+    - `failed: 0`, `blockedByTemplate: 0`
+    - `directoriesCreated: N` (una per listing)
+  </Step>
+  <Step title="13. Verifica su Conduit">
+    `GET /v1/kb/nodes?workspace_id=X&listing_id=Y&parent_id=<Mattone KB Sync folder>` deve mostrare le note per-apt. Cerca almeno il nodo `[<Apt>] Wi-Fi (rete + password)`.
+  </Step>
+</Steps>
+
+## Canali + finalizzazione
+<Steps>
+  <Step title="14. Numero WhatsApp italiano">
+    Ticket a Flor (Conduit) chiedendo numero italiano dedicato per il workspace. ETA variabile (2-10 giorni).
+  </Step>
+  <Step title="15. Numero voce (se applicabile)">
+    Per voice agent: lingua **specifica** (mai Multilingual — STT storpia i nomi ospiti). Vedi [Personalizzazione](/delivery/personalizzazione-studente).
+  </Step>
+  <Step title="16. Onboarding message al cliente">
+    Riassunto in italiano di cosa è live + come loggarsi + call di 15' per demo. Template branded Mattone (mai email raw da Gmail).
+  </Step>
+  <Step title="17. Aggiorna task registro (ClickUp)">
+    Chiudi la task cliente in ClickUp Delivery. Aggiungi consumo baseline in `conduit_usage_snapshots` (il cron lo aggiorna ogni 6h).
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+### Kross auth failed dopo cambio password
+Sintomo: `pms_integrations.status = 'error'` per provider `krossbooking`.
+Fix: chiedi al cliente le nuove creds. Aggiorna la riga via `PUT /api/admin/kross/connect`. Il sync listings riparte in automatico. Senza questo il KB Bridge segna `unresolvedApartments: N`.
+
+### Template Notion non canonico (pattern Andrés)
+Sintomo: `incompleteTemplates: N`, ogni apt manca `Wi-Fi + Orari + Come raggiungere + Regole + Prima di partire`.
+
+Fix in ordine:
+1. Scrape credenziali WiFi dal sito guest guide del cliente (se ne ha uno) o chiedi al cliente.
+2. Append 23 blocchi canonical sul Notion (heading_2 + paragraphs) tramite `PATCH /v1/blocks/{page_id}/children`. Script `andres-fill-canonical.mjs`.
+3. Se il validator continua a leggere il vecchio blocco WiFi (paragrafo `🛜 WI-FI`) prima del nuovo, patch il titolo del **toggle** WiFi originale per includere `Rete: X — Password: Y`.
+4. Se un callout child del toggle contiene "wifi"/"internet", il matcher lo prende come sub-section e fallisce. Riformula il testo per rimuovere quelle parole.
+5. Se il primo toggle si chiama "Modem - X" e i suoi children contengono "wifi" nel testo, rinomina il toggle rimuovendo "wifi" (es. `Router X`) così il matcher passa al toggle successivo (quello patchato correttamente).
+
+### KB Bridge 504 timeout
+Sintomo: la route va in timeout esatto a 300s per workspace medio-grandi.
+Fix: `maxDuration = 800` in `src/app/api/conduit/sync-knowledge/route.ts`. Deploy via PR (già mergiata 2026-08-24).
+
+### Copilot non suggerisce niente ("Listing unavailable in Conduit")
+Sintomo: config agent tutta verde ma i suggerimenti restano vuoti.
+Root cause tipica: apts Airbnb non mappati al listing corretto (registry buco).
+Fix: verifica `apartment_registry.conduit_listing_id` per ogni apt che dovrebbe rispondere.
+
+### Ticket Conduit "parameters[].description Required"
+Sintomo: creazione custom tool fallisce con Zod validation.
+Fix: aggiungi `description: string` per ogni parametro. Se usi la route Mattone, il catalog li genera; se chiami direttamente Conduit API, aggiungi description auto-generate nel payload (vedi `andres-provision-conduit.mjs`).
+
+<Tip>
+**▷ Prompt Claude Code: nuovo cliente Conduit da zero**  ·  incolla in Claude Code:
+
+```text
+Contesto: setup Conduit per il nuovo cliente [NOME, EMAIL, N. apts].
+Segui /delivery/onboarding-conduit-cliente passo per passo. Non saltare
+verifiche binarie: ogni step deve chiudersi con un output ispezionato
+(row DB creata, response API 200, contenuti presenti su Conduit).
+
+Prerequisiti da confermare prima di iniziare:
+- Stripe sub attiva? sub_id?
+- Kross creds valide? (se error, sblocca prima)
+- Template Notion canonico o proprietario? (se proprietario, applica patch)
+```
+</Tip>
+
+## Riferimenti
+<CardGroup cols={2}>
+  <Card title="Problemi ricorrenti Conduit" icon="triangle-exclamation" href="/delivery/problemi-ricorrenti-conduit">Catalogo problema→fix già visti</Card>
+  <Card title="Personalizzazione per studente" icon="user-gear" href="/delivery/personalizzazione-studente">Cosa cambia per cliente (skill policy, KB, listino)</Card>
+  <Card title="Flusso completo studente" icon="route" href="/delivery/flusso-completo">Vista d'insieme delle 3 fasi</Card>
+  <Card title="Monitorare studenti" icon="chart-line" href="/delivery/monitorare-studenti">KPI + segnali di allarme post-live</Card>
+</CardGroup>
