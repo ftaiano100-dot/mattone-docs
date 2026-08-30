@@ -1,0 +1,149 @@
+---
+title: "KrossBooking — il filtro IP sulla chiave partner"
+description: "Perché i clienti partner non si collegano a Conduit mentre quelli con chiave propria sì, cosa è verificato e cosa no, e la decisione presa."
+---
+
+<Warning>
+**Versione ridotta.** `mattone-docs` è un repo GitHub **pubblico**: `.mintignore` tiene questa
+cartella fuori dal sito, **non fuori da GitHub**. Qui indirizzi IP, credenziali e identificativi
+di infrastruttura sono **oscurati**. I valori reali stanno nel Vault e in
+`mattone-integrations-docs`.
+</Warning>
+
+Ricostruito il **30 agosto 2026**. Tutto quanto segue è **verificato in esecuzione**, salvo dove
+scritto il contrario.
+
+## La causa, in una riga
+
+Il filtro IP è stato **acceso il 31 luglio sulla sola chiave partner**, come passaggio per far
+comparire le credenziali nel portale, e **non è mai stato rimesso a posto**. Non è un
+comportamento di KrossBooking né un requisito del modello partner. Tutto il resto discende da lì.
+
+## Perché alcuni clienti funzionano e altri no
+
+| Clienti | Chiave | Filtro IP | Conduit |
+|---|---|---|---|
+| Quelli con chiave propria | `own` | spento | ✅ funziona |
+| Quelli sotto il profilo partner | `partner` | acceso | ❌ bloccato |
+
+**È l'unica differenza.** Non il gateway, non l'architettura, non Conduit.
+
+## Il filtro è opzionale per chiave — dimostrato
+
+Sondando l'autenticazione con password volutamente errata, così da non creare nessun token:
+
+```
+chiave own      da IPv4 → error_code 5   "Authentication failed"   ← filtro superato
+chiave own      da IPv6 → error_code 5   "Authentication failed"   ← filtro superato
+chiave partner  da IPv6 → error_code 0   "<ip> not allowed"        ← BLOCCATO
+```
+
+Le chiavi `own` girano **in produzione con il filtro spento**. Non è uno stato degradato: è
+uno stato supportato.
+
+## Perché non si whitelistano gli IP di Conduit
+
+Conduit ha comunicato i propri range, ma:
+
+- **Quasi tutto il traffico esce su IPv6**, con indirizzo diverso quasi a ogni richiesta
+- Sono **range condivisi** del loro cloud provider (regione US-East), non riservati a Conduit
+- **Cambiano senza preavviso**, e non esiste un processo di notifica
+
+Il giorno che cambiano si rompono **tutti i clienti insieme, in silenzio**. Si comprerebbe
+fragilità vera in cambio di protezione nominale: un range condiviso di una regione cloud non è
+"gli IP di Conduit", è l'indirizzo di chiunque abbia un carico di lavoro lì.
+
+<Note>
+`api.krossbooking.com` è **dual-stack**: il traffico IPv6 arriva davvero come IPv6 e viene
+valutato come tale. Il problema non è teorico.
+</Note>
+
+Conduit ha inoltre confermato che il connettore nativo **non è deviabile** su una base URL
+nostra, e che **non esiste nessuna API di ingestione prenotazioni** — l'oggetto Reservation ha
+un solo scrittore, il loro sync interno. Quindi non si può togliere Conduit dal percorso verso
+KrossBooking.
+
+## Due scoperte che contano più del filtro
+
+<Warning>
+**Un solo username API per tutti i clienti partner.** Contraddice il modello "credenziali
+per-cliente" che davamo per assunto. Se anche la password è condivisa, **un unico set di
+credenziali apre tutti i clienti partner insieme** — e sono quelle che finiscono dentro Conduit.
+Da verificare nel portale.
+</Warning>
+
+<Warning>
+**Disattivazione automatica dopo 15 giorni di inattività.** Regola documentata da KrossBooking,
+per singolo hotel. È già successo su un account di test.
+
+Il problema è l'errore restituito: `error_code 11`, *"Invalid combination api key/hotel id"* —
+che sembra **"credenziali sbagliate"**, non "chiave scaduta". Su un cliente fermo due settimane
+si perde mezza giornata a cercare la cosa sbagliata.
+
+Serve una chiamata automatica ogni ≤15 giorni per ogni hotel collegato.
+</Warning>
+
+## Dettagli che servono a chi scrive codice
+
+- **Il blocco IP torna `error_code: 0`** con l'indirizzo nel messaggio, **non il 21** che dice
+  la documentazione. Codice che facesse `switch` su 21 non lo intercetterebbe mai.
+- **Ordine dei controlli: IP → chiave/hotel → credenziali.** Quindi `error 11` o `error 5`
+  significano che l'IP è passato: è il modo più veloce per capire se il problema è la rete o le
+  credenziali.
+- **Nessun webhook sulle prenotazioni.** La documentazione dice testualmente *"THIS PROCEDURE IS
+  ONLY ENABLED FOR OTAs"*: esistono solo prezzi e disponibilità. E non c'è nessun parametro
+  incrementale tipo `modified_since` su `reservations/get-list` — quindi il polling deve
+  scaricare la finestra intera e fare il diff da parte nostra.
+- **Nessuna autenticazione alternativa**: zero occorrenze di OAuth, mTLS, HMAC o JWT in tutta la
+  documentazione. Il filtro IP non è sostituibile, è però disattivabile.
+- **L'URL della documentazione è uno strumento di introspezione gratuito e non filtrato per IP**:
+  passando una chiave in query string, renderizza **solo gli endpoint abilitati per quella
+  chiave**. Utile per capire cosa un profilo può davvero fare. Richiede uno User-Agent da
+  browser, altrimenti Cloudflare blocca con errore 1010.
+
+## Correzione a quello che credevamo
+
+<Warning>
+**Il gateway multi-tenant non esiste.** La cartella contiene **solo un README** con uno skeleton
+marcato "da completare". Nessun sorgente, in nessun repo. E l'MCP di `cosmica-booking` non ha
+niente di multi-tenant: né token per studente, né lettura dal Vault, né proxy.
+</Warning>
+
+Quindi i clienti partner **non passano da nessun gateway**: ricadono sul connettore nativo, che
+è esattamente quello che il filtro blocca.
+
+**Il gateway serve ai custom tool, non al connettore nativo.** Sono due percorsi paralleli: il
+connettore nativo porta i dati e gli eventi prenotazione, i custom tool fanno le azioni durante
+la conversazione. Non si sostituiscono a vicenda.
+
+<Note>
+**Conseguenza**: non esiste nessuna strada, né costruita né progettata, che tolga al connettore
+nativo il bisogno di raggiungere KrossBooking direttamente. Finché un cliente usa Conduit, sulla
+sua chiave il filtro deve stare spento.
+</Note>
+
+Il **proxy invece esiste e funziona**: gira su un droplet con IP statico, in whitelist da luglio,
+ed è usato dalla validazione delle connessioni nell'admin della platform. Copre la platform e
+l'MCP, **non** il connettore nativo di Conduit — e questa era l'unica assunzione sbagliata del
+disegno originale.
+
+## La decisione
+
+**Spegnere il filtro IP sulla chiave partner.** È l'unica azione che sblocca, costa zero, e
+riporta i clienti partner allo stesso stato di quelli con chiave propria, che funzionano da
+sempre.
+
+Due richieste restano aperte con i fornitori:
+
+- **A KrossBooking**: una chiave per cliente sotto il profilo partner, a parità di prezzo. Non
+  per gli IP, ma per poter **revocare e cambiare password un cliente alla volta**, cosa che oggi
+  non è possibile.
+- **A Conduit**: un proxy in uscita configurabile a livello di workspace. È l'unica cosa che ci
+  servirebbe davvero da loro, e risolverebbe il problema per qualunque PMS che filtri per IP —
+  cioè la maggior parte dei PMS europei.
+
+## Cosa non fare
+
+- **Non whitelistare gli IP di Conduit.** Vedi sopra: fragilità vera, protezione finta.
+- **Non costruire proxy nuovi.** Ne esiste già uno funzionante. Due meccanismi per lo stesso
+  lavoro sono peggio di uno solo.
