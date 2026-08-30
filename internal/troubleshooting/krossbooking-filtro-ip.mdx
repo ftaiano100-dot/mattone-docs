@@ -65,12 +65,22 @@ KrossBooking.
 
 ## Due scoperte che contano più del filtro
 
+<Note>
+**Le credenziali sono per cliente — verificato.** Confrontando le impronte nel Vault: username
+e password sono **diversi per ogni cliente partner**. Condivisa è **solo la api_key generica**,
+esattamente come previsto dal modello.
+
+Conseguenze buone: la chiave da sola **non apre niente**, la **revoca per singolo cliente è
+possibile** cambiandogli la password API, e un'eventuale fuga riguarda **un cliente solo**.
+
 <Warning>
-**Un solo username API per tutti i clienti partner.** Contraddice il modello "credenziali
-per-cliente" che davamo per assunto. Se anche la password è condivisa, **un unico set di
-credenziali apre tutti i clienti partner insieme** — e sono quelle che finiscono dentro Conduit.
-Da verificare nel portale.
+Attenzione a una riga della documentazione Kross che trae in inganno:
+`Active Hotel IDs for this Api Key: [apiXXXXXXX] hotel1, hotel2, …` elenca **gli hotel
+raggiungibili dalla chiave**, e lo username mostrato è quello della richiesta con cui hai
+interrogato la documentazione — **non** uno username comune a tutti. Letta male, sembra dire
+che le credenziali siano condivise. Non lo sono.
 </Warning>
+</Note>
 
 <Warning>
 **Disattivazione automatica dopo 15 giorni di inattività.** Regola documentata da KrossBooking,
