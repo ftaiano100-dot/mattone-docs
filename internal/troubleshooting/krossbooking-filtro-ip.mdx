@@ -15,9 +15,22 @@ scritto il contrario.
 
 ## La causa, in una riga
 
-Il filtro IP è stato **acceso il 31 luglio sulla sola chiave partner**, come passaggio per far
-comparire le credenziali nel portale, e **non è mai stato rimesso a posto**. Non è un
-comportamento di KrossBooking né un requisito del modello partner. Tutto il resto discende da lì.
+Il filtro IP è stato **acceso il 31 luglio sulla sola chiave partner**, e **non è mai stato
+rimesso a posto**. Tutto il resto discende da lì.
+
+<Note>
+**Non era obbligatorio, e non serviva a far comparire le credenziali.** Parole testuali di
+KrossBooking all'attivazione del profilo: *"Mi raccomando anche di impostare subito gli IP da
+mettere in whitelist nella sezione API"* — una **raccomandazione di igiene**, messa insieme al
+cambio password e alla 2FA.
+
+Le credenziali dei clienti arrivano da tutt'altro flusso: KrossBooking crea un link, il cliente
+lo accetta, e a quel punto compaiono nella sezione API sotto "credenziali".
+
+L'idea che il filtro servisse a sbloccare le credenziali era una **nostra deduzione del
+31 luglio**, mai confermata dal fornitore. Spegnerlo è una nostra scelta e non viola nulla —
+vale però la cortesia di avvisarli, visto che l'avevano raccomandato loro.
+</Note>
 
 ## Perché alcuni clienti funzionano e altri no
 
@@ -82,16 +95,20 @@ che le credenziali siano condivise. Non lo sono.
 </Warning>
 </Note>
 
-<Warning>
-**Disattivazione automatica dopo 15 giorni di inattività.** Regola documentata da KrossBooking,
-per singolo hotel. È già successo su un account di test.
+<Note>
+**Disattivazione automatica dopo 15 giorni di inattività — già coperta.** KrossBooking disattiva
+l'accesso di una chiave a un singolo hotel dopo 15 giorni senza chiamate su quell'hotel.
 
-Il problema è l'errore restituito: `error_code 11`, *"Invalid combination api key/hotel id"* —
-che sembra **"credenziali sbagliate"**, non "chiave scaduta". Su un cliente fermo due settimane
-si perde mezza giornata a cercare la cosa sbagliata.
+Il **keepalive esiste già**: il cron `revalidate-integrations` gira ogni giorno alle 04:15 e
+autentica ogni integrazione collegata. I 15 giorni non scattano mai sui clienti veri.
 
-Serve una chiamata automatica ogni ≤15 giorni per ogni hotel collegato.
-</Warning>
+⚠️ **Vale solo per quello che sta in `pms_integrations`.** Un account di test fuori da quella
+tabella è morto esattamente così.
+
+⚠️ **Da ricordare in diagnosi**: l'errore restituito è `error_code 11`, *"Invalid combination
+api key/hotel id"*, che sembra **"credenziali sbagliate"** e non "chiave scaduta". Se vedi
+quell'errore su un cliente fermo da settimane, la causa è l'inattività.
+</Note>
 
 ## Dettagli che servono a chi scrive codice
 
