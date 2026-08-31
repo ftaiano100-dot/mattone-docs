@@ -1,0 +1,157 @@
+---
+title: "Prenotazioni per i clienti in regime partner"
+description: "Perché non hanno l'oggetto Reservation nativo, quanto si può recuperare e come. Stato al 31/08/2026."
+---
+
+<Warning>
+**Pagina interna.** Il repo è pubblico su GitHub: `.mintignore` tiene `internal/` fuori dal sito,
+**non** fuori da GitHub. Qui non vanno credenziali, indirizzi IP, token, id di workspace o dati
+finanziari dei clienti. Quelli stanno nel repo privato e nella memoria.
+</Warning>
+
+## Il vincolo, in una riga
+
+Per i clienti serviti tramite il nostro gateway, l'agente **legge** le prenotazioni ma il
+workspace **non ha l'oggetto `Reservation` popolato**. Da lì discende tutto il resto.
+
+Il motivo è del prodotto, non nostro: l'oggetto `Reservation` di Conduit accetta scritture da
+**un solo scrittore**, il sync PMS interno, e il connettore nativo **non è deviabile** su un
+endpoint diverso. Confermato dal supporto Conduit.
+
+## Cosa funziona e cosa no
+
+| | Con connettore nativo | Con il nostro gateway |
+|---|---|---|
+| Stato prenotazione, disponibilità, istruzioni check-in | ✅ | ✅ **più fresco** (lettura live, non sync) |
+| Ospiti in casa, portali incompleti | ✅ | ✅ |
+| Oggetto `Reservation` nel workspace | ✅ | ❌ |
+| Calendario nativo | ✅ | ❌ vuoto e inaffidabile |
+| Trigger `RESERVATION_NEW` / `RESERVATION_MODIFIED` | ✅ | ❌ |
+| Tool interni Conduit sulle prenotazioni | ✅ | ❌ restituiscono vuoto |
+
+<Note>
+Sulla **freschezza del dato** il gateway è migliore del connettore nativo: interroga il
+gestionale al momento, quindi non esiste la finestra di disallineamento del sync.
+</Note>
+
+## Quanto si recupera, realisticamente
+
+- **Conversazione con l'ospite** — quello che il cliente percepisce: **85-90%**.
+- **Automazione di piattaforma** — tutto ciò che parte da un evento prenotazione: **40-50%** senza interventi.
+
+I due gradini qui sotto portano l'automazione **oltre il 70%**. Sono entrambi lavoro nostro sul
+gateway: non richiedono nulla al fornitore del gestionale né a Conduit.
+
+## Gradino 1 — trigger `cron`
+
+L'agente si sveglia a intervalli e chiede al gateway cosa è cambiato. Copre benvenuto,
+promemoria di check-in, solleciti sul portale.
+
+**Da costruire:** un endpoint sul gateway che risponda "prenotazioni nuove o modificate da X".
+Il gestionale non espone webhook sulle prenotazioni né un parametro `modified_since`, quindi il
+polling a finestra piena è obbligato. Il delta si calcola dalla nostra parte.
+
+**Limite:** latenza pari all'intervallo del cron. Accettabile quasi sempre, non per l'istantaneo.
+
+## Gradino 2 — attributi del contatto (consigliato)
+
+Tra i tipi di evento che fanno scattare un agente Conduit ci sono **`CONTACT_NEW`** e
+**`CONTACT_ATTRIBUTE_UPDATED`**, e i campi custom del contatto **si scrivono via API**.
+
+Quindi: il gateway rileva la prenotazione nuova o modificata, scrive i dati sul contatto
+(check-in, check-out, alloggio, codice, stato del portale) e **quella scrittura fa scattare
+l'agente**. Diventa event-driven davvero, quasi istantaneo, senza l'oggetto `Reservation`.
+
+Effetto collaterale positivo: l'agente si trova i dati già nel contesto e non deve chiamare un
+tool per averli — meno latenza e meno occasioni di sbagliare.
+
+## Cosa è stato scartato
+
+**PMS ponte** (specchiare le prenotazioni dentro un secondo gestionale che Conduit legge
+nativamente): tecnicamente porterebbe al 90-95%, ma comporta un abbonamento per cliente, un
+motore di sincronizzazione da mantenere e il rischio di divergenza fra i due sistemi.
+**Decisione 31/08/2026: non si fa.** Per i clienti che richiedono il livello nativo pieno si
+valuta il passaggio a un gestionale che Conduit integra nativamente.
+
+## I workflow standard, riscritti per questo scenario
+
+I workflow che usiamo per tutti gli altri clienti partono da un evento sulla prenotazione. Qui
+quell'evento non esiste, quindi vanno ri-agganciati a un'altra sorgente. **Il contenuto non
+cambia: cambia solo cosa li fa partire.**
+
+<Note>
+**Tre di questi sette funzionano già oggi**, con i tool che i workspace hanno di serie. Il lavoro
+vero da fare è solo il rilevamento di "nuova o modificata": un endpoint sul gateway più la
+scrittura sul contatto. Da lì in giù è configurazione, non sviluppo.
+</Note>
+
+| Workflow | Come parte nativamente | Come lo facciamo partire qui | Serve dal gateway |
+|---|---|---|---|
+| **Benvenuto post-prenotazione** | evento prenotazione nuova | scrittura sul contatto → `CONTACT_NEW` / `CONTACT_ATTRIBUTE_UPDATED` | 🔨 endpoint "nuove da X" + scrittura contatto |
+| **Sollecito portale check-in** | scarto dalla data di arrivo | `cron` giornaliero | ✅ già disponibile (portali incompleti) |
+| **Istruzioni di accesso il giorno dell'arrivo** | scarto = 0 | `cron` mattutino | ✅ già disponibile (istruzioni + arrivi) |
+| **Prenotazione modificata o cancellata** | evento di modifica | differenza sugli attributi → `CONTACT_ATTRIBUTE_UPDATED` | 🔨 delta su date e alloggio |
+| **Check a metà soggiorno** | scarto dall'arrivo | `cron` giornaliero | ✅ già disponibile (ospiti in casa) |
+| **Check-out e richiesta recensione** | scarto dalla partenza | `cron` mattutino | 🔨 elenco partenze del giorno |
+| **Upsell early / late check-out** | scarto dall'arrivo | `cron`, oppure attributo del contatto | ✅ disponibilità già disponibile, listino da definire |
+
+### Le tre regole per riscriverli
+
+1. **Un solo punto di verità sul "quando".** Nel mondo nativo la data di arrivo la tiene Conduit.
+   Qui la tiene il contatto: il gateway la scrive, i workflow la leggono da lì. Non farla
+   ricalcolare a ogni workflow con una chiamata a un tool — è lento e diverge.
+2. **Idempotenza obbligatoria.** Un `cron` rigira. Ogni workflow deve poter constatare di aver
+   già agito su quella prenotazione e fermarsi, altrimenti l'ospite riceve il benvenuto tre
+   volte. Il marcatore sta su un attributo del contatto.
+3. **Silenzio in caso di dubbio.** Se il gateway non risponde, il workflow **non manda niente** e
+   riprova al giro dopo. Non deve mai dedurre dallo stato vuoto: lo stato vuoto qui è la norma,
+   non un'informazione. Vale la stessa logica del wrapper anti-errore sui tool.
+
+### Ordine di costruzione consigliato
+
+Prima i quattro che girano su `cron` e usano tool esistenti: si configurano subito, coprono
+promemoria e solleciti, e sono la parte che il cliente nota di più. Poi l'endpoint delta e la
+scrittura sul contatto, che sbloccano benvenuto e modifiche. Solo alla fine gli upsell, che
+richiedono anche una decisione commerciale sul listino.
+
+## Regole operative
+
+<Warning>
+**Il filtro IP sulla chiave partner non si spegne.** Non è la causa dei blocchi — un cliente
+fermo lo era per credenziali rifiutate, non per l'IP — e abbiamo dichiarato per iscritto al
+fornitore che le chiamate partono solo dalla nostra infrastruttura autorizzata.
+</Warning>
+
+1. **Ogni custom tool deve avere il wrapper anti-errore.** Senza, su un errore transitorio
+   l'agente afferma cose false all'ospite: "non c'è nessuno in casa", "le date sono libere".
+   Il wrapper distingue l'errore transitorio, dice all'agente di **non dedurre**, di **non usare
+   il calendario nativo** e di riprovare con lo **stesso** identificatore.
+   Vedi [Silent & wrong](/internal/troubleshooting/silent-wrong).
+2. **Le credenziali del gestionale non entrano mai in un workspace Conduit.** I tool portano solo
+   un token opaco verso il nostro endpoint.
+3. **Specchio a senso unico.** Se un giorno si mirrorano dati, le letture passano dal ponte e le
+   **azioni** continuano ad andare sul gestionale via custom tool. Scrivere in due direzioni
+   produce prenotazioni fantasma.
+
+## Diagnosi rapida
+
+L'ordine dei controlli lato gestionale è **IP → chiave/struttura → credenziali**. L'errore dice
+a che punto ti sei fermato:
+
+| Sintomo | Significato |
+|---|---|
+| Errore che cita l'indirizzo chiamante | filtro IP: la chiamata non è partita da dove doveva |
+| "Invalid combination" chiave/struttura | coppia non abbinata, **oppure** accesso disattivato per inattività |
+| "Authentication failed" | IP e chiave **passati**: sono utenza e password a essere sbagliate |
+| Messaggio di logica applicativa | tutto a posto: sei arrivato in fondo |
+
+Un accesso resta disattivato dopo un periodo di inattività per singola struttura: il
+rivalidatore giornaliero lo previene per i clienti censiti. Chi non è in quella tabella muore in
+silenzio.
+
+## Correlate
+
+- [Gateway multi-tenant](/internal/conduit-knowhow/gateway-multi-tenant)
+- [Pattern custom tools](/internal/conduit-knowhow/custom-tools-pattern)
+- [Diagnosi custom tools](/internal/troubleshooting/diagnosi-custom-tools)
+- [Stato flotta](/internal/troubleshooting/stato-flotta)
