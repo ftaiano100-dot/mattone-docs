@@ -57,6 +57,16 @@ Procedura testata su **Cosmica → Soliséra → The Concept Studio (Andrés) �
 </Steps>
 
 ## Sync listings + mapping registry
+
+<Note>
+**Due strade compatibili — nessun cambio di processo, solo scelta di scoping.**
+
+- **Strada A — KB per-listing (Cosmica, Andrés)**: Il cliente ha listings sincronizzati su Conduit (via connector Airbnb/Booking o già presenti manualmente). Si popola `apartment_registry` con `conduit_listing_id`, la KB Bridge scopa le note per listing (isolamento perfetto tra apt). **Segui gli step 8-13 come scritti.**
+- **Strada B — Custom tools only (HostManager, workspace senza listings)**: Il cliente ha 0 listings su Conduit e la strategia è **6 custom tools Kross + skill abbinate** (regola d'oro Mattone, vedi [Custom Tools](/integrazioni/conduit/custom-tools)). L'agent risponde live via API Kross per domande dinamiche (disponibilità, portale, in-house guests). La KB statica (WiFi/regole/come raggiungere) è opzionale e, se serve, si carica manualmente su Conduit come directory globali — **saltare step 8-13**, andare direttamente al § "Canali + finalizzazione".
+
+**Come capire quale strada per il cliente attuale**: `GET /v1/listings?workspace_id=X` restituisce >0 listings → Strada A; restituisce 0 e non è colpa di Kross auth → Strada B.
+</Note>
+
 <Steps>
   <Step title="8. Verifica listings sync">
     `GET /v1/listings?workspace_id=X` deve tornare **N listings = N appartamenti attivi Kross**. Se 0 → Kross auth failed o partner non collegato. Sblocca prima.
