@@ -1,0 +1,245 @@
+---
+title: "Customer Journey + Cadenze Delivery"
+sidebarTitle: "Journey & Cadenze"
+description: "Il percorso end-to-end di un cliente Mattone dal contratto firmato alla steady state. Chi fa cosa, con che SLA, quando escalation a Nick."
+---
+
+Questa pagina è **la fonte di verità operativa** del delivery Mattone. Il team la segue come SOP: ogni cliente passa da queste fasi, con questi owner, con queste cadenze. Nick decide solo quando arriva un go/no-go.
+
+<Warning>
+**Principio di delega — non negoziabile.**
+Il team esegue TUTTO seguendo la procedura. A Nick arriva SOLO **go/no-go** (vedi § Escalation Matrix). Tutto il resto — chi contattare, quando, come — lo decide il team senza chiedere.
+</Warning>
+
+## Fase 1 — Entry (giorno 0, cliente appena firmato)
+
+<Steps>
+  <Step title="1. Contratto firmato + pagamento ricevuto">
+    **Owner:** Amministrazione (verifica Stripe/bonifico).
+    **Output:** riga cliente su CRM/Notion con `status: signed` + link contratto.
+  </Step>
+  <Step title="2. Aggiunto al gruppo WhatsApp cliente">
+    **Owner:** Delivery.
+    **Output:** cliente dentro il gruppo WA nominale (uno per cliente + team).
+  </Step>
+  <Step title="3. Consulenza kick-off con Francesco — FISSATA SUBITO">
+    **Owner:** Delivery.
+    **Come:** manda link calendario di Francesco al cliente; lui sceglie lo slot.
+    **SLA:** consulenza fissata entro **24h** dalla firma. Se il cliente non risponde in 48h → escalation al PM cliente (vedi Escalation Matrix).
+    **Output:** evento in calendario Francesco + notifica al cliente.
+  </Step>
+  <Step title="4. Questionario onboarding compilato">
+    **Owner:** Delivery.
+    **Come:** manda link questionario appena dopo la conferma kick-off.
+    **SLA:** compilato **prima** della kick-off con Francesco.
+  </Step>
+  <Step title="5. Consulenza kick-off con Francesco (avviene)">
+    **Owner:** Francesco.
+    **Output:** report call + prossimi step tecnici concordati.
+  </Step>
+  <Step title="6. Consulenza cold onboarding con Mattia">
+    **Owner:** Mattia.
+    **SLA:** fissata entro 48h dalla kick-off Francesco.
+    **Output:** cliente ha capito la roadmap tecnica.
+  </Step>
+  <Step title="7. Accesso piattaforma + walkthrough">
+    **Owner:** Delivery.
+    **Come:** credenziali app.mattone.co, video/live walkthrough di 20 min sulla sidebar.
+    **Output:** cliente logga, vede tools abilitati, sa cosa cliccare.
+  </Step>
+</Steps>
+
+## Fase 2 — Attivazione marketing (giorno +1 dopo Francesco, se il cliente ha Marketing)
+
+<Steps>
+  <Step title="8. Handoff a Ole">
+    **Owner:** Delivery → Ole.
+    **Come:** Delivery scrive a Ole nel canale marketing con: nome cliente, tipo (agenzia/host), URL sito, email login GHL.
+  </Step>
+  <Step title="9. Questionario marketing">
+    **Owner:** Ole.
+    **Come:** Ole manda link questionario marketing al cliente + spiega cosa serve.
+  </Step>
+  <Step title="10. Setup GHL + PIT + landing + ads">
+    **Owner:** Ole.
+    **Procedura:** [Marketing Onboarding](/delivery/marketing-onboarding) + [Setup landing agenzia](/integrazioni/ghl/setup-agenzia-landing).
+    **SLA:** completato entro **5 gg lavorativi** dal questionario compilato.
+  </Step>
+  <Step title="11. Credenziali consegnate + annunci partono">
+    **Owner:** Ole.
+    **Output:** cliente ha login GHL, landing live, primo set di ads attivi. Messaggio "TUTTO LIVE" nel gruppo WA cliente.
+  </Step>
+</Steps>
+
+## Fase 3 — Attivazione operations (in parallelo se il cliente ha Kross/Conduit)
+
+<Steps>
+  <Step title="12. Setup Kross + Conduit end-to-end">
+    **Owner:** Delivery tecnico.
+    **Procedura:** [Onboarding Conduit Cliente](/delivery/onboarding-conduit-cliente) — segui i 17 step.
+    **SLA:** setup Conduit live entro **7 gg lavorativi** da Notion + Kross valid.
+    **Output:** Copilot risponde con KB per-listing sui suoi appartamenti.
+  </Step>
+  <Step title="13. Messaggio ufficiale al cliente 'sei live'">
+    **Owner:** Delivery.
+    **Come:** template branded Mattone (mai email raw). Include: cosa è live, come loggarsi, primo test suggerito, prossima call di verifica.
+  </Step>
+</Steps>
+
+## Fase 4 — Steady state (dopo live)
+
+### Cadenza ricorrenti
+| Ritmo | Cosa | Owner | Note |
+|---|---|---|---|
+| **Ogni giorno** | Check messaggi WA clienti attivi ("tutto ok? siete fermi?") | Delivery | Template in § Templates |
+| **Ogni lunedì** | Weekly review delivery interno (30 min) | Nick + Delivery | Stato clienti + blocker |
+| **Ogni settimana** | Consulenza gruppo con Mattia | Mattia | Cliente sceglie slot |
+| **Ogni 2 settimane** | Consulenza 1:1 con Mattia | Mattia | Su richiesta cliente o proattiva se cliente fermo |
+| **Ogni settimana** | Consulenza marketing/vendita | Ole + team sales | Solo clienti con Marketing attivo |
+| **Ogni 2 settimane** | Commercialista | Commercialista esterno | Booking automatico calendario |
+| **Ogni mese** | Report metriche cliente | Delivery | Vedi [Metriche & Numeri](/delivery/metriche-numeri) |
+
+### Monitoring cliente
+- Ogni cliente ha un **PM assegnato** (persona di Delivery) — un solo punto di contatto interno.
+- Ogni cliente ha uno **status** aggiornato ogni venerdì: `ok / bloccato / a rischio / churn` + causa in una riga.
+- Cliente fermo **>3 gg** → PM lo chiama (non messaggio). Se non risponde in 5 gg → escalation Nick.
+
+## Escalation Matrix — quando serve Nick (go/no-go)
+
+Il team decide TUTTO tranne questi 6 casi. Nick riceve una richiesta con **una riga di contesto + opzioni + raccomandazione team**. Nick risponde solo con go / no-go / eventuale contro-proposta di 1 riga.
+
+| Caso | Chi decide | Perché |
+|---|---|---|
+| Modifica contratto (prezzo, scope, durata) | **Nick (go/no-go)** | Cambia P&L cliente |
+| Deroga policy (sconto, rimborso, refund) | **Nick (go/no-go)** | Precedente |
+| Escalation cliente arrabbiato / minaccia refund | **Nick (go/no-go)** | Rischio brand |
+| Spesa fuori budget (>500€) | **Nick (go/no-go)** | Cash |
+| Blocco cliente (Charles Smith style) | **Nick (go/no-go)** | Reputazionale |
+| Nuova features / promesse "custom" al cliente | **Nick (go/no-go)** | Debito futuro |
+| Tutto il resto (call, config, patch, tech debug, comunicazione operativa) | **Team** | Delega totale |
+
+<Note>
+Il team NON scrive a Nick "cosa faccio con X?" — scrive "**su X propongo Y perché Z. Go/no-go?**". Se non c'è una proposta, la richiesta viene rimandata al team.
+</Note>
+
+## Templates messaggi standard
+
+### Check-in giornaliero cliente
+```
+Ciao [NOME]! Come procede?
+
+Volevo fare un check veloce — è tutto ok da parte vostra o siete
+fermi su qualcosa dove vi serve una mano?
+
+In parallelo stiamo mettendo giù la programmazione delle prossime
+group call, così ve le mando appena definite.
+
+Fammi sapere!
+```
+
+### Cliente non risponde da >3 gg (call diretta, non messaggio)
+```
+Ciao [NOME], provo a chiamarti al numero X. Se non riesco a raggiungerti
+lasci un messaggio vocale e ti mando il calendario per uno slot rapido.
+```
+
+### Escalation richiesta a Nick (interno)
+```
+[CLIENTE X] – [SITUAZIONE 1 riga]
+Opzioni: A) …  B) …  C) …
+Team propone: [A/B/C] perché [motivo 1 riga].
+Go/no-go?
+```
+
+### Chiusura call di follow-up
+```
+Ciao [NOME], grazie per la call di oggi. Riassunto veloce:
+- Concordato: [X]
+- Next step nostro: [Y] entro [DATA]
+- Next step tuo: [Z] entro [DATA]
+
+Ci sentiamo [DATA/EVENTO].
+```
+
+---
+
+## Come condividiamo i processi con il team
+
+Nick deve poter dire una volta "leggete la doc" invece di spiegare a voce ogni volta. Ecco il sistema.
+
+<Steps>
+  <Step title="1. Fonte di verità unica → mattone-docs">
+    Tutte le procedure sono **QUI** su `docs.mattone.co` (Mintlify).
+    Nessuna procedura vive in Notion privato, WhatsApp, o mail. Se non è nei docs, **non esiste**.
+  </Step>
+  <Step title="2. Onboarding nuovo membro team (giorno 1)">
+    Prima giornata di lavoro = **leggere tutta la sezione Delivery**, in ordine:
+    - `/delivery/flusso-completo` (vista d'insieme)
+    - `/delivery/journey-e-cadenze` (QUESTA pagina)
+    - `/delivery/onboarding-conduit-cliente` (setup tecnico)
+    - `/delivery/marketing-onboarding` (setup marketing)
+    - `/delivery/problemi-ricorrenti-conduit` (troubleshooting)
+    - `/delivery/personalizzazione-studente` (config cliente)
+    - `/delivery/monitorare-studenti` (KPI post-live)
+    - `/delivery/supportare-studenti` (gestione support)
+    - `/delivery/mancato-pagamento` (dunning)
+
+    Alla fine della lettura: **quiz orale** con il PM del team per verificare che abbia capito. Se ok → può iniziare a lavorare su cliente reale in shadowing.
+  </Step>
+  <Step title="3. Weekly kick-off lunedì (30 min)">
+    Lunedì 09:30 tutti in call. Ordine del giorno:
+    - Stato clienti attivi (semaforo: ok/rischio/bloccato)
+    - Blocker della settimana + owner
+    - Aggiornamenti procedure (se un doc è cambiato: link + 1 riga di cosa cambia)
+    - Cadenze consulenze della settimana
+
+    Nick partecipa solo se ci sono go/no-go da decidere insieme (altrimenti riceve minutes scritti).
+  </Step>
+  <Step title="4. Canale Slack/WA #delivery">
+    Un unico canale interno. Le regole:
+    - Ogni cliente ha il suo thread
+    - Update procedure: sempre con **link al doc aggiornato**, mai spiegazione a voce
+    - Escalation a Nick: solo nel formato "cliente – opzioni – proposta – go/no-go?"
+  </Step>
+  <Step title="5. Aggiornamento procedure — chi e quando">
+    Chiunque nel team può proporre una modifica a un doc: apre PR su github.com/ftaiano100-dot/mattone-docs.
+    Chi lo approva:
+    - Modifica **operativa** (SLA, template, un caso troubleshooting): PM Delivery approva
+    - Modifica **strutturale** (nuovo processo, nuovo owner, nuova fase): Nick approva
+
+    Deploy: automatico via Mintlify appena mergiato in `main`.
+  </Step>
+  <Step title="6. Rituale mensile — retrospettiva SOP">
+    Primo lunedì del mese, 60 min. Team + Nick.
+    Cosa: **guardiamo i doc e chiediamo — cosa non è più vero? cosa manca? cosa è cambiato nella realtà ma non nel doc?**
+    Output: lista di modifiche → PR entro la settimana.
+  </Step>
+  <Step title="7. Prompt Claude Code — usa la doc, non la memoria">
+    Ogni membro tech del team ha Claude Code configurato con MCP a `mattone-docs`.
+    Prompt tipo per nuovo cliente:
+    ```
+    Nuovo cliente [NOME], [N] apts, [profilo]. Segui /delivery/journey-e-cadenze
+    fase per fase. Chiedimi go/no-go solo se rientra nell'Escalation Matrix.
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+**Come Nick condivide questa doc con il team la prima volta**
+
+1. Fissa 1 call di 45 min con TUTTO il team delivery
+2. Manda il link a questa pagina 24h prima → tutti la leggono
+3. In call: scorri la pagina insieme, ognuno commenta cosa non torna nella loro realtà quotidiana
+4. Modifiche emerse → PR entro la sera stessa
+5. Da lunedì successivo: la doc è **legge**. Se qualcuno chiede a voce "come si fa X", la risposta è "leggi la sezione Y dei docs, se non è chiaro apri PR".
+</Tip>
+
+## Riferimenti
+<CardGroup cols={2}>
+  <Card title="Onboarding Conduit cliente" icon="server" href="/delivery/onboarding-conduit-cliente">Setup tecnico end-to-end</Card>
+  <Card title="Marketing onboarding" icon="megaphone" href="/delivery/marketing-onboarding">Fase Ole GHL</Card>
+  <Card title="Flusso completo" icon="route" href="/delivery/flusso-completo">Vista d'insieme (3 fasi alto livello)</Card>
+  <Card title="Personalizzazione studente" icon="user-gear" href="/delivery/personalizzazione-studente">Config per cliente</Card>
+  <Card title="Monitorare studenti" icon="chart-line" href="/delivery/monitorare-studenti">KPI post-live</Card>
+  <Card title="Mancato pagamento" icon="triangle-exclamation" href="/delivery/mancato-pagamento">Dunning</Card>
+</CardGroup>
