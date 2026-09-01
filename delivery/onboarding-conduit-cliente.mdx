@@ -62,7 +62,7 @@ Procedura testata su **Cosmica → Soliséra → The Concept Studio (Andrés) �
 **Due strade compatibili — nessun cambio di processo, solo scelta di scoping.**
 
 - **Strada A — KB per-listing (Cosmica, Andrés)**: Il cliente ha listings sincronizzati su Conduit (via connector Airbnb/Booking o già presenti manualmente). Si popola `apartment_registry` con `conduit_listing_id`, la KB Bridge scopa le note per listing (isolamento perfetto tra apt). **Segui gli step 8-13 come scritti.**
-- **Strada B — Custom tools only (HostManager, workspace senza listings)**: Il cliente ha 0 listings su Conduit e la strategia è **6 custom tools Kross + skill abbinate** (regola d'oro Mattone, vedi [Custom Tools](/integrazioni/conduit/custom-tools)). L'agent risponde live via API Kross per domande dinamiche (disponibilità, portale, in-house guests). La KB statica (WiFi/regole/come raggiungere) è opzionale e, se serve, si carica manualmente su Conduit come directory globali — **saltare step 8-13**, andare direttamente al § "Canali + finalizzazione".
+- **Strada B — Custom tools only (HostManager, Usai/Domos Sardinia, workspace senza listings)**: Il cliente ha 0 listings su Conduit e la strategia è **6 custom tools Kross + skill abbinate** (regola d'oro Mattone, vedi [Custom Tools](/integrazioni/conduit/custom-tools)). L'agent risponde live via API Kross per domande dinamiche (disponibilità, portale, in-house guests). La KB statica (WiFi/regole/come raggiungere) è opzionale e, se serve, si carica manualmente su Conduit come directory globali — **saltare step 8-13**, andare direttamente al § "Canali + finalizzazione".
 
 **Come capire quale strada per il cliente attuale**: `GET /v1/listings?workspace_id=X` restituisce >0 listings → Strada A; restituisce 0 e non è colpa di Kross auth → Strada B.
 </Note>
@@ -145,6 +145,20 @@ Fix: verifica `apartment_registry.conduit_listing_id` per ogni apt che dovrebbe 
 ### Ticket Conduit "parameters[].description Required"
 Sintomo: creazione custom tool fallisce con Zod validation.
 Fix: aggiungi `description: string` per ogni parametro. Se usi la route Mattone, il catalog li genera; se chiami direttamente Conduit API, aggiungi description auto-generate nel payload (vedi `andres-provision-conduit.mjs`).
+
+### Cliente Strada B — setup rapido (esempio Usai/Domos Sardinia)
+Sintomo/scenario: cliente con workspace Conduit già configurato (agent, skill) ma **0 custom tools Kross** e 0 listings su Conduit.
+
+Fix (~10 min end-to-end):
+1. **Row `conduit_workspace_config`** su Supabase (mapping ws → student) — vedi step 2 della procedura.
+2. **Aggiungi email cliente a `BETA_EMAILS`** (branch → PR → merge). Non serve se non useremo mai KB Bridge; utile per abilitare il tool in futuro.
+3. **Provisiona i 6 custom tools Kross** con `enable_globally=true` — clona lo script `andres-provision-conduit.mjs`, sostituisci `WS`, `AGENT_ID`, `STUDENT` (il `STUDENT` è l'`id` della riga `pms_integrations` di provider `krossbooking` del cliente, NON lo `student_id`).
+4. **Verifica skill esistenti sull'agent Guest** — se mancano `booking-extension-assistant`, `check-in-access-manager`, `reservation-status-verification-procedure` (le 3 skill Cosmica minime che coprono gran parte dei tool Kross), aggiungile.
+5. **Test**: apri conversazione test → chiedi "sei disponibile dal 15 al 20 novembre?" → l'agent deve chiamare `check-availability` (visibile nei log Conduit).
+
+<Note>
+Sulla Strada B **non serve toccare `apartment_registry` né lanciare KB Bridge**. La KB statica (WiFi/regole) resta nel dominio del cliente: se decide di caricarla, lo fa manualmente o via Notion bridge quando disponibile.
+</Note>
 
 <Tip>
 **▷ Prompt Claude Code: nuovo cliente Conduit da zero**  ·  incolla in Claude Code:
