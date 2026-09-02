@@ -62,6 +62,7 @@
             "group": "Delivery a volumi",
             "pages": [
               "delivery/flusso-completo",
+              "delivery/organigramma-e-ruoli",
               "delivery/journey-e-cadenze",
               "delivery/onboarding-conduit-cliente",
               "delivery/monitorare-studenti",
