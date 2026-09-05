@@ -12,7 +12,9 @@ Oggi il tool parla **solo con KrossBooking**. Non c'è un adattatore per Hostawa
 
 Dalla **Mattone Platform**, non da un form nel tool. La platform conserva per ogni studente la terna Kross (hotel, utente, password) usata anche da Conduit; il tool la chiede alla platform con una firma fra servizi e la tiene in memoria 5 minuti. Lo studente **non inserisce nulla** nel tool: se Kross è collegato sulla platform, funziona anche qui.
 
-Se la platform non trova credenziali per il tenant, il tool prova quelle **salvate localmente** nella pagina Integrazioni (è il metodo vecchio, usato da Cosmica). Se non ci sono nemmeno quelle, la sincronizzazione risponde «non collegato».
+**È il flusso attivo in produzione dal 5 settembre 2026**, da entrambi i lati: il tool in produzione espone la lettura dello stato credenziali e la platform risponde all'indirizzo che il tool interroga. Se una sincronizzazione dice «non collegato», il posto dove guardare è il collegamento KrossBooking sulla platform, non il tool.
+
+Resta un **ripiego**: una credenziale salvata direttamente nel database del tool per un singolo tenant (oggi è il caso di Cosmica), usata solo quando la platform non ne ha una utilizzabile. **Non c'è più un form nel tool per inserirla**: la si imposta solo dal team Mattone. Se non c'è né l'una né l'altra, la sincronizzazione risponde «non collegato» e rimanda a collegare KrossBooking sulla platform.
 
 <Warning>
 Le chiamate a Kross partono dall'indirizzo del server del tool, che deve essere nella **lista IP autorizzata** della chiave partner Mattone. Il filtro IP non si spegne mai: vedi [KrossBooking, filtro IP e trappole](/integrazioni/kross/rate-limit-trappole). Un errore HTTP 400 con «not allowed» è il filtro IP, non le credenziali.

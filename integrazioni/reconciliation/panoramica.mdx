@@ -45,5 +45,7 @@ description: "Il tool di riconciliazione bancaria di Mattone: confronta i movime
 </CardGroup>
 
 <Note>
-**Stato al 5 settembre 2026.** Il codice con isolamento per tenant, credenziali Kross prese dalla Mattone Platform e guardrail sul database è su `main` del repo, ma in produzione gira ancora la versione precedente. Il passaggio è descritto in [Regole per chi tocca il codice](/integrazioni/reconciliation/regole-codice-deploy). Finché non è fatto, uno studente può entrare ma le prenotazioni Kross vanno caricate con le credenziali inserite a mano nel tool.
+**Stato al 5 settembre 2026: il passaggio è fatto.** Dalla sera del 5 settembre 2026 il tool in produzione gira il codice di `main` e usa il **database definitivo su Supabase**. Sono quindi attivi: l'isolamento per tenant, le credenziali KrossBooking prese dalla Mattone Platform (lo studente non le inserisce più nel tool) e i controlli che impediscono al backend di partire su un database diverso da quello previsto.
+
+Il database precedente resta acceso, **inutilizzato, solo come piano di rientro fino al 19 settembre 2026**: dopo quella data viene spento e le sue credenziali ruotate. Fino ad allora nessuno ci scrive: se qualcosa risulta scritto lì, è un errore da segnalare. Dettagli operativi in [Regole per chi tocca il codice](/integrazioni/reconciliation/regole-codice-deploy).
 </Note>

@@ -72,5 +72,9 @@ Fino ad agosto 2026 la produzione era **un commit che non esisteva su GitHub pi�
 - Il valore di default di `DB_MIGRATIONS_RUN` è `false` nel compose ma alcune note nel repo dicono ancora `true`.
 
 <Note>
-Stato al 5 settembre 2026: `main` contiene guardrail, isolamento tenant e credenziali Kross dalla platform, ma il server gira ancora il codice precedente sul database DigitalOcean. Il passaggio prevede, in ordine: ripristino dei dati DigitalOcean nel database Supabase, server allineato a `main`, switch del `.env` e riavvio con la verifica sopra.
+**Stato al 5 settembre 2026 — passaggio completato.** La sera del 5 settembre 2026 il server è stato allineato a `main` ed è stato fatto lo **switch al database canonico su Supabase**. Verificato subito dopo: preflight tutto verde, `/api/health` con `db.canonical: true` anche chiamandolo dall'esterno, e i conteggi delle tabelle principali uguali a quelli del database precedente.
+
+Il **database precedente su DigitalOcean resta acceso solo come piano di rientro fino al 19 settembre 2026**, senza che nessuno lo legga o ci scriva; dopo quella data viene spento e le credenziali (utente dell'app, JWT, segreto HMAC) vengono ruotate. Chi dovesse davvero rientrare su quel database controlli prima che nel file d'ambiente di rientro `DB_MIGRATIONS_RUN` sia `false`: nella copia salvata era `true`, e al riavvio farebbe partire le migration da solo.
+
+Da qui in poi vale la regola in cima: `main` **è** la produzione, e la verità sullo stato del server è `curl /api/health`, non questa pagina.
 </Note>
