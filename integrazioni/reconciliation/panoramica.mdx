@@ -1,0 +1,49 @@
+---
+title: "Reconciliation: panoramica"
+sidebarTitle: "Panoramica"
+description: "Il tool di riconciliazione bancaria di Mattone: confronta i movimenti del conto con gli incassi Booking, Airbnb e Stripe, e produce la prima nota per il commercialista."
+---
+
+**Reconciliation** (`reconciliation.mattone.co`, si entra da `app.mattone.co`) è il tool che confronta i **movimenti del conto bancario** con gli **incassi delle prenotazioni** (Booking, Airbnb, Stripe) e ti dice cosa torna e cosa no. Alla fine esporta la **prima nota** in Excel, già nel formato che il commercialista si aspetta.
+
+È lo stesso tool che Cosmica usa ogni mese per i propri conti. Ogni studente ha il proprio spazio separato (**tenant**): i dati di uno non si mescolano mai con quelli di un altro.
+
+## Cosa fa
+
+- Importa i **movimenti bancari** da un file Excel o CSV esportato dalla banca, oppure direttamente da **Revolut Business**.
+- Importa le **prenotazioni** dal PMS (oggi solo **KrossBooking**).
+- Abbina ogni **incasso** Booking, Airbnb o Stripe arrivato sul conto alle prenotazioni che lo compongono. Un bonifico Booking di 1.240 € può essere la somma di quattro soggiorni: il tool li trova.
+- Dà a ogni movimento uno stato: **Matched** (torna al centesimo), **Partial** (torna quasi, differenza sopra i 5 centesimi), **Unmatched** (non trovato), **Ignored** (escluso a mano).
+- Esporta la **prima nota** mensile o annuale.
+
+## Cosa NON fa
+
+- **Non tocca le uscite.** Guarda solo i soldi in entrata: pulizie pagate, fornitori, canoni restano fuori per costruzione.
+- **Non riconcilia gli incassi fuori canale**: bonifici diretti di ospiti, giroconti, fatture di consulenza. Li vedi fra i movimenti, ma non vengono abbinati.
+- **Non legge PDF** dell'estratto conto: serve un export Excel o CSV. Vedi [Banche e file](/integrazioni/reconciliation/banche-e-csv).
+- **Non supporta altri PMS** oltre a KrossBooking. Hostaway, Smoobu e simili non sono collegabili oggi.
+
+## Il giro mensile, in quattro passi
+
+<Steps>
+  <Step title="Entra dal tuo account Mattone">Da `app.mattone.co` apri **Reconciliation**: entri nel tuo tenant senza altra password. Vedi [Accesso](/integrazioni/reconciliation/accesso).</Step>
+  <Step title="Porta dentro i movimenti bancari">Carica il file della banca dal wizard **Import Mensile**, oppure sincronizza da Revolut Business. Vedi [Banche e file](/integrazioni/reconciliation/banche-e-csv) e [Revolut Business](/integrazioni/reconciliation/revolut).</Step>
+  <Step title="Porta dentro le prenotazioni">Lancia la sincronizzazione KrossBooking sul periodo. Vedi [PMS e abbinamento](/integrazioni/reconciliation/pms-kross).</Step>
+  <Step title="Riconcilia ed esporta">Nella pagina **Riconciliazione** controlla i Partial e gli Unmatched, poi esporta la prima nota. Vedi [Prima nota](/integrazioni/reconciliation/prima-nota).</Step>
+</Steps>
+
+## Le pagine di questa sezione
+
+<CardGroup cols={2}>
+  <Card title="Accesso e tenant" icon="right-to-bracket" href="/integrazioni/reconciliation/accesso">Come si entra, cos'è un tenant, cosa vede uno studente al primo accesso.</Card>
+  <Card title="Banche e file" icon="file-csv" href="/integrazioni/reconciliation/banche-e-csv">Formati accettati, banche già mappate, come si aggiunge una banca nuova.</Card>
+  <Card title="Revolut Business" icon="building-columns" href="/integrazioni/reconciliation/revolut">Il collegamento diretto al conto: come si attiva e i suoi limiti.</Card>
+  <Card title="PMS e abbinamento" icon="bed" href="/integrazioni/reconciliation/pms-kross">KrossBooking, le regole di abbinamento per canale, gli stati.</Card>
+  <Card title="Prima nota" icon="file-excel" href="/integrazioni/reconciliation/prima-nota">Cosa contiene l'export e come leggerlo.</Card>
+  <Card title="Regole per chi tocca il codice" icon="shield-halved" href="/integrazioni/reconciliation/regole-codice-deploy">Repo, database canonico, guardrail, deploy. Da leggere prima di qualunque modifica.</Card>
+  <Card title="Troubleshooting" icon="wrench" href="/integrazioni/reconciliation/troubleshooting">Sintomo, causa, soluzione.</Card>
+</CardGroup>
+
+<Note>
+**Stato al 5 settembre 2026.** Il codice con isolamento per tenant, credenziali Kross prese dalla Mattone Platform e guardrail sul database è su `main` del repo, ma in produzione gira ancora la versione precedente. Il passaggio è descritto in [Regole per chi tocca il codice](/integrazioni/reconciliation/regole-codice-deploy). Finché non è fatto, uno studente può entrare ma le prenotazioni Kross vanno caricate con le credenziali inserite a mano nel tool.
+</Note>

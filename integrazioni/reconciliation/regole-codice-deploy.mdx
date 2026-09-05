@@ -1,0 +1,76 @@
+---
+title: "Reconciliation: regole per chi tocca il codice"
+sidebarTitle: "Regole codice e deploy"
+description: "Repo canonico, database canonico, guardrail nel codice, procedura di deploy e le cose da non fare mai. Da leggere prima di qualunque modifica al tool."
+---
+
+Questa pagina è per chi **modifica o deploya** il tool: team Mattone, Mattia, qualunque agente. Uno studente non ha bisogno di leggerla.
+
+## Le tre fonti di verità
+
+| Cosa | Dov'è | Regola |
+|---|---|---|
+| **Codice** | repo GitHub privato `mattone-reconciliation`, branch `main` | `main` **è** la produzione. Niente codice che vive solo sul server |
+| **Database** | Postgres su Supabase, progetto dedicato al tool, utente dell'app `reconciliation_app` | è l'**unico** database. L'host canonico è scritto nel codice (`backend/src/common/db-guard.ts`) e il backend si rifiuta di partire su un altro |
+| **Server** | un droplet DigitalOcean con Docker (backend NestJS + frontend Vite dietro nginx) | si tocca solo per deployare da `main`, mai per scrivere codice |
+
+Le credenziali (database, JWT, segreto HMAC con la platform) stanno nel `.env` del server e nel Vault. **Mai nel repo, mai in questa documentazione.**
+
+## L'architettura non si sposta
+
+Il tool è diviso in tre pezzi che vivono in posti diversi: **backend e frontend sul droplet DigitalOcean**, **database su Supabase**, più un progetto Vercel che builda il frontend ma **non serve il sito pubblico**. Questa divisione fa venire la tentazione di «rifare il backend da un'altra parte» (su Vercel, su Supabase Edge, su un nuovo server) o di attaccare un secondo backend allo stesso database.
+
+**Non si fa.** Gli studenti e Cosmica usano il tool ogni mese: un secondo backend, o un database parallelo, li rompe in silenzio (dati scritti in due posti, tenant che divergono, riconciliazioni che spariscono). Finché una decisione esplicita di Mattone non dice altro:
+
+- il backend è **uno**, gira sul droplet, si aggiorna solo da `main` di questo repo;
+- il database è **uno**, quello canonico su Supabase, e nessun altro servizio ci scrive sopra;
+- il frontend pubblico è quello servito dal droplet: il build Vercel serve a verificare che compili, non a servire gli studenti;
+- chi vuole cambiare questa architettura apre una discussione prima, con piano di migrazione e rollback, non un branch.
+
+<Warning>
+Se trovi un backend, un cron o uno script che scrive nel database del tool da un posto diverso dal droplet, è un errore da segnalare subito, non una feature.
+</Warning>
+
+## Perché esistono queste regole
+
+Fino ad agosto 2026 la produzione era **un commit che non esisteva su GitHub più 46 file modificati a mano sul server**. Un `git reset --hard` avrebbe cancellato codice vivo. Sullo stesso server un database di sviluppo esposto su internet con password di default è stato bucato e usato per minare cripto dal 1 aprile al 5 settembre. Il tentativo di aprile di spostare il database su Supabase era fallito perché le tabelle avevano la protezione per riga accesa e l'utente dell'app non le vedeva: il tool sembrava vuoto ed è stato riportato indietro. Ogni regola qui sotto chiude uno di questi buchi.
+
+## I guardrail nel codice
+
+- **`db-guard.ts`**: all'avvio confronta l'host del database con quello canonico. Se è diverso, o è un host DigitalOcean, il processo **esce**. L'unico bypass è la variabile `RECON_ALLOW_NONCANONICAL_DB=I_UNDERSTAND_THE_RISK`, da dichiarare per iscritto quando la si usa.
+- **`scripts/preflight-deploy.sh`**: prima del deploy verifica albero git pulito, `HEAD` presente su `origin`, nessun certificato DigitalOcean, `tsc --noEmit` a zero errori. Se fallisce, non si deploya.
+- **`/api/health`**: risponde con `db.canonical` e un'impronta dell'host. Se nella risposta **manca** la chiave `db`, in produzione gira codice vecchio.
+- **`assertTenantId`**: ogni query dei repository lancia un errore se il tenant manca. Motivo: TypeORM ignora `tenantId: undefined` e restituirebbe i dati di **tutti** i tenant.
+- **Script da riga di comando**: richiedono `--tenant=<id>` o `TENANT_ID`, nessun default. Un audit esiste: `node backend/scripts/audit-tenant-scope.js`.
+- **`DB_MIGRATIONS_RUN`**: le migration **non** partono all'avvio; si applicano a mano via SQL dopo averle lette.
+
+## Come si fa una modifica
+
+<Steps>
+  <Step title="Branch e PR sul repo">Lavori in locale su un branch, apri una pull request verso `main`. Niente commit diretti su `main`, niente modifiche sul server.</Step>
+  <Step title="Typecheck e test in locale">`npm run typecheck` nel backend deve dare zero errori. Il preflight lo ricontrolla.</Step>
+  <Step title="Merge">La PR si mergia su `main`. Il frontend viene buildato anche da Vercel (utile per vedere che compila), ma il sito pubblico è servito dal server.</Step>
+  <Step title="Deploy sul server">Sul droplet, nella cartella del progetto: `git fetch`, `git checkout main`, `git pull --ff-only`, poi `./scripts/preflight-deploy.sh`. Solo se è verde: `docker-compose -f docker-compose.prod.yml build backend && docker-compose -f docker-compose.prod.yml up -d backend`. Per il frontend lo stesso con `frontend`.</Step>
+  <Step title="Verifica">`docker logs reconciliation-backend-prod` deve mostrare `DbGuard: DB canonico OK` e `SchemaGuard: all tables and columns OK`. Poi `curl -s https://reconciliation.mattone.co/api/health` con `db.canonical: true`. Infine login dalla platform e un conteggio noto (es. i movimenti di un mese del tenant Cosmica).</Step>
+</Steps>
+
+## Da non fare mai
+
+1. **Mai modificare file sul server** e lasciarli lì. Se una cosa funziona solo sul droplet, non esiste.
+2. **Mai `git reset --hard` sul server**: prima si controlla `git status`, se c'è roba non committata si porta su GitHub.
+3. **Mai far partire il backend su un database diverso da quello canonico.** Se ti serve davvero, il bypass va scritto nel messaggio della PR o nel report.
+4. **Mai `DB_MIGRATIONS_RUN=true`.** Le migration si leggono e si applicano a mano.
+5. **Mai una query o uno script senza tenant.**
+6. **Mai un database di sviluppo sul server di produzione**, e mai una porta database esposta su internet.
+7. **Mai riattivare la GitHub Action di deploy così com'è**: è rossa da maggio 2026 e, se ripartisse, farebbe `git reset --hard` più migration automatiche. Va riscritta prima.
+8. **Mai fidarsi della documentazione sullo stato del server**: la verità è `curl /api/health` e `docker exec ... printenv DB_HOST`.
+
+## Cose note da sistemare
+
+- Nella pagina Reconciliation della platform esiste un fallback che passa utente e password nell'indirizzo del tool. Il tool non li legge: il fallback va rimosso.
+- Alcuni documenti in `docs/` del repo descrivono endpoint o regole di abbinamento diversi dal codice. Fa fede il codice; questa pagina è allineata al 5 settembre 2026.
+- Il valore di default di `DB_MIGRATIONS_RUN` è `false` nel compose ma alcune note nel repo dicono ancora `true`.
+
+<Note>
+Stato al 5 settembre 2026: `main` contiene guardrail, isolamento tenant e credenziali Kross dalla platform, ma il server gira ancora il codice precedente sul database DigitalOcean. Il passaggio prevede, in ordine: ripristino dei dati DigitalOcean nel database Supabase, server allineato a `main`, switch del `.env` e riavvio con la verifica sopra.
+</Note>

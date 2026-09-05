@@ -1,0 +1,65 @@
+---
+title: "Reconciliation: troubleshooting"
+sidebarTitle: "Troubleshooting"
+description: "Sintomo, causa, soluzione: import, Revolut, Kross, abbinamenti, deploy."
+---
+
+Prima di tutto: **non dare per definitivo un risultato strano.** Il tool risponde OK anche quando ha lavorato sui dati sbagliati (tenant sbagliato, periodo sbagliato, file con colonne invertite). Verifica con un conteggio che conosci.
+
+## Accesso e tenant
+
+| Sintomo | Causa | Soluzione |
+|---|---|---|
+| Entro e vedo movimenti che non sono miei | lo slug dell'organizzazione sulla platform punta a un altro tenant | correggere il collegamento organizzazione → tenant sulla platform; disattivare l'utente nel tenant sbagliato |
+| Il pulsante dalla platform apre il tool ma mi rimanda al login | il codice usa-e-getta è scaduto (60 secondi) o il tool non raggiunge la platform | riprovare dal pulsante; se persiste, controllare `PLATFORM_URL` e il segreto HMAC sul server |
+| Tool vuoto, nessun conto bancario | primo accesso: è normale | i tre conti seed compaiono al primo avvio; se mancano, il backend è partito su un database sbagliato: vedi Deploy |
+
+## Import file
+
+| Sintomo | Causa | Soluzione |
+|---|---|---|
+| Il file della banca ha un formato diverso da quello che il tool si aspetta | ogni banca esporta colonne e nomi diversi; il tool non indovina | scegliere il conto come tipo «Altro», mappare le colonne a mano nell'anteprima, salvare la mappa sul conto: vedi [Banche e file](/integrazioni/reconciliation/banche-e-csv) |
+| «Nessuna colonna riconosciuta» | intestazioni diverse dalla mappa del tipo di conto, o tabella non sul primo foglio | mappare a mano le colonne e salvare la mappa sul conto; spostare la tabella nel primo foglio |
+| Importi tutti a zero o tutti positivi | banca con due colonne (Accrediti/Addebiti) mappate su una sola | mappare entrambe le colonne |
+| Righe saltate come duplicate ma sono movimenti diversi | stesso giorno, stesso importo, riferimento vuoto | mappare come riferimento una colonna che varia (id operazione, causale completa) |
+| Ho caricato il file sbagliato | | entro 5 minuti: annulla ultimo import dalla pagina di import; oltre: chiedere al team (pulizia per entità) |
+| Date sballate (mese e giorno invertiti) | formato data non riconosciuto dal parser | segnalare al team: è una modifica al codice, non alla mappa |
+
+## Revolut Business
+
+| Sintomo | Causa | Soluzione |
+|---|---|---|
+| «Mattone user not linked» | sei entrato con il login classico, non dalla platform | entrare dal pulsante Reconciliation su `app.mattone.co` |
+| Errore 404 dalla platform durante la sincronizzazione | Revolut non collegato in Connessioni | collegarlo, poi riprovare |
+| Errore 400 «esistono già movimenti nel periodo» | protezione anti-doppioni | scegliere un periodo non sovrapposto o annullare l'import precedente |
+| Periodo rifiutato | più di 92 giorni | spezzare in trimestri |
+| Movimenti di un altro conto (es. GBP) | la sincronizzazione prende tutti i conti dell'account | ignorarli a mano o segnalare: il filtro per conto non esiste ancora |
+
+## KrossBooking
+
+| Sintomo | Causa | Soluzione |
+|---|---|---|
+| «Non collegato» | la platform non ha credenziali Kross per il tenant e non ce ne sono nel tool | collegare Kross sulla platform (onboarding step 2); come ripiego, inserirle in Integrazioni |
+| HTTP 400 con «not allowed» | filtro IP della chiave partner: l'indirizzo del server non è autorizzato | non è un problema di password; vedi [KrossBooking, filtro IP](/integrazioni/kross/rate-limit-trappole) |
+| HTTP 401 | credenziali sbagliate (hotel, utente o password) | rifare il test credenziali dalla platform |
+| Sincronizzazione Kross «ok» ma zero prenotazioni | periodo senza arrivi, oppure hotel sbagliato nelle credenziali (la terna è di un'altra struttura) | confrontare con Kross a mano: se lì le prenotazioni ci sono, rifare il test credenziali sulla platform e controllare l'hotel |
+| Prenotazioni importate ma nessun abbinamento | periodo Kross troppo stretto: i bonifici arrivano settimane dopo il soggiorno | sincronizzare un periodo più ampio dei soggiorni, non solo del mese bancario |
+| Molti Unmatched su Booking | descrizioni bancarie accorciate, senza `booking.com` | mappare la descrizione completa dell'export |
+
+## Abbinamenti
+
+| Sintomo | Causa | Soluzione |
+|---|---|---|
+| Molti Partial dello stesso importo | commissione o rimborso non tracciato nei payout | controllare i payout caricati; spiegare al commercialista se è sistematico |
+| Un movimento in uscita non è riconciliato | il tool non riconcilia le uscite, per costruzione | non è un bug |
+| La prima nota ha `Partial` su un gruppo che a mano torna | differenza sopra 2 centesimi per arrotondamento multi-riga | correggere l'importo della riga nel tool e riesportare |
+
+## Deploy e server
+
+| Sintomo | Causa | Soluzione |
+|---|---|---|
+| `/api/health` senza la chiave `db` | in produzione gira codice vecchio | deploy da `main` come in [Regole codice e deploy](/integrazioni/reconciliation/regole-codice-deploy) |
+| Backend che esce subito con `DbGuard` | `DB_HOST` non canonico | correggere il `.env`; non usare il bypass senza dichiararlo |
+| Tabelle vuote dopo lo switch del database | protezione per riga accesa sulle tabelle, o tabelle create da un altro utente | ripristinare con l'utente dell'app; verificare `SchemaGuard` nei log |
+| Preflight rosso per «HEAD non su origin» | commit locali sul server | portarli su GitHub in un branch, mai `reset --hard` |
+| Container sconosciuto sul server | vedi incidente aprile-settembre 2026 | fermarlo, rimuoverlo, avvisare il team; non è mai legittimo un database dev in produzione |

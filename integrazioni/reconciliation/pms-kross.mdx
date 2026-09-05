@@ -1,0 +1,50 @@
+---
+title: "Reconciliation: PMS e abbinamento"
+sidebarTitle: "PMS e abbinamento"
+description: "Come il tool prende le prenotazioni da KrossBooking, con quali credenziali, e le regole con cui abbina gli incassi Booking, Airbnb e Stripe ai movimenti bancari."
+---
+
+## Il PMS supportato
+
+Oggi il tool parla **solo con KrossBooking**. Non c'è un adattatore per Hostaway o altri PMS: uno studente su un altro gestionale può usare il tool solo per i movimenti bancari, senza abbinamento.
+
+## Da dove prende le credenziali Kross
+
+Dalla **Mattone Platform**, non da un form nel tool. La platform conserva per ogni studente la terna Kross (hotel, utente, password) usata anche da Conduit; il tool la chiede alla platform con una firma fra servizi e la tiene in memoria 5 minuti. Lo studente **non inserisce nulla** nel tool: se Kross è collegato sulla platform, funziona anche qui.
+
+Se la platform non trova credenziali per il tenant, il tool prova quelle **salvate localmente** nella pagina Integrazioni (è il metodo vecchio, usato da Cosmica). Se non ci sono nemmeno quelle, la sincronizzazione risponde «non collegato».
+
+<Warning>
+Le chiamate a Kross partono dall'indirizzo del server del tool, che deve essere nella **lista IP autorizzata** della chiave partner Mattone. Il filtro IP non si spegne mai: vedi [KrossBooking, filtro IP e trappole](/integrazioni/kross/rate-limit-trappole). Un errore HTTP 400 con «not allowed» è il filtro IP, non le credenziali.
+</Warning>
+
+## Cosa importa da Kross
+
+Le **prenotazioni** del periodo scelto (con l'esito per proprietario), una riga per codice prenotazione: ricaricare lo stesso periodo non duplica. La chiamata ai payout Kross serve solo a recuperare il nome della stanza: **gli importi dei payout Booking non vengono presi da Kross**, ma dai movimenti bancari e dai file di payout caricati.
+
+## Come abbina gli incassi
+
+Il tool guarda **solo i movimenti in entrata** e li classifica dalla descrizione bancaria:
+
+| Canale | Riconosce il movimento se | Come abbina |
+|---|---|---|
+| **Booking** | la descrizione contiene `booking.com` | prima cerca un payout Booking con **stesso importo e stesso riferimento**; se non c'è, cerca l'**insieme di prenotazioni Kross** la cui somma dà l'importo del bonifico |
+| **Airbnb** | descrizione o riferimento contengono `airbnb` | cerca un payout Airbnb con importo uguale (±1 centesimo) e data di payout **non successiva** al movimento |
+| **Stripe** | descrizione contiene `stripe` | somma i pagamenti Stripe dello stesso versamento automatico, finestra da 60 giorni prima a 30 dopo, tolleranza 5 centesimi; se serve, confronta il nome del cliente per somiglianza |
+
+Ogni movimento riceve uno stato:
+
+- **Matched**: la somma delle prenotazioni abbinate torna col bonifico (differenza ≤ 5 centesimi).
+- **Partial**: abbinato ma la differenza è sopra i 5 centesimi. Tipico di un rimborso o di una commissione non prevista: va guardato a mano.
+- **Unmatched**: nessuna prenotazione trovata.
+- **Ignored**: lo hai escluso tu a mano.
+
+## Cosa resta fuori, e perché
+
+- **Tutte le uscite**: il tool non le classifica né le abbina.
+- **Incassi non da canale** (bonifici diretti, giroconti, fatture): restano fra i movimenti, non entrano nella riconciliazione.
+- Un movimento Booking la cui descrizione **non contiene** `booking.com` (alcune banche accorciano) finisce fuori canale: in quel caso mappa come descrizione la colonna completa dell'export.
+
+## Cosa prova che sta funzionando
+
+Sul tenant Cosmica, da gennaio a maggio 2026, gli incassi Booking, Airbnb e Stripe sono stati abbinati quasi tutti (una manciata di Partial al mese, 1-2 Unmatched su centinaia). Se sul tuo tenant vedi molti Unmatched, prima di pensare a un bug controlla: periodo Kross sincronizzato che copre i soggiorni (i bonifici arrivano settimane dopo), payout caricati, descrizioni bancarie complete.

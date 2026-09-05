@@ -1,0 +1,30 @@
+---
+title: "Reconciliation: Revolut Business"
+sidebarTitle: "Revolut Business"
+description: "Il collegamento diretto al conto Revolut Business: come lo attiva uno studente, cosa importa, quali limiti ha e cosa non è ancora stato provato in produzione."
+---
+
+Con Revolut Business il tool può **scaricare i movimenti direttamente dal conto**, senza export manuale. Il collegamento passa dalla Mattone Platform: è lei a custodire l'autorizzazione Revolut dello studente, il tool gliela chiede al momento del bisogno con una firma condivisa fra i due servizi.
+
+## Come lo attiva uno studente
+
+<Steps>
+  <Step title="Collega Revolut sulla platform">Da `app.mattone.co` → **Connessioni** → **Revolut Business**. Parte l'autorizzazione sul sito Revolut: lo studente accede con il proprio account Business e approva. Il token resta sulla platform, mai nel tool.</Step>
+  <Step title="Entra nel tool dalla platform">Serve entrare dal pulsante Reconciliation della platform: è così che il tool sa quale utente Mattone sei. Con il login classico il collegamento non funziona (errore «Mattone user not linked»).</Step>
+  <Step title="Import Mensile → Importa da Revolut Business">Scegli il periodo. Il tool mostra un'anteprima, poi importa.</Step>
+</Steps>
+
+## Cosa importa e con quali regole
+
+- Solo i movimenti **completati** (niente pending).
+- **Tutti i conti** dell'account Revolut Business insieme: se lo studente ha un conto EUR e uno GBP, arrivano entrambi. Oggi i movimenti importati da Revolut **non vengono legati a un conto bancario specifico** nel tool: compaiono fra i movimenti del tenant con origine `revolut-api`.
+- Periodo massimo **92 giorni** per volta, sempre con inizio e fine espliciti. Per un anno intero servono quattro sincronizzazioni.
+- Se nel periodo scelto esistono **già** movimenti nel tenant, il tool si rifiuta di importare (protezione anti-doppioni). Scegli un periodo che non si sovrappone, oppure cancella prima l'import precedente.
+
+## Stato reale
+
+Il collegamento Revolut è **scritto ma mai eseguito con successo in produzione**: al 4 settembre 2026 il registro delle sincronizzazioni era vuoto e nessun movimento nel tenant Cosmica proviene dall'API. Cosmica usa l'export CSV mensile. Il primo studente (o Cosmica stessa) che lo attiva sta facendo il **collaudo**: fallo su un periodo corto, confronta il numero di movimenti con l'export della banca, e segnala al team cosa è successo. Vedi [Troubleshooting](/integrazioni/reconciliation/troubleshooting).
+
+<Note>
+Doc ufficiale Revolut Business API: https://developer.revolut.com/docs/api/business. Le chiavi dell'app Revolut e il segreto condiviso fra platform e tool vivono nelle variabili d'ambiente dei due servizi, mai qui.
+</Note>

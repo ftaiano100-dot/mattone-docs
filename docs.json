@@ -118,8 +118,20 @@
               "integrazioni/ghl/rebilling",
               "integrazioni/ghl/troubleshooting",
               "integrazioni/operations/panoramica",
-              "integrazioni/operations/collegamento",
-              "integrazioni/operations/reconciliation"
+              "integrazioni/operations/collegamento"
+            ]
+          },
+          {
+            "group": "Reconciliation (banca)",
+            "pages": [
+              "integrazioni/reconciliation/panoramica",
+              "integrazioni/reconciliation/accesso",
+              "integrazioni/reconciliation/banche-e-csv",
+              "integrazioni/reconciliation/revolut",
+              "integrazioni/reconciliation/pms-kross",
+              "integrazioni/reconciliation/prima-nota",
+              "integrazioni/reconciliation/regole-codice-deploy",
+              "integrazioni/reconciliation/troubleshooting"
             ]
           },
           {
@@ -200,5 +212,11 @@
       "claude",
       "chatgpt"
     ]
-  }
+  },
+  "redirects": [
+    {
+      "source": "/integrazioni/operations/reconciliation",
+      "destination": "/integrazioni/reconciliation/panoramica"
+    }
+  ]
 }

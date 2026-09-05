@@ -1,0 +1,42 @@
+---
+title: "Reconciliation: accesso e tenant"
+sidebarTitle: "Accesso e tenant"
+description: "Come uno studente entra nel tool dalla Mattone Platform, cosa viene creato al primo accesso, quali ruoli esistono."
+---
+
+## Come si entra
+
+Si entra **sempre dalla Mattone Platform** (`app.mattone.co` → voce **Reconciliation**). La platform genera un codice usa-e-getta valido 60 secondi e ti porta su `reconciliation.mattone.co` già dentro il tuo spazio. Non serve una seconda password.
+
+Esiste anche il login classico con utente, password e nome del tenant. È riservato agli amministratori e a Cosmica: uno studente non deve mai avere credenziali dirette del tool.
+
+## Cos'è il tenant
+
+Il **tenant** è lo spazio dello studente: conti bancari, movimenti, prenotazioni, riconciliazioni ed export sono tutti legati al suo tenant. Il tenant viene dall'organizzazione dello studente sulla platform (campo `slug` dell'organizzazione). Se lo slug è sbagliato o punta a un'altra organizzazione, lo studente entra **nello spazio sbagliato**: è il primo controllo da fare se qualcuno vede dati che non sono suoi.
+
+## Cosa succede al primo accesso
+
+Al primo ingresso il tool crea da solo:
+
+- il **tenant**, se non esiste;
+- l'**utente** dello studente, collegato al suo account Mattone;
+- tre **conti bancari** vuoti già pronti: Revolut, Sella, Intesa. Si possono rinominare, cambiare di tipo o aggiungerne altri dalla pagina **Conti Bancari**.
+
+Non ci sono dati: movimenti e prenotazioni si caricano dopo.
+
+## Il menu
+
+Dashboard · Riconciliazione · Transazioni bancarie · Conti Bancari · Proprietari · Pagamenti · Prenotazioni · Fatture · Cedolare Secca · **Import Mensile** (il wizard) · Integrazioni · Guida e FAQ. La voce **Amministrazione** compare solo agli amministratori di Mattone.
+
+## Ruoli
+
+| Ruolo | Chi | Cosa può fare |
+|---|---|---|
+| `user` | ogni studente, creato al primo accesso | tutto dentro il proprio tenant: import, riconciliazione, export |
+| `super_admin` | team Mattone | in più la sezione Amministrazione, su tutti i tenant |
+
+Non esistono ruoli intermedi (es. "solo lettura"): chi entra nel tenant può importare e cancellare.
+
+<Warning>
+**Un utente nel tenant sbagliato vede la banca di quel tenant.** È successo con un account collegato a Cosmica: chi crea o corregge collegamenti sulla platform deve verificare lo slug prima di far entrare la persona.
+</Warning>

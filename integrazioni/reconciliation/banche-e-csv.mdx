@@ -1,0 +1,65 @@
+---
+title: "Reconciliation: banche e file di import"
+sidebarTitle: "Banche e file"
+description: "Quali file accetta il tool, quali banche sono già mappate, come si mappa una banca nuova e cosa succede con i duplicati."
+---
+
+## Da dove vengono i movimenti
+
+Due strade, che possono convivere:
+
+1. **File esportato dalla banca**, caricato dal wizard **Import Mensile**. Funziona con qualunque banca che esporti una tabella.
+2. **Revolut Business** in diretta, dallo stesso wizard. Vedi [Revolut Business](/integrazioni/reconciliation/revolut).
+
+## Formati accettati
+
+- **Excel** `.xlsx` e `.xls`, oppure **CSV** (separatore `;`, `,` o tab: lo riconosce da solo). Massimo 50 MB.
+- Viene letto **solo il primo foglio** del file. Se la banca esporta più fogli, sposta la tabella nel primo.
+- La **riga di intestazione** viene cercata automaticamente anche se non è la prima (molte banche mettono sopra logo e dati del conto).
+- **PDF: no.** Il tool non legge l'estratto conto in PDF. Se la banca dà solo PDF, va convertito in Excel prima (la maggior parte delle home banking ha comunque un export CSV o Excel nella sezione movimenti).
+
+## Come funziona l'import
+
+<Steps>
+  <Step title="Scegli il conto">Il tool **non indovina la banca dal file**: sei tu a scegliere il conto bancario su cui caricare. Il tipo del conto (Revolut, Sella, Intesa, UniCredit, Fineco, altro) precompila la mappa delle colonne.</Step>
+  <Step title="Controlla la mappa delle colonne">Il tool propone quale colonna del file è la data, la descrizione, la controparte, l'importo. Se il file usa nomi diversi prova a riconoscerli per somiglianza. Correggi se serve: la mappa si può **salvare sul conto**, così il mese dopo non la rifai.</Step>
+  <Step title="Anteprima">Vedi le righe come verranno importate, con i duplicati già segnalati.</Step>
+  <Step title="Importa">Le righe entrano nel tenant. Se hai sbagliato file, entro 5 minuti puoi annullare l'ultimo import dalla stessa pagina.</Step>
+</Steps>
+
+## Banche già mappate
+
+| Banca | Colonne attese nel file |
+|---|---|
+| **Revolut** | Data operazione · Controparte · Descrizione · Importo totale EUR |
+| **Sella** | stesse di Revolut |
+| **Intesa Sanpaolo** | Data contabile · Descrizione estesa · Accrediti · Addebiti |
+| **Fineco** | Data · Descrizione completa · Entrate · Uscite |
+| **UniCredit** | Data · Causale · Avere · Dare (schema **da confermare** sul primo export vero) |
+| **Altro** | nessuna mappa: la costruisci tu al primo import e la salvi sul conto |
+
+Per le banche con due colonne (Accrediti/Addebiti, Entrate/Uscite) il tool le unisce in un unico importo con segno.
+
+## Una banca nuova: cosa serve
+
+Nella maggior parte dei casi **non serve toccare il codice**: crea il conto come tipo «Altro», mappa le colonne al primo import e salva la mappa. Da lì in poi è come una banca supportata.
+
+Serve un intervento sul codice solo se vuoi che la banca compaia **precompilata** per tutti gli studenti. In quel caso i punti da toccare sono quattro, tutti nel repo (vedi [Regole per chi tocca il codice](/integrazioni/reconciliation/regole-codice-deploy)):
+
+1. le colonne di default della banca (`backend/src/modules/bank-accounts/bank-type-defaults.ts`);
+2. la voce nel menu a tendina dei tipi di conto (`frontend/src/pages/BankAccountsPage.tsx`);
+3. facoltativo, i sinonimi delle colonne per il riconoscimento automatico (`column-mapper.service.ts`);
+4. facoltativo, il conto seed creato ai nuovi tenant (`schema-guard.ts`).
+
+Due limiti oggi: il formato della data e il foglio letto **non** sono configurabili per banca. Se una banca esporta date in un formato che il tool non capisce, va segnalato al team: è una modifica al parser, non alla mappa.
+
+## Duplicati
+
+Un movimento è considerato duplicato se **data, importo e riferimento** coincidono con uno già presente nel tenant. Due conseguenze pratiche:
+
+- Ricaricare lo stesso file non crea doppioni: le righe già presenti vengono saltate.
+- Due movimenti **diversi** con stessa data, stesso importo e stesso riferimento vuoto vengono visti come uno solo. Succede con banche che lasciano il campo riferimento vuoto: in quel caso conviene mappare come «riferimento» una colonna che varia (id operazione, causale completa).
+
+<Note>
+Il file di Cosmica: Revolut, export CSV dei movimenti dalla web app, caricato da Mattia una volta al mese sul conto Revolut del tenant Cosmica. Se vuoi un esempio di file che funziona, è quello.
+</Note>

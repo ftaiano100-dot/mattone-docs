@@ -1,0 +1,35 @@
+---
+title: "Reconciliation: prima nota"
+sidebarTitle: "Prima nota"
+description: "L'export Excel per il commercialista: come si genera, cosa contiene, come leggere la colonna di controllo."
+---
+
+La **prima nota** è l'export finale: un Excel con, per ogni incasso bancario, le righe di dettaglio delle prenotazioni che lo compongono. È il file che a Cosmica va al commercialista ogni mese.
+
+## Come si genera
+
+Dalla pagina **Riconciliazione**, dopo aver controllato Partial e Unmatched: **Esporta prima nota** per il mese, oppure l'**annuale** (un foglio per mese). L'export si genera al momento e **non viene salvato** nel tool: se ti serve di nuovo, lo rigeneri. Sui mesi grandi può metterci qualche minuto.
+
+## Cosa contiene
+
+Un foglio per mese, con queste colonne:
+
+| Colonna | Cosa c'è |
+|---|---|
+| DATA | data del movimento bancario |
+| DESCRIZIONE | il canale (Booking, Airbnb, Stripe) |
+| CLIENTE / FORNITORE | ospite o piattaforma |
+| DOCUMENTI | numero fattura o ricevuta collegata |
+| DARE / AVERE | importi in partita doppia |
+| Movimento Positivo | l'importo del bonifico come appare in banca |
+| OK SE=0 | controllo: differenza fra somma delle righe e bonifico |
+
+Quante righe per incasso: Booking **3** per prenotazione (lordo, commissione, netto), Stripe **2**, Airbnb da 1 a 3, un Unmatched **1** riga sola con l'importo bancario.
+
+## Come leggere il controllo
+
+La colonna **OK SE=0** vale `OK` quando la somma delle righe torna col bonifico entro 2 centesimi. Se vale `Partial`, quel gruppo va spiegato al commercialista (rimborso, commissione extra, cambio) oppure corretto nel tool e riesportato.
+
+<Note>
+La prima nota copre **solo gli incassi da canale**. Uscite e incassi fuori canale non ci sono: vanno integrati nel giro contabile normale. Vedi [Panoramica, cosa non fa](/integrazioni/reconciliation/panoramica#cosa-non-fa).
+</Note>
