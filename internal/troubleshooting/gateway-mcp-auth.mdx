@@ -1,0 +1,84 @@
+---
+title: "Gateway MCP — l'autenticazione che esiste e nessuno accende"
+description: "Un gateway MCP senza autenticazione sull'esecuzione lascia a chiunque i tuoi tool. Il gate spesso è già scritto nel codice: quello che manca è averlo acceso."
+---
+
+<Warning>
+Il controllo di autenticazione su un gateway MCP **può essere già scritto nel file da mesi** e non
+essere mai stato acceso, perché è un `if` su una variabile d'ambiente che nessuno ha impostato.
+Quando trovi un gate opt-in nel codice, la domanda non è *«c'è?»* ma **«è acceso in produzione?»**
+— e la risposta si ottiene solo chiamando l'endpoint dall'esterno.
+</Warning>
+
+## Perché conta
+
+Un gateway MCP è la porta d'ingresso a PMS e domotica. Se l'esecuzione è pubblica, **chiunque
+conosca l'URL diventa il tuo agente**: può leggere le prenotazioni, bruciare il rate limit del PMS
+— e, sulla domotica, aprire una porta.
+
+## Come si verifica, sul TUO gateway
+
+```bash
+# 1. l'elenco dei tool è pubblico? (metadata: fastidioso, non grave)
+curl -s -X POST https://<il-tuo-gateway>/api/mcp/<capability> \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+
+# 2. l'ESECUZIONE è pubblica? è questo che conta
+#    usa SEMPRE un tool di sola lettura per il test — mai open_door
+curl -s -X POST https://<il-tuo-gateway>/api/mcp/<capability> \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"<tool-di-lettura>","arguments":{}}}'
+```
+
+**Se il secondo comando restituisce dati, il gateway è aperto e va chiuso.**
+Se invece risponde con un errore tipo `manca l'header` o `401`, l'esecuzione è protetta.
+
+## Il gate opt-in — il pattern da usare
+
+Non si aggiunge un'autenticazione obbligatoria in un deploy solo: si spezzerebbero i custom tool
+che parlano con gli ospiti. Il gate va scritto **opt-in**, inerte finché la variabile non esiste:
+
+```ts
+function checkAuth(request: Request): Response | null {
+  const expected = process.env.MCP_SECRET;
+  if (!expected) return null;              // gate non ancora acceso
+  const got = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
+    ?? request.headers.get('x-mcp-secret');
+  if (got === expected) return null;
+  return Response.json(
+    { jsonrpc: '2.0', id: null, error: { code: -32001, message: 'Unauthorized' } },
+    { status: 401 },
+  );
+}
+```
+
+## 🔴 L'ordine di accensione — invertirlo lascia gli ospiti fuori dalla porta
+
+1. **Deploy del gate** → nessun effetto, la variabile non esiste.
+2. **I custom tool mandano l'header**, letto da una variabile di workspace:
+   `"Authorization": \`Bearer ${process.env.MCP_TOKEN || ""}\`` → ancora nessun effetto.
+3. **Il segreto nei secrets del workspace Conduit.**
+4. **Solo adesso** la variabile sul progetto in produzione → l'enforcement si accende.
+
+Saltare il 3 e andare al 4 significa che ogni tool riceve `401` mentre un ospite è davanti al portone.
+
+## Il ramo 401 nel custom tool — la rete di sicurezza
+
+Anche con l'ordine giusto, il tool deve sapere cosa fare se riceve un `401`. **Non deve dire
+all'ospite che qualcosa non funziona**: deve trattarlo come un transitorio.
+
+```js
+if (r.status === 401) return { message: BUSY, rawData: { transient: true, reason: "auth" } };
+```
+
+dove `BUSY` è il messaggio *«sistema momentaneamente occupato, riprova fra ~30 secondi»* — mai
+*«la porta non si apre»* o *«non risulti prenotato»*. È la porta 4 del
+[guardrail a 6 porte](/internal/troubleshooting/guardrail-6-porte): **un errore di infrastruttura
+non è un fatto sul mondo.**
+
+## La regola generale
+
+> Un meccanismo di sicurezza scritto e non acceso **non è sicurezza: è un commento**.
+
+Vale per l'auth del gateway come per qualunque cosa che risponde `200` mentre non fa niente.
